@@ -18,6 +18,15 @@ data/**
 reports/**
 !reports/
 !reports/.gitkeep
+!reports/loocv/
+!reports/loocv/**/
+!reports/loocv/README.md
+!reports/loocv/**/cnn_summary_by_k.csv
+!reports/loocv/**/cnn_simulated_vs_real_by_k.csv
+!reports/loocv/**/cnn_domain_adaptation_by_k.csv
+!reports/loocv/**/vlm_summary_by_k.csv
+!reports/loocv/**/vlm_summary_by_model_condition_k.csv
+!reports/loocv/**/vlm_setup_validation.json
 notebooks/
 outputs/
 tmp/

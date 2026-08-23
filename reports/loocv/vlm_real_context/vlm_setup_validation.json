@@ -1,0 +1,64 @@
+{
+  "clinical_aggregation": "majority",
+  "clinical_lead": "V1",
+  "clinical_leads": [
+    "V1"
+  ],
+  "condition_k_plan": {
+    "balanced": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "estandar": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "zero_shot": [
+      0
+    ]
+  },
+  "conditions": [
+    "zero_shot",
+    "estandar",
+    "balanced"
+  ],
+  "context_dataset_root": "data/brugada_huca (not versioned)",
+  "dataset_root": "data/brugada_huca (not versioned)",
+  "errors": [],
+  "folds": 317,
+  "images": 317,
+  "k_values": [
+    0,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "model": "google/gemma-4-E4B-it",
+  "model_loads": 0,
+  "models": [
+    "google/gemma-4-E4B-it"
+  ],
+  "network_calls": 0,
+  "ok": true,
+  "patients": 317,
+  "planned_context_images": 117924,
+  "planned_image_requests": 10461,
+  "planned_model_requests": 10461,
+  "planned_patient_predictions": 10461,
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "task": "clinical",
+  "vlm_runtime": "remote_api",
+  "warnings": []
+}

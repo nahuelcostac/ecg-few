@@ -1,0 +1,62 @@
+{
+  "clinical_aggregation": "",
+  "clinical_lead": "",
+  "clinical_leads": [],
+  "condition_k_plan": {
+    "balanced": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "estandar": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "zero_shot": [
+      0
+    ]
+  },
+  "conditions": [
+    "zero_shot",
+    "estandar",
+    "balanced"
+  ],
+  "context_dataset_root": "data/simulator_qrs (not versioned)",
+  "dataset_root": "data/simulator_qrs (not versioned)",
+  "errors": [],
+  "folds": 100,
+  "images": 100,
+  "k_values": [
+    0,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "model": "google/gemma-4-E4B-it",
+  "model_loads": 0,
+  "models": [
+    "google/gemma-4-E4B-it"
+  ],
+  "network_calls": 0,
+  "ok": true,
+  "patients": 100,
+  "planned_context_images": 111600,
+  "planned_image_requests": 9900,
+  "planned_model_requests": 9900,
+  "planned_patient_predictions": 3300,
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "task": "morphology",
+  "vlm_runtime": "remote_api",
+  "warnings": []
+}

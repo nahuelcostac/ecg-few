@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 EMBED_DIR = OUT_DIR / "drawio_embedded"
 REPORTS = ROOT / "reports" / "loocv"
-CLINICAL_EXAMPLE = ROOT / "data" / "brugada_huca" / "examples" / "clinical_brugada_example.png"
+CLINICAL_THUMBNAIL = EMBED_DIR / "pipeline_huca_ecg.png"
 CNN_PIPELINE = OUT_DIR / "cnn_convolutional_pipeline.drawio.png"
 VLM_PIPELINE = OUT_DIR / "vlm_icl_context_window.drawio.png"
 
@@ -103,11 +103,12 @@ def make_synthetic_thumb() -> tuple[str, np.ndarray]:
 
 
 def make_clinical_thumb() -> tuple[str, np.ndarray]:
-    image = Image.open(CLINICAL_EXAMPLE).convert("RGB")
-    image = ImageOps.fit(image, (260, 240), method=Image.Resampling.LANCZOS, centering=(0.50, 0.50))
-    path = EMBED_DIR / "pipeline_huca_ecg.png"
-    image.save(path)
-    return image_file_b64(path)
+    if not CLINICAL_THUMBNAIL.is_file():
+        raise FileNotFoundError(
+            "Missing the versioned, anonymized clinical thumbnail required "
+            f"for the pipeline diagram: {CLINICAL_THUMBNAIL}"
+        )
+    return image_file_b64(CLINICAL_THUMBNAIL)
 
 
 def make_cnn_curve() -> tuple[str, np.ndarray]:

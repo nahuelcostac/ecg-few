@@ -60,13 +60,14 @@ scripts/eval/                   Evaluación y comparaciones
 scripts/run/                    Entradas reproducibles
 scripts/thesis/                 Figuras y auditoría de la memoria
 prompts/                        Prompts VLM
+reports/loocv/                  Resultados agregados para regenerar las gráficas
 thesis/thesis/                  Fuente LaTeX
 thesis/thesis/assets/results/   Figuras versionadas
 ```
 
-Los resultados voluminosos no se versionan. Los renderizadores reciben directamente la carpeta `loocv` mediante `--loocv-dir` o la variable `LOOCV_DIR`.
+Se versionan los resúmenes agregados por valor de `K`, condición y método que consumen los renderizadores del TFG. No se incluyen predicciones por paciente, pliegues LOOCV, imágenes, manifiestos clínicos ni rutas a datos en crudo. El contenido y los criterios de inclusión se documentan en `reports/loocv/README.md`.
 
-La fuente LaTeX, los logos y todas las figuras utilizadas por la memoria sí se versionan. Los datos clínicos del HUCA y los resultados LOOCV completos no son necesarios para compilar el PDF y no se incluyen por privacidad y tamaño.
+La fuente LaTeX, los logos y todas las figuras utilizadas por la memoria también se versionan. Los datos clínicos del HUCA y los resultados LOOCV a nivel de paciente no son necesarios para compilar el PDF ni para regenerar sus gráficas, y se excluyen por privacidad y tamaño.
 
 ## Reproducción
 
@@ -76,22 +77,16 @@ Instalación:
 uv sync --extra dev --extra cnn
 ```
 
-Regeneración de las figuras finales desde un directorio LOOCV existente:
+Regeneración de las figuras finales con los resultados agregados incluidos en el repositorio:
 
 ```bash
-LOOCV_DIR="/ruta/a/loocv" RUN_COMPARISONS=0 sh scripts/run/build_tfg_report_figures.sh
+RUN_COMPARISONS=0 sh scripts/run/build_tfg_report_figures.sh
 ```
 
 Auditoría de cifras, unidades, figuras y uso de Draw.io:
 
 ```bash
-uv run --no-sync python scripts/thesis/audit_final_tfg.py --loocv-dir "/ruta/a/loocv"
-```
-
-La parte de la auditoría que solo depende de los archivos versionados puede ejecutarse sin los resultados LOOCV:
-
-```bash
-uv run --no-sync python scripts/thesis/audit_final_tfg.py --skip-results
+uv run --no-sync python scripts/thesis/audit_final_tfg.py
 ```
 
 ### Compilación de la memoria
