@@ -20,7 +20,6 @@ from PIL import Image, ImageOps
 
 from ecg_few.simulator import generate_beat
 
-
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 EMBED_DIR = OUT_DIR / "drawio_embedded"
@@ -49,8 +48,12 @@ def main() -> None:
     assets = {
         "synthetic": make_synthetic_thumb(),
         "clinical": make_clinical_thumb(),
-        "cnn_pipeline": make_fitted_asset(CNN_PIPELINE, EMBED_DIR / "pipeline_cnn_drawio_panel.png", (390, 135)),
-        "vlm_pipeline": make_fitted_asset(VLM_PIPELINE, EMBED_DIR / "pipeline_vlm_drawio_panel.png", (390, 135)),
+        "cnn_pipeline": make_fitted_asset(
+            CNN_PIPELINE, EMBED_DIR / "pipeline_cnn_drawio_panel.png", (390, 135)
+        ),
+        "vlm_pipeline": make_fitted_asset(
+            VLM_PIPELINE, EMBED_DIR / "pipeline_vlm_drawio_panel.png", (390, 135)
+        ),
         "curve": make_cnn_curve(),
         "confusion": make_confusion_matrix(),
     }
@@ -61,7 +64,9 @@ def main() -> None:
     print(OUT_DIR / "fig_pipeline_experimental.drawio.png")
 
 
-def fig_to_file_b64(fig: plt.Figure, path: Path, *, transparent: bool = False) -> tuple[str, np.ndarray]:
+def fig_to_file_b64(
+    fig: plt.Figure, path: Path, *, transparent: bool = False
+) -> tuple[str, np.ndarray]:
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=220, bbox_inches="tight", pad_inches=0.02, transparent=transparent)
     plt.close(fig)
@@ -86,7 +91,9 @@ def make_fitted_asset(source: Path, target: Path, size: tuple[int, int]) -> tupl
 
 
 def make_synthetic_thumb() -> tuple[str, np.ndarray]:
-    waveform, _ = generate_beat(class_name="BRUGADA", seed=2029, subtype="coved", fs=500, duration_ms=900)
+    waveform, _ = generate_beat(
+        class_name="BRUGADA", seed=2029, subtype="coved", fs=500, duration_ms=900
+    )
     t_ms = np.arange(waveform.shape[0], dtype=float) / 500.0 * 1000.0
     fig, ax = plt.subplots(figsize=(1.7, 1.55), dpi=220)
     draw_ecg_grid(ax, 0, 900, -1.05, 0.95)
@@ -129,7 +136,10 @@ def make_cnn_curve() -> tuple[str, np.ndarray]:
 
 
 def make_confusion_matrix() -> tuple[str, np.ndarray]:
-    row = sorted(read_csv(REPORTS / "cnn_simulator_qrs" / "cnn_summary_by_k.csv"), key=lambda item: int(item["k"]))[-1]
+    row = sorted(
+        read_csv(REPORTS / "cnn_simulator_qrs" / "cnn_summary_by_k.csv"),
+        key=lambda item: int(item["k"]),
+    )[-1]
     matrix = np.array([[int(row["tn"]), int(row["fp"])], [int(row["fn"]), int(row["tp"])]])
     fig, ax = plt.subplots(figsize=(1.15, 1.15), dpi=220)
     ax.imshow(matrix, cmap="Blues", vmin=0)
@@ -165,7 +175,17 @@ def draw_ecg_grid(ax: plt.Axes, xmin: float, xmax: float, ymin: float, ymax: flo
         ax.axhline(y, color="#EDA6A6", lw=0.7, zorder=0)
 
 
-def rounded(ax: plt.Axes, x: float, y: float, w: float, h: float, fill: str, stroke: str, lw: float = 1.1, radius: float = 8) -> None:
+def rounded(
+    ax: plt.Axes,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    fill: str,
+    stroke: str,
+    lw: float = 1.1,
+    radius: float = 8,
+) -> None:
     ax.add_patch(
         FancyBboxPatch(
             (x, y),
@@ -191,7 +211,14 @@ def label(ax: plt.Axes, x: float, y: float, text: str, **kwargs) -> None:
     ax.text(x, y, text, **opts)
 
 
-def arrow(ax: plt.Axes, start: tuple[float, float], end: tuple[float, float], *, color: str = INK, lw: float = 2.0) -> None:
+def arrow(
+    ax: plt.Axes,
+    start: tuple[float, float],
+    end: tuple[float, float],
+    *,
+    color: str = INK,
+    lw: float = 2.0,
+) -> None:
     ax.add_patch(
         FancyArrowPatch(
             start,
@@ -206,11 +233,33 @@ def arrow(ax: plt.Axes, start: tuple[float, float], end: tuple[float, float], *,
     )
 
 
-def card(ax: plt.Axes, x: float, y: float, w: float, h: float, header: str, fill: str, stroke: str, *, header_fill: str = BLUE_FILL, header_stroke: str = BLUE_STROKE) -> None:
+def card(
+    ax: plt.Axes,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    header: str,
+    fill: str,
+    stroke: str,
+    *,
+    header_fill: str = BLUE_FILL,
+    header_stroke: str = BLUE_STROKE,
+) -> None:
     rounded(ax, x + 5, y + 7, w, h, "#ECEFF3", "#ECEFF3", lw=0.0, radius=11)
     rounded(ax, x, y, w, h, fill, stroke, lw=1.1, radius=11)
     header_w = min(w - 42, max(120, len(header) * 8.4 + 34))
-    rounded(ax, x + (w - header_w) / 2, y - 18, header_w, 35, header_fill, header_stroke, lw=1.0, radius=4)
+    rounded(
+        ax,
+        x + (w - header_w) / 2,
+        y - 18,
+        header_w,
+        35,
+        header_fill,
+        header_stroke,
+        lw=1.0,
+        radius=4,
+    )
     label(ax, x + w / 2, y - 0.5, header, fontsize=10.8, fontweight="bold")
 
 
@@ -218,7 +267,9 @@ def image(ax: plt.Axes, img: np.ndarray, x: float, y: float, w: float, h: float)
     ax.imshow(img, extent=(x, x + w, y + h, y), aspect="auto", zorder=4)
 
 
-def mini_pill(ax: plt.Axes, x: float, y: float, w: float, text: str, fill: str, stroke: str) -> None:
+def mini_pill(
+    ax: plt.Axes, x: float, y: float, w: float, text: str, fill: str, stroke: str
+) -> None:
     rounded(ax, x, y, w, 24, fill, stroke, lw=0.8, radius=5)
     label(ax, x + w / 2, y + 12, text, fontsize=8.2, fontweight="bold")
 
@@ -235,13 +286,46 @@ def draw_preview(assets: dict[str, tuple[str, np.ndarray]]) -> None:
     image(ax, assets["synthetic"][1], 72, 226, 103, 100)
     image(ax, assets["clinical"][1], 186, 226, 96, 100)
 
-    card(ax, 402, 58, 430, 190, "B: CNN", "#FFFFFF", "#6F6F6F", header_fill=BLUE_FILL, header_stroke=BLUE_STROKE)
+    card(
+        ax,
+        402,
+        58,
+        430,
+        190,
+        "B: CNN",
+        "#FFFFFF",
+        "#6F6F6F",
+        header_fill=BLUE_FILL,
+        header_stroke=BLUE_STROKE,
+    )
     image(ax, assets["cnn_pipeline"][1], 422, 97, 390, 135)
 
-    card(ax, 402, 312, 430, 190, "C: VLM/ICL", "#FFFFFF", "#6F6F6F", header_fill=PURPLE_FILL, header_stroke=PURPLE_STROKE)
+    card(
+        ax,
+        402,
+        312,
+        430,
+        190,
+        "C: VLM/ICL",
+        "#FFFFFF",
+        "#6F6F6F",
+        header_fill=PURPLE_FILL,
+        header_stroke=PURPLE_STROKE,
+    )
     image(ax, assets["vlm_pipeline"][1], 422, 352, 390, 135)
 
-    card(ax, 875, 130, 305, 265, "D: Evaluación común", "#FFFFFF", "#6F6F6F", header_fill=GREEN_FILL, header_stroke=GREEN_STROKE)
+    card(
+        ax,
+        875,
+        130,
+        305,
+        265,
+        "D: Evaluación común",
+        "#FFFFFF",
+        "#6F6F6F",
+        header_fill=GREEN_FILL,
+        header_stroke=GREEN_STROKE,
+    )
     image(ax, assets["curve"][1], 902, 212, 170, 116)
     image(ax, assets["confusion"][1], 1082, 220, 82, 82)
 
@@ -250,19 +334,30 @@ def draw_preview(assets: dict[str, tuple[str, np.ndarray]]) -> None:
     arrow(ax, (832, 156), (875, 242))
     arrow(ax, (832, 407), (875, 304))
 
-    fig.savefig(OUT_DIR / "fig_pipeline_experimental.drawio.png", dpi=180, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(
+        OUT_DIR / "fig_pipeline_experimental.drawio.png",
+        dpi=180,
+        bbox_inches="tight",
+        pad_inches=0.04,
+    )
     plt.close(fig)
 
 
 def geom(parent: ET.Element, x: float, y: float, w: float, h: float) -> None:
-    ET.SubElement(parent, "mxGeometry", {"x": str(x), "y": str(y), "width": str(w), "height": str(h), "as": "geometry"})
+    ET.SubElement(
+        parent,
+        "mxGeometry",
+        {"x": str(x), "y": str(y), "width": str(w), "height": str(h), "as": "geometry"},
+    )
 
 
 class Drawio:
     def __init__(self) -> None:
         self.i = 2
         self.mxfile = ET.Element("mxfile", {"host": "Electron", "version": "29.6.1"})
-        diagram = ET.SubElement(self.mxfile, "diagram", {"id": "experimental-pipeline", "name": "Experimental pipeline"})
+        diagram = ET.SubElement(
+            self.mxfile, "diagram", {"id": "experimental-pipeline", "name": "Experimental pipeline"}
+        )
         model = ET.SubElement(
             diagram,
             "mxGraphModel",
@@ -294,24 +389,41 @@ class Drawio:
         return value
 
     def vertex(self, value: str, style: str, x: float, y: float, w: float, h: float) -> None:
-        cell = ET.SubElement(self.root, "mxCell", {"id": self._id(), "value": value, "style": style, "vertex": "1", "parent": "1"})
+        cell = ET.SubElement(
+            self.root,
+            "mxCell",
+            {"id": self._id(), "value": value, "style": style, "vertex": "1", "parent": "1"},
+        )
         geom(cell, x, y, w, h)
 
-    def edge(self, start: tuple[float, float], end: tuple[float, float], *, color: str = INK, width: float = 2.0) -> None:
+    def edge(
+        self,
+        start: tuple[float, float],
+        end: tuple[float, float],
+        *,
+        color: str = INK,
+        width: float = 2.0,
+    ) -> None:
         cell = ET.SubElement(
             self.root,
             "mxCell",
             {
                 "id": self._id(),
                 "value": "",
-                "style": f"endArrow=block;html=1;rounded=0;strokeWidth={width};strokeColor={color};",
+                "style": (
+                    f"endArrow=block;html=1;rounded=0;strokeWidth={width};strokeColor={color};"
+                ),
                 "edge": "1",
                 "parent": "1",
             },
         )
         geometry = ET.SubElement(cell, "mxGeometry", {"relative": "1", "as": "geometry"})
-        ET.SubElement(geometry, "mxPoint", {"x": str(start[0]), "y": str(start[1]), "as": "sourcePoint"})
-        ET.SubElement(geometry, "mxPoint", {"x": str(end[0]), "y": str(end[1]), "as": "targetPoint"})
+        ET.SubElement(
+            geometry, "mxPoint", {"x": str(start[0]), "y": str(start[1]), "as": "sourcePoint"}
+        )
+        ET.SubElement(
+            geometry, "mxPoint", {"x": str(end[0]), "y": str(end[1]), "as": "targetPoint"}
+        )
 
     def save(self, path: Path) -> None:
         ET.indent(self.mxfile, space="  ")
@@ -322,7 +434,14 @@ def xml_value(value: str) -> str:
     return html.escape(value, quote=True)
 
 
-def box_style(fill: str, stroke: str, *, rounded_box: bool = True, stroke_width: float = 1.0, font_size: float = 10) -> str:
+def box_style(
+    fill: str,
+    stroke: str,
+    *,
+    rounded_box: bool = True,
+    stroke_width: float = 1.0,
+    font_size: float = 10,
+) -> str:
     return (
         f"rounded={1 if rounded_box else 0};whiteSpace=wrap;html=1;arcSize=8;"
         f"fillColor={fill};strokeColor={stroke};strokeWidth={stroke_width};"
@@ -331,18 +450,39 @@ def box_style(fill: str, stroke: str, *, rounded_box: bool = True, stroke_width:
 
 
 def image_style() -> str:
-    return "text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacing=0;whiteSpace=wrap;overflow=hidden;"
+    return (
+        "text;html=1;strokeColor=none;fillColor=none;align=center;"
+        "verticalAlign=middle;spacing=0;whiteSpace=wrap;overflow=hidden;"
+    )
 
 
 def image_value(b64: str, w: int, h: int) -> str:
     return f'<img src="data:image/png;base64,{b64}" width="{w}" height="{h}">'
 
 
-def add_card(d: Drawio, x: float, y: float, w: float, h: float, header: str, fill: str, stroke: str, header_fill: str, header_stroke: str) -> None:
+def add_card(
+    d: Drawio,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    header: str,
+    fill: str,
+    stroke: str,
+    header_fill: str,
+    header_stroke: str,
+) -> None:
     d.vertex("", box_style("#ECEFF3", "#ECEFF3", stroke_width=0), x + 5, y + 7, w, h)
     d.vertex("", box_style(fill, stroke, stroke_width=1.1), x, y, w, h)
     header_w = min(w - 42, max(120, len(header) * 8.4 + 34))
-    d.vertex(xml_value(header), box_style(header_fill, header_stroke, font_size=10.8), x + (w - header_w) / 2, y - 18, header_w, 35)
+    d.vertex(
+        xml_value(header),
+        box_style(header_fill, header_stroke, font_size=10.8),
+        x + (w - header_w) / 2,
+        y - 18,
+        header_w,
+        35,
+    )
 
 
 def write_drawio(assets: dict[str, tuple[str, np.ndarray]]) -> None:
@@ -364,7 +504,9 @@ def write_drawio(assets: dict[str, tuple[str, np.ndarray]]) -> None:
     add_card(d, 402, 312, 430, 190, "C: VLM/ICL", "#FFFFFF", "#6F6F6F", PURPLE_FILL, PURPLE_STROKE)
     d.vertex(image_value(assets["vlm_pipeline"][0], 390, 135), image_style(), 422, 352, 390, 135)
 
-    add_card(d, 875, 130, 305, 265, "D: Evaluación común", "#FFFFFF", "#6F6F6F", GREEN_FILL, GREEN_STROKE)
+    add_card(
+        d, 875, 130, 305, 265, "D: Evaluación común", "#FFFFFF", "#6F6F6F", GREEN_FILL, GREEN_STROKE
+    )
     d.vertex(image_value(assets["curve"][0], 170, 116), image_style(), 902, 212, 170, 116)
     d.vertex(image_value(assets["confusion"][0], 82, 82), image_style(), 1082, 220, 82, 82)
 

@@ -22,6 +22,11 @@ notebooks/
 outputs/
 tmp/
 
+# Generated review renders; keep only the final deliverable.
+output/**
+!output/pdf/
+!output/pdf/TFG_Alejandro_Moris_Lara_FINAL.pdf
+
 # Local task-board/tooling files for this workspace
 .obsidian/
 .codex

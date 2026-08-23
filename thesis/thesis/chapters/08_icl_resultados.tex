@@ -1,55 +1,55 @@
 \section{VLM con ICL}
 \label{chap:vlm}
 
-El segundo enfoque usa un modelo de visión y lenguaje con aprendizaje en contexto. A diferencia de la CNN, el VLM no se entrena con los ejemplos del pliegue. Recibe la imagen objetivo dentro de un prompt y, cuando \(K>0\), observa antes algunas demostraciones etiquetadas. La hipótesis es que esas demostraciones ayudan a concretar la tarea sin modificar los pesos del modelo.
+El segundo enfoque utiliza un modelo de visión y lenguaje con aprendizaje en contexto. El VLM no se entrena con los ejemplos seleccionados en cada pliegue: los recibe como demostraciones antes de la imagen objetivo cuando \(K>0\). El experimento estudia si ese contexto permite concretar la tarea sin actualizar los pesos.
 
 \subsection{Motivación}
 
-Los modelos supervisados necesitan suficientes datos etiquetados para ajustar sus parámetros con estabilidad. En una enfermedad rara, esa condición puede no cumplirse. El aprendizaje en contexto ofrece otra forma de usar ejemplos. No los convierte en gradientes, sino en una guía explícita para la inferencia.
+El ajuste supervisado puede ser inestable cuando solo se dispone de unos pocos pacientes. El aprendizaje en contexto ofrece otra forma de utilizar sus etiquetas: no las convierte en gradientes, sino que las presenta como una guía explícita durante la inferencia.
 
-No se da por hecho que esta vía sea mejor que la CNN. Se evalúa porque plantea una duda práctica. Si ya existe un modelo multimodal generalista ejecutable en local, ¿pueden unos pocos ejemplos orientar su lectura de un ECG como imagen? Para interpretar esa posibilidad, el experimento compara el VLM con la referencia supervisada y con su propio comportamiento sin ejemplos previos.
+No se presupone que esta estrategia supere a la CNN. Se compara el VLM tanto con la referencia supervisada como con su propia condición sin demostraciones para medir el efecto del contexto.
 
 \subsection{Modelos médicos, modelos cerrados y privacidad}
 
-En medicina han aparecido modelos multimodales cada vez más capaces, tanto generalistas como adaptados al dominio clínico. Una opción natural sería utilizar un modelo propietario servido por API, porque trabajos recientes han mostrado que los VLM pueden detectar ciertas anomalías en ECG tratados como imagen mediante aprendizaje en contexto \cite{camba2026icl}. Esa vía puede ser útil para demostrar viabilidad, pero no encaja del todo con el objetivo de esta memoria.
+Existen modelos multimodales generalistas y otros adaptados al ámbito clínico. Algunos trabajos han estudiado modelos propietarios servidos por API para detectar anomalías en ECG tratados como imagen mediante aprendizaje en contexto \cite{camba2026icl}. En esta memoria se adopta una configuración distinta para conservar el control sobre el modelo y el tratamiento de los datos.
 
-El caso de uso planteado trabaja con datos sanitarios. Aunque las imágenes estén seudonimizadas, proceden de pacientes y deben tratarse con prudencia. La evaluación prioriza modelos con pesos abiertos que puedan ejecutarse en local. Esta decisión evita enviar trazados a servicios externos, permite fijar versiones y parámetros, y facilita que otra persona reproduzca el protocolo sin depender de un proveedor cuyo modelo pueda cambiar.
+Aunque las imágenes clínicas están seudonimizadas, siguen siendo datos sanitarios. Por este motivo se utilizan pesos abiertos en infraestructura universitaria bajo control propio. vLLM expone el modelo mediante un endpoint compatible con la API de OpenAI, sin enviar los trazados a un proveedor comercial. La configuración permite fijar la versión y los parámetros de inferencia.
 
 \subsection{Modelo evaluado}
 
-El modelo evaluado es Gemma~4 \cite{gemma4card}. La elección responde a criterios prácticos y metodológicos: es un VLM abierto de altas prestaciones, admite texto e imágenes, permite incluir varias imágenes en el mismo contexto y puede desplegarse en infraestructura local para inferencia. Estas propiedades son relevantes en un escenario hospitalario de investigación, donde interesa mantener los datos dentro de la infraestructura propia, fijar la versión del modelo y trabajar con un tamaño de inferencia razonable.
+El modelo evaluado es \texttt{google/gemma-4-E4B-it} \cite{gemma4card}. Admite entradas de texto e imagen y permite configurar el presupuesto visual. La disponibilidad de sus pesos hace posible desplegar una versión fija en la infraestructura utilizada.
 
-Gemma~4 no se utiliza porque exista una garantía previa de superioridad en ECG. Precisamente resulta útil porque permite probar si un modelo abierto y generalista puede aprovechar unos pocos ejemplos antes de entrenar un sistema especializado. Si obtiene señal útil, el aprendizaje en contexto puede servir como prueba inicial de viabilidad. Si no la obtiene, el resultado delimita cuándo hacen falta modelos adaptados al dominio o anotaciones clínicas más ricas.
+Gemma~4 no se selecciona por una superioridad demostrada en ECG, sino para caracterizar el comportamiento de un modelo generalista con pocos ejemplos. Los resultados no constituyen una validación del modelo para esta modalidad clínica.
 
 \subsection{Construcción del prompt}
 
-La inferencia VLM se organiza siempre de la misma forma. Primero se seleccionan los pacientes que servirán como demostraciones, respetando que el paciente reservado para prueba no aparezca en el contexto. Después se construye un mensaje multimodal con una instrucción de sistema, las demostraciones disponibles y la imagen de consulta.
+La inferencia sigue el mismo orden en todos los pliegues. Primero se seleccionan los pacientes que actuarán como demostraciones, excluyendo al paciente de prueba. Después se construye un mensaje multimodal con la instrucción de sistema, las demostraciones y, al final, la imagen de consulta. La Figura~\ref{fig:icl_context_window} representa esta secuencia.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.96\textwidth]{results/vlm_icl_context_window.drawio.png}
-  \caption{Construcción del contexto en el enfoque VLM/ICL. Las demostraciones etiquetadas se incorporan al prompt antes de la imagen de consulta, y la predicción se obtiene sin actualizar los pesos del modelo.}
+  \caption{Construcción del contexto VLM/ICL. Las demostraciones preceden a la imagen de consulta y la predicción se obtiene sin actualizar los pesos.}
   \label{fig:icl_context_window}
 \end{figure}
 
-Cada demostración contiene una imagen de ECG y la respuesta esperada en formato JSON. La imagen de consulta se coloca al final, después de las demostraciones. El modelo genera una respuesta textual, pero esa respuesta debe ajustarse al esquema definido. Si el formato no es válido, la predicción se registra como inválida en lugar de interpretarla a mano.
+Cada demostración contiene una imagen de ECG y la respuesta correcta en formato JSON. La consulta se coloca después de todos los ejemplos. La salida del modelo debe ajustarse al esquema definido; si el formato no es válido, se registra como tal y no se reconstruye mediante una interpretación manual.
 
-No se solicita una explicación libre obligatoria. El objetivo de esta evaluación no es producir informes clínicos, sino comparar decisiones binarias con la CNN. El formato cerrado reduce ambigüedades y evita que una respuesta verbalmente plausible se convierta en etiqueta por interpretación subjetiva.
+No se exige una explicación libre, porque la evaluación compara decisiones binarias y no informes clínicos. El formato cerrado reduce la ambigüedad y evita convertir una respuesta plausible en una etiqueta mediante un juicio subjetivo.
 
 \subsection{Condiciones de consulta}
 \label{sec:condiciones_vlm}
 
-Se informan tres condiciones VLM. En \emph{zero-shot}, el modelo recibe únicamente la imagen objetivo y las instrucciones. No se le enseña ningún ejemplo previo del conjunto. Esta condición mide qué hace Gemma~4 con su conocimiento previo y con la descripción textual de la tarea, sin ayuda local.
+Se evalúan tres condiciones. En \emph{zero-shot}, el modelo solo recibe las instrucciones y la imagen objetivo. La salida depende así de su conocimiento previo y de la descripción textual de la tarea, sin ejemplos locales.
 
-En ICL estándar, el prompt incluye \(K\) demostraciones correctas tomadas del conjunto disponible. Cada demostración contiene una imagen de ECG y la respuesta JSON esperada. La selección no fuerza explícitamente la proporción entre positivos y negativos. Por tanto, refleja el contexto que aparece al seguir la estrategia estándar de muestreo del experimento.
+En ICL estándar, para \(K\geq2\) se selecciona primero una demostración positiva y otra negativa. Las \(K-2\) posiciones restantes se completan de forma seudoaleatoria entre los pacientes disponibles. La condición estándar tiene, por tanto, una cobertura mínima de ambas clases y no equivale a una recuperación completamente aleatoria.
 
-En ICL balanceado, el prompt también incluye \(K\) demostraciones, pero la selección intenta mantener ejemplos positivos y negativos siempre que el pliegue lo permite. Esta condición permite estudiar si un contexto con más presencia de casos Brugada desplaza la decisión hacia una lectura más sensible. En triaje, aumentar la sensibilidad puede ser valioso porque reduce los positivos no detectados. Al mismo tiempo, puede bajar la especificidad y aumentar las alertas innecesarias.
+En ICL balanceado se intenta seleccionar \(K/2\) demostraciones positivas y \(K/2\) negativas. Si una clase no dispone de suficientes pacientes dentro del pliegue, las posiciones libres se completan con la otra. La comparación permite estudiar si una representación equitativa de las clases modifica la sensibilidad y la especificidad frente a la cobertura mínima del ICL estándar. Las semillas 42, 123 y 2026 fijan las selecciones de ambas condiciones.
 
 \subsection{Origen del contexto}
 \label{sec:origen_contexto_vlm}
 
-En el simulador, las demostraciones y la imagen de consulta pertenecen al mismo dominio morfológico. Con los datos reales del HUCA se informan dos usos distintos del contexto. El primero usa ejemplos de la cohorte real como demostraciones y una imagen real V1 como consulta. Esta es la comparación clínica principal, porque el contexto y la consulta comparten dominio visual y etiqueta clínica.
+En el simulador, las demostraciones y la consulta pertenecen al mismo dominio morfológico. Para la cohorte del HUCA se analizan dos orígenes del contexto. La comparación principal utiliza pacientes de la propia cohorte como demostraciones y una imagen V1 clínica como consulta; ambos elementos comparten así dominio visual y referencia.
 
-El segundo usa el simulador como contexto etiquetado y consulta imágenes de la cohorte real. En esa rama, el modelo recibe demostraciones con etiquetas morfológicas sintéticas y debe transferir ese criterio a imágenes reales. No se considera una solución clínica, sino un análisis de transferencia sintético-real. Su valor está en comprobar si el contexto generado por el simulador basta para orientar al VLM cuando cambia el dominio de la imagen y la referencia de evaluación pasa a ser clínica.
+El análisis complementario utiliza demostraciones del simulador para consultar imágenes del HUCA. El modelo recibe entonces etiquetas morfológicas sintéticas y la evaluación se realiza contra la referencia clínica de la cohorte. Esta rama mide la transferencia sintético-real del contexto; no se interpreta como una solución clínica.
 
-La comparación con la CNN se hace siempre a nivel de paciente y con las mismas métricas. La diferencia está en el modo de utilizar \(K\): la CNN aprende pesos con esos pacientes y el VLM los usa como contexto.
+La CNN y el VLM se comparan a nivel de paciente y con las mismas métricas. La diferencia reside en el uso de \(K\): la primera actualiza sus pesos, mientras que el segundo incorpora las imágenes al contexto de inferencia.

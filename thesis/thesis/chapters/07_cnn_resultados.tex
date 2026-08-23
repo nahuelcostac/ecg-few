@@ -1,24 +1,24 @@
 \section{Enfoque supervisado con CNN ResNet18}
 \label{chap:cnn_enfoque}
 
-La CNN constituye la referencia supervisada del trabajo. Su función no es competir con todas las arquitecturas posibles, sino representar un enfoque estándar para aprender a partir de imágenes etiquetadas. En este caso, los ejemplos disponibles se usan para actualizar pesos y producir un modelo específico para la tarea.
+La CNN sirve como referencia supervisada. El objetivo no es comparar arquitecturas, sino estudiar un procedimiento convencional de aprendizaje a partir de imágenes etiquetadas. Los ejemplos actualizan los pesos y producen un modelo específico para la tarea.
 
 \subsection{Arquitectura y entrada}
 
-El modelo ejecutado es una ResNet18 preentrenada \cite{he2016}. La cabeza final se sustituye por tres salidas, una para cada hallazgo morfológico: RBBB, elevación ST e inversión de T. La entrada se procesa como imagen RGB de 224 por 224 píxeles. En el simulador, la etiqueta positiva de paciente se obtiene cuando los tres hallazgos están presentes.
+El modelo es una ResNet18 preentrenada \cite{he2016}. Su cabeza final se sustituye por tres salidas, correspondientes a RBBB, elevación del ST e inversión de T. Las imágenes se procesan en RGB con un tamaño de 224 por 224 píxeles. En el simulador, un paciente se considera positivo cuando concurren los tres hallazgos.
 
-Esta formulación condiciona toda la evaluación real. La CNN no aprende directamente la etiqueta clínica \texttt{clinical\_brugada}. Aprende a detectar tres rasgos morfológicos y después deriva una decisión positiva cuando los tres aparecen simultáneamente. Por ello, los datos reales del HUCA se usan como conjunto de prueba clínica, no como conjunto supervisado de entrenamiento morfológico.
+Esta formulación determina cómo se interpreta la evaluación real. La CNN no se ajusta directamente a la etiqueta \texttt{clinical\_brugada}; estima los tres rasgos morfológicos y deriva una decisión positiva cuando aparecen de forma simultánea. La cohorte del HUCA actúa, por tanto, como conjunto de prueba clínica y no como fuente de entrenamiento morfológico. La Figura~\ref{fig:cnn_convolutional_pipeline} resume el procedimiento.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.96\textwidth]{results/cnn_convolutional_pipeline.drawio.png}
-  \caption{Uso supervisado de los ejemplos etiquetados en la CNN. Las muestras de entrenamiento actualizan los pesos de ResNet18 y la muestra reservada produce una predicción binaria junto con su mapa Grad CAM.}
+  \caption{Uso supervisado de los ejemplos etiquetados. Las muestras de entrenamiento actualizan ResNet18 y la muestra reservada produce una predicción binaria y su mapa Grad-CAM.}
   \label{fig:cnn_convolutional_pipeline}
 \end{figure}
 
 \subsection{Entrenamiento}
 
-La pérdida es entropía cruzada binaria multietiqueta. Cuando el pliegue lo requiere, la clase positiva se pondera automáticamente a partir de los ejemplos de entrenamiento. El optimizador es AdamW \cite{loshchilov2019}, con tasa de aprendizaje \(3\times10^{-4}\), lote de 32 imágenes y 20 épocas máximas.
+El entrenamiento utiliza entropía cruzada binaria multietiqueta. La ponderación de la clase positiva se calcula automáticamente a partir de los ejemplos de cada pliegue. Se emplea AdamW \cite{loshchilov2019}, con una tasa de aprendizaje de \(3\times10^{-4}\), lotes de 32 imágenes y un máximo de 20 épocas.
 
 \begin{table}[H]
   \centering
@@ -37,7 +37,7 @@ La pérdida es entropía cruzada binaria multietiqueta. Cuando el pliegue lo req
     Tamaño de lote & 32 \\
     Valores de \(K\) & \(K=\{2,4,8,16,32\}\) \\
     Semillas & 42, 123 y 2026 \\
-    Umbral & Seleccionado por validación con exactitud equilibrada por paciente \\
+    Umbral & Seleccionado por validación con \textit{Balanced Accuracy} por paciente \\
     Agregación & Sin agregación multiderivación; se usa únicamente V1 antes del umbral \\
     \bottomrule
   \end{tabularx}
@@ -45,35 +45,35 @@ La pérdida es entropía cruzada binaria multietiqueta. Cuando el pliegue lo req
   \label{tab:modelo_cnn_final}
 \end{table}
 
-\subsection{Uso de datos reales en la CNN}
+\subsection{Evaluación con la cohorte del HUCA}
 
-Los datos reales del HUCA no contienen anotaciones independientes de RBBB, elevación ST e inversión de T para cada imagen. Solo incorporan la referencia clínica de caso Brugada confirmado frente a normal. Esto impide entrenar, con la arquitectura definida, una CNN supervisada con esa cohorte real y evaluarla después sobre la misma fuente manteniendo la tarea morfológica.
+La cohorte del HUCA no contiene anotaciones independientes de RBBB, elevación del ST e inversión de T para cada imagen. Solo dispone de la referencia clínica binaria empleada en la campaña final. Con la arquitectura definida, no es posible entrenar la cabeza morfológica sobre esos datos sin inventar etiquetas que no están disponibles.
 
-La evaluación real de la CNN se plantea por tanto como transferencia desde el simulador. En cada pliegue, los \(K\) pacientes que actualizan los pesos proceden del conjunto sintético QRS/ST. La muestra evaluada pertenece a los datos reales del HUCA y su resultado se compara con la etiqueta clínica disponible. Esta decisión no inventa etiquetas morfológicas en el dominio real, pero hace que la lectura sea necesariamente una prueba de transferencia sintético-real.
+La evaluación real se plantea, en consecuencia, como una transferencia desde el simulador. Los \(K\) pacientes que actualizan los pesos proceden del conjunto sintético QRS/ST; la muestra de prueba pertenece al HUCA y se compara con la referencia clínica disponible. El protocolo evita crear anotaciones morfológicas artificiales para el dominio real, pero mide una transferencia sintético-real y no un entrenamiento clínico directo.
 
-Entrenar una CNN supervisada directamente con los datos reales del HUCA sería una línea distinta. Requeriría disponer de anotaciones morfológicas clínicas por imagen o rediseñar el modelo como clasificador binario directo de \texttt{clinical\_brugada}. Esa segunda opción mediría otra tarea, más próxima a predicción clínica agregada que a detección de rasgos visuales.
+Un entrenamiento supervisado directo con el HUCA exigiría anotaciones morfológicas por imagen o un rediseño como clasificador binario de \texttt{clinical\_brugada}. Esta segunda opción abordaría una tarea diferente, más próxima a la predicción de la referencia clínica que a la detección explícita de los tres rasgos visuales.
 
 \subsection{Validación por paciente}
 
-El entrenamiento y la evaluación se organizan mediante validación leave-one-out. En cada pliegue se reserva un paciente completo y el modelo se ajusta con un subconjunto de \(K\) pacientes del resto. Esto evita que un mismo paciente aparezca simultáneamente en entrenamiento y prueba. En los datos reales del HUCA esta restricción es indispensable porque la etiqueta clínica pertenece al paciente, no a una imagen aislada.
+La evaluación se organiza mediante validación leave-one-out por paciente. En el dominio sintético, cada pliegue reserva un paciente y selecciona los \(K\) casos de entrenamiento entre los restantes. En la transferencia al HUCA, la unidad reservada sigue siendo un paciente real, pero los \(K\) ejemplos de entrenamiento proceden del simulador. Ninguna imagen del paciente de prueba interviene en el ajuste.
 
-La evaluación registra las probabilidades de la imagen V1, la predicción por paciente, el umbral elegido, la matriz de confusión y las métricas finales. También conserva paneles Grad CAM para inspección cualitativa.
+Para cada pliegue se registran las probabilidades de V1, la predicción del paciente, el umbral seleccionado y los datos necesarios para calcular las matrices de confusión y las métricas. También se conservan paneles Grad-CAM para la inspección cualitativa.
 
 \subsection{Selección de umbral}
 
-La ResNet18 se entrena con tres salidas, una para RBBB, otra para elevación ST y otra para inversión de T. Cada salida produce un logit, que se transforma mediante una sigmoide en una probabilidad. Por tanto, el umbral no se aplica sobre una clase Brugada directa, sino sobre cada hallazgo morfológico. En esta versión experimental solo se usa V1, de modo que las probabilidades de V1 se umbralizan directamente por hallazgo.
+Cada una de las tres salidas produce un logit, que una función sigmoide transforma en probabilidad. El umbral se aplica por separado a RBBB, elevación del ST e inversión de T, no a una clase Brugada directa. Como el experimento utiliza únicamente V1, tampoco existe una agregación previa entre derivaciones.
 
-La decisión de paciente se obtiene después de aplicar el umbral a V1. Un hallazgo se considera presente si su probabilidad alcanza el umbral elegido. La predicción positiva de Brugada se deriva con la misma regla utilizada durante el experimento: RBBB, elevación ST e inversión de T deben estar presentes simultáneamente.
+Un hallazgo se considera presente cuando su probabilidad alcanza el umbral seleccionado. La decisión positiva se deriva después mediante la regla del experimento: RBBB, elevación del ST e inversión de T deben estar presentes de forma simultánea.
 
-El valor del umbral se escoge dentro de cada pliegue usando solo pacientes de validación, nunca el paciente reservado para prueba. La búsqueda prueba umbrales candidatos y conserva el que maximiza la exactitud equilibrada de la etiqueta derivada a nivel de paciente. Si la validación del pliegue no contiene ambas clases, se mantiene 0,5. El paciente de prueba se evalúa siempre con un criterio fijado antes de consultar su etiqueta.
+El umbral se selecciona dentro de cada pliegue utilizando solo los pacientes de validación. Entre los valores candidatos se conserva el que maximiza la \textit{Balanced Accuracy} de la etiqueta derivada a nivel de paciente. Si la validación no contiene ambas clases, se mantiene el valor 0,5. La etiqueta del paciente de prueba no interviene en esta elección.
 
 \subsection{Adaptación de dominio}
 
-Además de la transferencia directa, se probaron variantes de adaptación de dominio no supervisada. En todas ellas el origen etiquetado sigue siendo el simulador QRS/ST y los datos reales del HUCA se usan como dominio objetivo sin etiquetas morfológicas. El objetivo no es convertir la cohorte real en un conjunto de entrenamiento clínico, sino reducir la discrepancia entre las representaciones aprendidas en imágenes sintéticas y las observadas en ECG reales.
+Además de la transferencia directa, se evaluaron cuatro variantes de adaptación de dominio no supervisada. El simulador QRS/ST se mantiene como fuente etiquetada, mientras que el HUCA actúa como dominio objetivo sin anotaciones morfológicas. Estos métodos intentan reducir la discrepancia entre las representaciones de las imágenes sintéticas y reales, sin convertir la cohorte clínica en un conjunto supervisado.
 
-El preentrenamiento autosupervisado usa SimCLR sobre imágenes sin etiquetas de los datos reales del HUCA \cite{chen2020simclr}. El encoder recibe dos vistas aumentadas de una misma imagen y aprende a acercar sus representaciones frente a otras imágenes del lote. Después, esos pesos inicializan la CNN supervisada sobre el simulador.
+El preentrenamiento autosupervisado aplica SimCLR a imágenes del HUCA sin utilizar sus etiquetas \cite{chen2020simclr}. El encoder recibe dos vistas aumentadas de una misma imagen, acerca entre sí sus representaciones y las separa de las correspondientes a otros elementos del lote. Los pesos obtenidos inicializan después la CNN entrenada con el simulador.
 
-CORAL añade una pérdida que aproxima las covarianzas de las características fuente y destino, de modo que las activaciones de ambos dominios tengan estadísticas de segundo orden más parecidas \cite{sun2016deepcoral}. MMD mide la discrepancia entre distribuciones de características mediante kernels RBF y penaliza que las medias embebidas de origen y destino permanezcan separadas \cite{long2015dan}. DANN incorpora un clasificador de dominio y una capa de inversión de gradiente, de forma que el extractor aprende características útiles para la tarea supervisada pero poco informativas sobre si una imagen procede del simulador o de HUCA \cite{ganin2016}.
+CORAL añade una pérdida que aproxima las covarianzas de las características de origen y destino \cite{sun2016deepcoral}. MMD mide la discrepancia entre ambas distribuciones mediante kernels RBF y penaliza la separación entre sus medias embebidas \cite{long2015dan}. DANN incorpora un clasificador de dominio y una capa de inversión de gradiente \cite{ganin2016}. De este modo, el extractor busca rasgos útiles para la tarea pero menos informativos sobre el origen sintético o real de la imagen.
 
 \begin{table}[H]
   \centering
@@ -82,7 +82,7 @@ CORAL añade una pérdida que aproxima las covarianzas de las características f
     \toprule
     Método & Idea principal \\
     \midrule
-    SSL & Preentrenar el encoder con imágenes reales sin etiquetas mediante aprendizaje contrastivo. \\
+    SSL & Preentrenar el encoder con imágenes del HUCA sin etiquetas mediante aprendizaje contrastivo. \\
     CORAL & Alinear covarianzas de características entre simulador y HUCA. \\
     MMD & Reducir una distancia de distribución con kernels RBF. \\
     DANN & Aprender características invariantes al dominio con inversión de gradiente. \\
@@ -92,17 +92,17 @@ CORAL añade una pérdida que aproxima las covarianzas de las características f
   \label{tab:cnn_domain_methods}
 \end{table}
 
-\subsection{Grad CAM}
+\subsection{Grad-CAM}
 
-Grad CAM se utiliza como diagnóstico cualitativo, no como explicación clínica suficiente \cite{selvaraju2017}. El mapa indica regiones que influyen en el logit del modelo, pero no prueba que la red haya aprendido un criterio médico correcto. En esta memoria se usa para comprobar si las activaciones se concentran en zonas plausibles del trazado y para detectar errores en los que una atención visual razonable termina en una decisión equivocada.
+Grad-CAM se utiliza como diagnóstico cualitativo y no como una explicación clínica suficiente \cite{selvaraju2017}. El mapa relaciona regiones de la imagen con el logit del modelo, pero no permite concluir que la red haya aprendido un criterio médico correcto. En este trabajo sirve para observar si las activaciones se concentran en zonas plausibles y para identificar decisiones erróneas pese a una localización visual razonable. La Figura~\ref{fig:gradcam_sintetico_modelos} presenta un ejemplo.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.92\textwidth]{results/cnn_simulator_qrs_gradcam_example.png}
-  \caption{Ejemplo Grad CAM del modelo CNN sobre el conjunto sintético.}
+  \caption{Ejemplo Grad-CAM de la CNN para una única imagen V1 del conjunto sintético: entrada, mapa de activación y superposición.}
   \label{fig:gradcam_sintetico_modelos}
 \end{figure}
 
 \subsection{Qué se mide}
 
-La evaluación posterior mide tres cuestiones. La primera es si una CNN entrenada con pocos ejemplos aprende una regla visual en el simulador QRS/ST. La segunda es si ese modelo transferido desde el simulador mantiene utilidad cuando la etiqueta pasa a ser clínica y los ECG proceden de pacientes reales. La tercera es si la adaptación de dominio no supervisada reduce de forma apreciable esa brecha. Estas preguntas se analizan después en los dominios sintético y real.
+La evaluación posterior aborda primero si la CNN aprende la regla visual del simulador con pocos ejemplos. Después examina si esa capacidad se transfiere a los ECG de la cohorte del HUCA y si la adaptación de dominio reduce la diferencia observada. Los resultados se presentan por separado para ambos dominios.

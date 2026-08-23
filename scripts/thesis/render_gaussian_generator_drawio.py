@@ -11,7 +11,6 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 
 from ecg_few.simulator import generate_beat
 
-
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
@@ -32,7 +31,9 @@ PURPLE_STROKE = "#9673a6"
 
 def fig_to_b64_and_array(fig: plt.Figure, *, transparent: bool = True) -> tuple[str, np.ndarray]:
     buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=180, bbox_inches="tight", pad_inches=0.03, transparent=transparent)
+    fig.savefig(
+        buf, format="png", dpi=180, bbox_inches="tight", pad_inches=0.03, transparent=transparent
+    )
     plt.close(fig)
     data = buf.getvalue()
     return base64.b64encode(data).decode("ascii"), plt.imread(io.BytesIO(data))
@@ -80,7 +81,9 @@ def phase_explanation_image() -> tuple[str, np.ndarray]:
         ("T1", 690, 78, -0.18, "#4f8f3a"),
         ("T2", 742, 94, -0.04, "#4f8f3a"),
     ]
-    curves = [(name, gaussian(t_ms, mu, sigma, amp), color) for name, mu, sigma, amp, color in components]
+    curves = [
+        (name, gaussian(t_ms, mu, sigma, amp), color) for name, mu, sigma, amp, color in components
+    ]
     waveform = np.sum([curve for _, curve, _ in curves], axis=0)
 
     fig, ax = plt.subplots(figsize=(6.35, 1.95), dpi=180)
@@ -93,9 +96,18 @@ def phase_explanation_image() -> tuple[str, np.ndarray]:
     ]
     for x0, x1, fill, name, color in regions:
         ax.axvspan(x0, x1, color=fill, alpha=0.72, zorder=0)
-        ax.text((x0 + x1) / 2, 0.86, name, fontsize=9, color=color, ha="center", va="center", weight="bold")
+        ax.text(
+            (x0 + x1) / 2,
+            0.86,
+            name,
+            fontsize=9,
+            color=color,
+            ha="center",
+            va="center",
+            weight="bold",
+        )
 
-    for name, curve, color in curves:
+    for _name, curve, color in curves:
         ax.plot(t_ms, curve, color=color, lw=0.9, alpha=0.46, zorder=2)
 
     ax.plot(t_ms, waveform, color=INK, lw=2.0, zorder=3)
@@ -115,7 +127,9 @@ def phase_explanation_image() -> tuple[str, np.ndarray]:
         (690, "T1", "#4f8f3a"),
         (742, "T2", "#4f8f3a"),
     ]:
-        ax.text(x, -0.72, label_text, fontsize=8.5, color=color, ha="center", va="center", weight="bold")
+        ax.text(
+            x, -0.72, label_text, fontsize=8.5, color=color, ha="center", va="center", weight="bold"
+        )
 
     ax.set_xlim(0, 900)
     ax.set_ylim(-0.86, 0.98)
@@ -152,7 +166,17 @@ def simulator_example() -> tuple[str, np.ndarray, dict[str, int]]:
     return ecg_b64, ecg_img, labels
 
 
-def rounded(ax: plt.Axes, x: float, y: float, w: float, h: float, fill: str, stroke: str, lw: float = 1.1, radius: float = 7) -> None:
+def rounded(
+    ax: plt.Axes,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    fill: str,
+    stroke: str,
+    lw: float = 1.1,
+    radius: float = 7,
+) -> None:
     ax.add_patch(
         FancyBboxPatch(
             (x, y),
@@ -166,7 +190,9 @@ def rounded(ax: plt.Axes, x: float, y: float, w: float, h: float, fill: str, str
     )
 
 
-def rect(ax: plt.Axes, x: float, y: float, w: float, h: float, fill: str, stroke: str, lw: float = 1.0) -> None:
+def rect(
+    ax: plt.Axes, x: float, y: float, w: float, h: float, fill: str, stroke: str, lw: float = 1.0
+) -> None:
     ax.add_patch(Rectangle((x, y), w, h, facecolor=fill, edgecolor=stroke, linewidth=lw))
 
 
@@ -182,7 +208,9 @@ def label(ax: plt.Axes, x: float, y: float, value: str, **kwargs) -> None:
     ax.text(x, y, value, **opts)
 
 
-def arrow(ax: plt.Axes, start: tuple[float, float], end: tuple[float, float], *, lw: float = 1.9) -> None:
+def arrow(
+    ax: plt.Axes, start: tuple[float, float], end: tuple[float, float], *, lw: float = 1.9
+) -> None:
     ax.add_patch(
         FancyArrowPatch(
             start,
@@ -206,7 +234,9 @@ def parameter_card(ax: plt.Axes, x: float, header: str, body: str) -> None:
     label(ax, x + 102.5, 101.5, body, fontsize=11)
 
 
-def draw_preview(phase_img: np.ndarray, formula_img: np.ndarray, ecg_img: np.ndarray, labels: dict[str, int]) -> None:
+def draw_preview(
+    phase_img: np.ndarray, formula_img: np.ndarray, ecg_img: np.ndarray, labels: dict[str, int]
+) -> None:
     fig, ax = plt.subplots(figsize=(WIDTH / 100, HEIGHT / 100), dpi=100)
     ax.set_xlim(0, WIDTH)
     ax.set_ylim(HEIGHT, 0)
@@ -237,7 +267,11 @@ def draw_preview(phase_img: np.ndarray, formula_img: np.ndarray, ecg_img: np.nda
         ax,
         947.5,
         372,
-        f"RBBB: {'SÍ' if labels['RBBB'] else 'NO'}  ST: {'SÍ' if labels['ST_ELEVATION'] else 'NO'}  TWI: {'SÍ' if labels['T_WAVE_INVERSION'] else 'NO'}",
+        (
+            f"RBBB: {'SÍ' if labels['RBBB'] else 'NO'}  "
+            f"ST: {'SÍ' if labels['ST_ELEVATION'] else 'NO'}  "
+            f"TWI: {'SÍ' if labels['T_WAVE_INVERSION'] else 'NO'}"
+        ),
         fontsize=9.1,
         fontweight="bold",
     )
@@ -246,19 +280,29 @@ def draw_preview(phase_img: np.ndarray, formula_img: np.ndarray, ecg_img: np.nda
     rounded(ax, 340, 452, 285, 106, PURPLE_FILL, PURPLE_STROKE, lw=1.5, radius=9)
     ax.imshow(formula_img, extent=(365, 600, 540, 468), aspect="auto", zorder=3)
 
-    fig.savefig(OUT_DIR / "gaussian_generator.drawio.png", dpi=180, bbox_inches="tight", pad_inches=0.04)
+    fig.savefig(
+        OUT_DIR / "gaussian_generator.drawio.png", dpi=180, bbox_inches="tight", pad_inches=0.04
+    )
     plt.close(fig)
 
 
 def geom(parent: ET.Element, x: float, y: float, w: float, h: float) -> None:
-    ET.SubElement(parent, "mxGeometry", {"x": str(x), "y": str(y), "width": str(w), "height": str(h), "as": "geometry"})
+    ET.SubElement(
+        parent,
+        "mxGeometry",
+        {"x": str(x), "y": str(y), "width": str(w), "height": str(h), "as": "geometry"},
+    )
 
 
 class Drawio:
     def __init__(self) -> None:
         self.i = 2
         self.mxfile = ET.Element("mxfile", {"host": "Electron", "version": "29.6.1"})
-        diagram = ET.SubElement(self.mxfile, "diagram", {"id": "gaussian-generator-sketch", "name": "Gaussian generator sketch"})
+        diagram = ET.SubElement(
+            self.mxfile,
+            "diagram",
+            {"id": "gaussian-generator-sketch", "name": "Gaussian generator sketch"},
+        )
         model = ET.SubElement(
             diagram,
             "mxGraphModel",
@@ -290,31 +334,45 @@ class Drawio:
         return value
 
     def vertex(self, value: str, style: str, x: float, y: float, w: float, h: float) -> None:
-        cell = ET.SubElement(self.root, "mxCell", {"id": self._id(), "value": value, "style": style, "vertex": "1", "parent": "1"})
+        cell = ET.SubElement(
+            self.root,
+            "mxCell",
+            {"id": self._id(), "value": value, "style": style, "vertex": "1", "parent": "1"},
+        )
         geom(cell, x, y, w, h)
 
-    def edge(self, start: tuple[float, float], end: tuple[float, float], *, width: float = 2.0) -> None:
+    def edge(
+        self, start: tuple[float, float], end: tuple[float, float], *, width: float = 2.0
+    ) -> None:
         cell = ET.SubElement(
             self.root,
             "mxCell",
             {
                 "id": self._id(),
                 "value": "",
-                "style": f"endArrow=block;html=1;rounded=0;strokeWidth={width};strokeColor=#202124;",
+                "style": (
+                    f"endArrow=block;html=1;rounded=0;strokeWidth={width};strokeColor=#202124;"
+                ),
                 "edge": "1",
                 "parent": "1",
             },
         )
         geometry = ET.SubElement(cell, "mxGeometry", {"relative": "1", "as": "geometry"})
-        ET.SubElement(geometry, "mxPoint", {"x": str(start[0]), "y": str(start[1]), "as": "sourcePoint"})
-        ET.SubElement(geometry, "mxPoint", {"x": str(end[0]), "y": str(end[1]), "as": "targetPoint"})
+        ET.SubElement(
+            geometry, "mxPoint", {"x": str(start[0]), "y": str(start[1]), "as": "sourcePoint"}
+        )
+        ET.SubElement(
+            geometry, "mxPoint", {"x": str(end[0]), "y": str(end[1]), "as": "targetPoint"}
+        )
 
     def save(self, path: Path) -> None:
         ET.indent(self.mxfile, space="  ")
         ET.ElementTree(self.mxfile).write(path, encoding="utf-8", xml_declaration=False)
 
 
-def box_style(fill: str, stroke: str, *, rounded_box: bool = True, stroke_width: float = 1.0) -> str:
+def box_style(
+    fill: str, stroke: str, *, rounded_box: bool = True, stroke_width: float = 1.0
+) -> str:
     return (
         f"rounded={1 if rounded_box else 0};whiteSpace=wrap;html=1;arcSize=8;"
         f"fillColor={fill};strokeColor={stroke};strokeWidth={stroke_width};"
@@ -323,7 +381,10 @@ def box_style(fill: str, stroke: str, *, rounded_box: bool = True, stroke_width:
 
 
 def image_style() -> str:
-    return "text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacing=0;whiteSpace=wrap;overflow=hidden;"
+    return (
+        "text;html=1;strokeColor=none;fillColor=none;align=center;"
+        "verticalAlign=middle;spacing=0;whiteSpace=wrap;overflow=hidden;"
+    )
 
 
 def image_value(b64: str, w: int, h: int) -> str:
@@ -345,7 +406,14 @@ def write_drawio(phase_b64: str, formula_b64: str, ecg_b64: str, labels: dict[st
     ]:
         d.vertex("", box_style("#ffffff", "#8a8a8a"), x, 55, 205, 92)
         d.vertex(header, box_style(BLUE_FILL, BLUE_STROKE), x + 30, 37, 145, 31)
-        d.vertex(body, box_style(GRAY_FILL, GRAY_STROKE, rounded_box=True, stroke_width=0.9), x + 42, 88, 121, 27)
+        d.vertex(
+            body,
+            box_style(GRAY_FILL, GRAY_STROKE, rounded_box=True, stroke_width=0.9),
+            x + 42,
+            88,
+            121,
+            27,
+        )
 
     d.vertex(
         "",
@@ -371,8 +439,16 @@ def write_drawio(phase_b64: str, formula_b64: str, ecg_b64: str, labels: dict[st
     d.vertex("A: Ejemplo simulado", box_style(GREEN_FILL, GREEN_STROKE), 855, 227, 185, 31)
     d.vertex(image_value(ecg_b64, 165, 50), image_style(), 865, 268, 165, 50)
     d.vertex(
-        f"RBBB: {'SÍ' if labels['RBBB'] else 'NO'}  ST: {'SÍ' if labels['ST_ELEVATION'] else 'NO'}  TWI: {'SÍ' if labels['T_WAVE_INVERSION'] else 'NO'}",
-        "text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;fontFamily=Arial;fontSize=10;fontStyle=1;fontColor=#202124;align=center;verticalAlign=middle;spacing=0;",
+        (
+            f"RBBB: {'SÍ' if labels['RBBB'] else 'NO'}  "
+            f"ST: {'SÍ' if labels['ST_ELEVATION'] else 'NO'}  "
+            f"TWI: {'SÍ' if labels['T_WAVE_INVERSION'] else 'NO'}"
+        ),
+        (
+            "text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;"
+            "fontFamily=Arial;fontSize=10;fontStyle=1;fontColor=#202124;"
+            "align=center;verticalAlign=middle;spacing=0;"
+        ),
         865,
         358,
         165,

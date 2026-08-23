@@ -3,9 +3,9 @@
 
 \section{Objetivo del dominio sintético}
 
-La disponibilidad de datos sintéticos permite estudiar una pregunta metodológica sin esperar a reunir una colección clínica extensa. En este trabajo el simulador actúa como un laboratorio sintético. Cada beat se construye a partir de componentes interpretables, se valida mediante reglas explícitas y se transforma en una imagen que puede entregarse tanto a una CNN como a un modelo de visión y lenguaje.
+Los datos sintéticos permiten estudiar la eficiencia con pocos ejemplos sin depender de una colección clínica extensa. En este trabajo, el simulador funciona como un entorno controlado. Cada latido se construye a partir de componentes interpretables, se somete a reglas explícitas y se renderiza como una imagen. Tanto la CNN como el modelo de visión y lenguaje reciben esa representación visual.
 
-El objetivo no es reproducir toda la fisiología cardíaca. Un simulador clínicamente exhaustivo tendría que modelar varias derivaciones, cambios de frecuencia, interacción entre ciclos, conducción auricular y ventricular, ruido de adquisición, variación anatómica y efectos del dispositivo. El sistema implementado reduce el problema a un único beat de apariencia precordial derecha. Esta simplificación permite parametrizar tres hallazgos visuales que intervienen en la motivación del proyecto.
+El objetivo no consiste en reproducir la fisiología cardíaca completa. Para ello habría que modelar las doce derivaciones, los cambios de frecuencia y la interacción entre ciclos. También serían necesarias la conducción auricular y ventricular, el ruido de adquisición, la variación anatómica y el efecto del dispositivo. El sistema implementado se limita a un latido aislado con apariencia de derivación precordial derecha. Esta simplificación hace posible parametrizar los tres hallazgos visuales de interés para el experimento.
 
 El uso de datos sintéticos cumple cuatro funciones:
 
@@ -16,11 +16,11 @@ El uso de datos sintéticos cumple cuatro funciones:
 \item Reservar una familia generadora compuesta para estudiar transferencia.
 \end{enumerate}
 
-La contrapartida es una brecha inevitable entre el dominio sintético y el real. El simulador puede demostrar que una tarea definida por reglas es aprendible. No puede demostrar que el mismo rendimiento se mantenga en un ECG clínico. Esa distinción se conserva en toda la memoria.
+Esta capacidad de control tiene como contrapartida una brecha entre los dominios sintético y real. El simulador permite comprobar si los modelos aprenden una tarea definida mediante reglas, pero no anticipa el rendimiento en ECG clínicos. Los resultados se interpretan teniendo presente esta diferencia.
 
 \section{Representación matemática}
 
-Cada beat se define como una suma de diez átomos gaussianos. Para el átomo \(i\), la amplitud \(a_i\), el centro temporal \(\mu_i\) y la anchura \(\sigma_i\) determinan la función
+Cada latido se expresa como la suma de diez átomos gaussianos. En el átomo \(i\), la amplitud \(a_i\), el centro temporal \(\mu_i\) y la anchura \(\sigma_i\) definen la función
 
 \begin{equation}
 g_i(t) =
@@ -40,9 +40,9 @@ x(t) =
 \label{eq:sum_gaussians}
 \end{equation}
 
-El signo de \(a_i\) define la dirección de la deflexión. El valor absoluto de \(a_i\) determina su magnitud. El parámetro \(\mu_i\) desplaza el componente sobre el eje temporal y \(\sigma_i\) modifica su extensión. La suma permite formar transiciones suaves sin introducir discontinuidades.
+El signo de \(a_i\) determina la dirección de la deflexión y su valor absoluto, la magnitud. El parámetro \(\mu_i\) sitúa el componente en el eje temporal, mientras que \(\sigma_i\) controla su extensión. Al sumar los átomos se obtienen transiciones suaves y sin discontinuidades.
 
-La elección de gaussianas se inspira en modelos sintéticos previos que representan ondas electrocardiográficas mediante componentes paramétricos \cite{sayadi2010}. El presente simulador es más sencillo que un modelo dinámico electrofisiológico. Su ventaja es la capacidad de relacionar cada modificación con una región visual concreta.
+El uso de gaussianas parte de trabajos previos que representan las ondas electrocardiográficas mediante componentes paramétricos \cite{sayadi2010}. Este simulador es más sencillo que un modelo electrofisiológico dinámico, pero permite relacionar cada modificación con una región concreta de la señal.
 
 \begin{table}[H]
 \centering
@@ -63,14 +63,16 @@ La elección de gaussianas se inspira en modelos sintéticos previos que represe
 \texttt{T2} & Cola de la onda T & Suaviza y prolonga la repolarización \\
 \bottomrule
 \end{tabularx}
-\caption{Átomos utilizados para construir un beat}
+\caption{Átomos utilizados para construir un latido sintético}
 \label{tab:atomos}
 \end{table}
+
+La Figura~\ref{fig:gaussian_generator} muestra cómo se combinan los átomos de la Tabla~\ref{tab:atomos}.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=\textwidth]{results/gaussian_generator.drawio.png}
-  \caption{Generador gaussiano de un beat sintético. Los parámetros de cada átomo fijan su amplitud, posición y anchura antes de sumar las regiones P, QRS, ST y T.}
+  \caption{Generador gaussiano de un latido sintético. Los parámetros de cada átomo fijan su amplitud, posición y anchura antes de sumar las regiones P, QRS, ST y T.}
   \label{fig:gaussian_generator}
 \end{figure}
 
@@ -95,7 +97,7 @@ t_n =
 n \in \{0,\ldots,N-1\}.
 \end{equation}
 
-Los rangos de la repolarización se definieron sobre una duración de referencia de 900 ms. Cuando cambia la duración del beat, los centros posteriores a 390 ms se adaptan mediante
+Los rangos de repolarización se definieron para una duración de referencia de 900 ms. Cuando cambia la duración del latido, los centros posteriores a 390 ms se adaptan mediante
 
 \begin{equation}
 \mu_i^{(D)} =
@@ -107,43 +109,43 @@ Los rangos de la repolarización se definieron sobre una duración de referencia
 \label{eq:time_scaling}
 \end{equation}
 
-Las anchuras de los componentes tardíos se escalan por el mismo factor, con un mínimo que impide gaussianas degeneradas. Los componentes anteriores al punto de pivote no se desplazan. De este modo el QRS conserva su posición mientras que ST y T se comprimen o expanden para ocupar la duración disponible.
+Las anchuras de los componentes tardíos se escalan con el mismo factor y se impone un mínimo para evitar gaussianas degeneradas. Los componentes anteriores al punto de pivote permanecen fijos. Así, el QRS conserva su posición, mientras que ST y T se comprimen o expanden según la duración disponible.
 
 \section{Rangos de parámetros}
 
-La generación comienza con un andamiaje compartido. Cada átomo dispone de intervalos para \(a\), \(\mu\) y \(\sigma\). Después se aplican sustituciones específicas de la familia. El muestreo dentro de cada intervalo es uniforme. La distribución final no es uniforme porque las reglas morfológicas y los validadores rechazan parte de las propuestas.
+La generación comienza con una configuración común que asigna a cada átomo intervalos para \(a\), \(\mu\) y \(\sigma\). A continuación se sustituyen los intervalos propios de la familia seleccionada. Aunque el muestreo dentro de cada rango es uniforme, la distribución de las señales aceptadas no lo es: las reglas morfológicas y los validadores descartan parte de las propuestas.
 
-Los rangos no deben interpretarse como límites clínicos. Son parámetros de un generador visual. Por ejemplo, el átomo \texttt{R\_prime} tiene amplitud casi nula en la familia normal y puede alcanzar valores mayores en RBBB. Los átomos \texttt{J\_elev}, \texttt{ST1} y \texttt{ST2} permanecen cerca de cero en una señal normal y se desplazan hacia amplitudes positivas en la familia de elevación del ST.
+Estos rangos pertenecen al generador visual y no representan límites clínicos. Por ejemplo, el átomo \texttt{R\_prime} mantiene una amplitud casi nula en la familia normal y admite valores mayores en RBBB. De forma análoga, \texttt{J\_elev}, \texttt{ST1} y \texttt{ST2} permanecen cerca de cero en las señales normales y adoptan amplitudes positivas en la familia con elevación del ST.
 
-Separar rangos y validadores responde a dos responsabilidades distintas. Los rangos hacen probable una morfología. Los validadores determinan si la señal terminada satisface la definición de cada etiqueta. Si ambos elementos se mezclaran, cualquier cambio visual podría alterar de manera silenciosa el significado de las etiquetas.
+Los rangos favorecen una morfología, mientras que los validadores deciden si la señal resultante satisface la definición de cada etiqueta. Mantener separadas ambas funciones evita que un cambio en la generación modifique de forma inadvertida el significado de las clases.
 
 \section{Familias generadoras}
 
-El simulador contiene cinco familias de origen. Una familia selecciona rangos de muestreo y reglas de coherencia, pero no determina directamente el vector objetivo.
+El simulador parte de cinco familias. Cada una selecciona rangos de muestreo y reglas de coherencia, pero no asigna directamente el vector objetivo.
 
 \subsection{Familia normal}
 
-La familia \texttt{NORMAL} reduce la amplitud de R prima, mantiene la región J y ST próxima a la línea base y fuerza ondas T positivas. También exige que la señal no satisfaga ninguno de los tres validadores de hallazgos. Esta exclusión explícita es necesaria porque una señal generada con rangos normales podría producir por azar una combinación que superase un umbral patológico.
+La familia \texttt{NORMAL} reduce la amplitud de R prima, mantiene las regiones J y ST próximas a la línea base y genera ondas T positivas. Además, rechaza cualquier señal que active alguno de los tres validadores de hallazgos. Esta comprobación evita que una combinación obtenida por azar dentro de los rangos normales supere uno de sus umbrales.
 
 \subsection{Morfología RBBB}
 
-La familia \texttt{RBBB} favorece una segunda deflexión positiva posterior a S. La posición de R prima se obliga a aparecer al menos 24 ms después del centro de S. Su amplitud no puede quedar por debajo del 80 por ciento de la amplitud de R dentro de los límites permitidos. También se amplía su anchura respecto a la primera R.
+La familia \texttt{RBBB} favorece una segunda deflexión positiva después de S. El centro de R prima se sitúa al menos 24 ms después del centro de S. Dentro de los límites permitidos, su amplitud debe alcanzar como mínimo el 80 por ciento de la amplitud de R. También se le asigna una anchura mayor que a la primera R.
 
-El resultado busca una forma RSR prima visible. No reproduce todos los criterios clínicos de bloqueo completo de rama derecha, que dependen de la duración global del QRS y de la distribución entre derivaciones \cite{surawicz2009}. Por ello la etiqueta se denomina morfología compatible en el texto interpretativo.
+El propósito es obtener una forma RSR prima visible, no reproducir todos los criterios clínicos del bloqueo completo de rama derecha. Estos dependen, entre otros aspectos, de la duración global del QRS y de su distribución entre derivaciones \cite{surawicz2009}. Por este motivo, el texto interpreta la etiqueta como una morfología compatible.
 
 \subsection{Elevación de ST}
 
-La familia \texttt{ST\_ELEVATION} utiliza amplitudes positivas en el punto J y en los dos componentes del ST. La primera sección del ST se ensancha para evitar un pico estrecho que pudiera confundirse con una deflexión del QRS. El validador exige además actividad ventricular positiva y negativa suficiente, con el fin de descartar señales planas elevadas.
+La familia \texttt{ST\_ELEVATION} asigna amplitudes positivas al punto J y a los dos componentes del ST. La primera sección del segmento se ensancha para que no adopte la forma de un pico estrecho confundible con una deflexión del QRS. El validador también exige actividad ventricular positiva y negativa suficiente, lo que permite descartar señales planas desplazadas hacia valores altos.
 
 \subsection{Inversión de T}
 
-La familia \texttt{T\_WAVE\_INVERSION} hace negativas las dos componentes de T y las separa de la región ST. También puede producir una R prima moderada y una elevación pequeña de J. Esta elección permite coocurrencias con RBBB y ST. El validador exige que la deflexión negativa sea tardía, suficientemente profunda y mantenida.
+La familia \texttt{T\_WAVE\_INVERSION} hace negativos los dos componentes de T y los separa de la región ST. Puede generar, además, una R prima moderada y una pequeña elevación de J, lo que permite coocurrencias con RBBB y elevación del ST. Para aceptar la señal, la deflexión negativa debe aparecer tarde, alcanzar una profundidad mínima y mantenerse durante un intervalo suficiente.
 
 \subsection{Familia Brugada}
 
-La familia \texttt{BRUGADA} implementa únicamente una forma coved o tipo 1 esquemática. Combina elevación de J, ST inicial positivo, descenso posterior e inversión de T. La amplitud de R prima es menor que en la familia RBBB pura, pero puede mantener una alteración terminal del QRS.
+La familia \texttt{BRUGADA} representa de forma esquemática una morfología coved o de tipo 1. Combina elevación de J, un ST inicial positivo, un descenso posterior y la inversión de T. La amplitud de R prima es menor que en la familia RBBB, aunque puede conservar una alteración terminal del QRS.
 
-El nombre de la familia no se incorpora al vector objetivo. Una señal aceptada por el validador interno de Brugada se vuelve a evaluar mediante los validadores independientes de RBBB, elevación de ST e inversión de T. Por tanto puede recibir una combinación parcial de hallazgos. Esta decisión convierte la familia en una prueba de composición y evita utilizar una etiqueta clínica que el simulador no puede justificar.
+El nombre de la familia no forma parte del vector objetivo. Una señal aceptada por el validador interno de Brugada se evalúa después con los validadores independientes de RBBB, elevación del ST e inversión de T. Puede recibir, por tanto, una combinación parcial de hallazgos. La familia se utiliza así como prueba de composición, sin introducir una etiqueta clínica que el simulador no permite justificar.
 
 \begin{table}[H]
 \centering
@@ -153,7 +155,7 @@ El nombre de la familia no se incorpora al vector objetivo. Una señal aceptada 
 \textbf{Familia} & \textbf{Modificación dominante} & \textbf{Interpretación experimental} \\
 \midrule
 \texttt{NORMAL} & ST próximo a cero, T positiva y R prima mínima & Referencia sin hallazgos del conjunto \\
-\texttt{RBBB} & Segundo máximo positivo tardío y ancho & Componente terminal del QRS \\
+\texttt{RBBB} & Segundo pico positivo tardío y ancho & Componente terminal del QRS \\
 \texttt{ST} elevado & Punto J y ST positivos & Componente de elevación posterior al QRS \\
 Inversión de T & Repolarización tardía negativa & Componente de inversión de T \\
 \texttt{BRUGADA} & J elevado, ST descendente y T negativa & Familia compuesta reservable para transferencia \\
@@ -165,15 +167,15 @@ Inversión de T & Repolarización tardía negativa & Componente de inversión de
 
 \section{Reglas de coherencia morfológica}
 
-El muestreo independiente de los átomos puede producir órdenes temporales incoherentes. Para reducir este problema se aplican reglas deterministas antes de sumar las gaussianas. Q debe preceder a R. S debe aparecer después de R y ser más ancha. J se sitúa después de S. Los dos componentes del ST se ordenan tras J. T1 y T2 ocupan la región final.
+El muestreo independiente de los átomos puede alterar el orden temporal de las ondas. Para evitarlo, antes de sumar las gaussianas se imponen varias relaciones. Q precede a R; S aparece después de R y tiene mayor anchura; J se sitúa después de S. Los dos componentes del ST se ordenan tras J, y T1 y T2 ocupan la región final.
 
-Estas reglas no garantizan fisiología. Garantizan una geometría mínima para que cada parámetro conserve una interpretación. Las reglas específicas de una familia refuerzan relaciones adicionales, como la posición tardía de R prima o el signo negativo de T.
+Estas relaciones no convierten la señal en una representación fisiológica. Su función es mantener una geometría mínima que preserve la interpretación de los parámetros. Las reglas propias de cada familia añaden restricciones como la posición tardía de R prima o el signo negativo de T.
 
-Modificar una regla puede tener efectos indirectos. Mover T1 cambia el resultado del validador de inversión y también puede alterar la media tardía del ST. Cada cambio debe acompañarse, por tanto, de una nueva generación de ejemplos, un análisis de frecuencias y una comprobación de aceptación.
+Los cambios en una regla pueden afectar a más de un componente. Desplazar T1, por ejemplo, modifica el resultado del validador de inversión y también puede alterar la media tardía del ST. Por ello, cualquier ajuste requiere volver a generar ejemplos y revisar tanto las frecuencias de las etiquetas como las tasas de aceptación.
 
 \section{Muestreo con rechazo}
 
-El procedimiento de generación utiliza muestreo con rechazo. Para una familia \(c\), el algoritmo sigue los siguientes pasos:
+La generación utiliza muestreo con rechazo. Para una familia \(c\), el procedimiento consta de los siguientes pasos:
 
 \begin{enumerate}
 \item Combinar los rangos base con los rangos específicos de \(c\).
@@ -185,7 +187,7 @@ El procedimiento de generación utiliza muestreo con rechazo. Para una familia \
 \item Aceptar la señal si supera las reglas o volver al paso de muestreo.
 \end{enumerate}
 
-El límite por defecto es de 400 intentos. Si no se obtiene una señal válida, el generador lanza un error e incluye las últimas métricas calculadas. El número de intento se almacena en los metadatos de cada muestra. Esta variable permite detectar rangos mal alineados con los validadores.
+El generador admite un máximo de 400 intentos. Si ninguno produce una señal válida, devuelve un error junto con las últimas métricas calculadas. Los metadatos de cada muestra registran el número de intentos, lo que ayuda a detectar rangos poco compatibles con los validadores.
 
 Sea \(q_c\) la probabilidad de aceptación de una propuesta de la familia \(c\). El número esperado de intentos antes de una aceptación es aproximadamente
 
@@ -194,11 +196,11 @@ Sea \(q_c\) la probabilidad de aceptación de una propuesta de la familia \(c\).
 \frac{1}{q_c}.
 \end{equation}
 
-Una familia que requiere muchos intentos puede seguir generando imágenes correctas, pero revela que gran parte de su espacio paramétrico no satisface la definición de la etiqueta. Las tasas de aceptación deben registrarse cuando se cierre la versión final del simulador.
+Un número elevado de intentos no invalida por sí mismo las imágenes aceptadas, pero indica que gran parte del espacio paramétrico queda fuera de la definición de la etiqueta. Por ello, la tasa de aceptación forma parte de la revisión del generador.
 
 \section{Validadores y semántica de las etiquetas}
 
-Los validadores operan sobre ventanas temporales de la señal terminada. Las ventanas posteriores a 390 ms se adaptan mediante la ecuación~\ref{eq:time_scaling}. Las amplitudes se expresan en mV y las duraciones en ms.
+Los validadores analizan ventanas temporales de la señal completa. Las situadas después de 390 ms se adaptan mediante la ecuación~\ref{eq:time_scaling}. Las amplitudes se expresan en mV y las duraciones, en ms.
 
 \begin{table}[H]
 \centering
@@ -223,17 +225,17 @@ Máximo del QRS superior a 0,18 mV, mínimo inferior a \(-0,16\) mV, media de J 
 \label{tab:validadores}
 \end{table}
 
-Los umbrales se diseñaron para separar morfologías del simulador. No deben trasladarse a un ECG real ni compararse de forma directa con criterios clínicos. Un ECG real requiere calibración, derivaciones identificadas, velocidad de papel conocida y valoración del contexto. Los estándares clínicos revisados en el capítulo~\ref{chap:fundamentos} se utilizan para orientar la forma general, no para validar pacientes.
+Los umbrales de la Tabla~\ref{tab:validadores} separan morfologías dentro del simulador. No son criterios clínicos ni deben aplicarse a ECG reales, cuya interpretación requiere calibración, derivaciones identificadas, velocidad de papel conocida y contexto clínico. Los estándares revisados en el capítulo~\ref{chap:fundamentos} solo orientan la forma general de las señales sintéticas.
 
-Las tres etiquetas finales se calculan de forma independiente. Para una señal aceptada, se ejecutan los validadores de RBBB, ST y TWI y se construye un vector binario. Este paso puede producir coocurrencias que no coinciden con la familia. La etiqueta final es una propiedad de la señal, no una copia del mecanismo que la generó.
+Las tres etiquetas finales se calculan de forma independiente. Una vez aceptada la señal, se ejecutan los validadores de RBBB, elevación del ST y TWI para construir un vector binario. Las coocurrencias resultantes no tienen por qué coincidir con la familia de origen: la etiqueta describe la señal generada, no el mecanismo utilizado para proponerla.
 
 \section{Renderizado de las señales}
 
-Cada beat se representa sobre un lienzo cuadrado. La configuración final guarda imágenes de 896 por 896 píxeles a 130 puntos por pulgada. El eje horizontal utiliza una cuadrícula menor cada 40 ms y una cuadrícula mayor cada 200 ms. El eje vertical utiliza divisiones menores de 0,1 mV y mayores de 0,5 mV. La señal se dibuja en negro con un grosor de dos puntos y la cuadrícula en rosa con dos intensidades.
+Cada latido se representa en un lienzo cuadrado de 896 por 896 píxeles y 130 puntos por pulgada. En el eje horizontal, la cuadrícula menor marca intervalos de 40 ms y la mayor, de 200 ms. En el eje vertical, las divisiones corresponden a 0,1 y 0,5 mV, respectivamente. La señal se dibuja en negro con un grosor de dos puntos y la cuadrícula, en dos tonos de rosa.
 
-El renderizado conserva títulos de ejes y valores numéricos. Estos elementos aportan información de escala, pero también pueden transformarse en atajos si los límites cambian entre muestras. Por ese motivo, los límites horizontal y vertical se fijan para todas las imágenes del experimento final. La inspección visual verifica que ninguna familia posee un encuadre, margen o patrón de marcas propio.
+El renderizado conserva los títulos de los ejes y los valores numéricos. Aunque aportan información de escala, podrían actuar como atajos si los límites variasen entre muestras. Para evitarlo, todas las imágenes del experimento final comparten los mismos límites horizontales y verticales. También se revisó que ninguna familia presentase un encuadre, un margen o un patrón de marcas propio.
 
-No se aplicarán reflejos horizontales. Invertir el eje temporal cambiaría el orden fisiológico de las ondas. Tampoco se aplicarán reflejos verticales, ya que intercambiarían elevación y depresión. Las transformaciones visuales admisibles deben conservar la semántica, como pequeñas variaciones de grosor, contraste, desplazamiento y escala dentro de límites conocidos.
+No se aplican reflejos horizontales, pues invertir el eje temporal alteraría el orden de las ondas, ni verticales, porque intercambiarían elevación y depresión. Las transformaciones admisibles deben conservar la semántica de la señal; entre ellas se encuentran pequeñas variaciones de grosor, contraste, desplazamiento y escala dentro de límites conocidos. La Figura~\ref{fig:synthetic_examples} muestra una señal de cada familia.
 
 \begin{figure}[H]
   \centering
@@ -244,17 +246,17 @@ No se aplicarán reflejos horizontales. Invertir el eje temporal cambiaría el o
 
 \section{Construcción del conjunto de datos}
 
-La generación del conjunto sintético parte de las familias definidas y asigna a cada muestra una semilla propia. Una vez aceptadas las señales, se crean las particiones de entrenamiento, validación y prueba y se guardan las imágenes junto con el manifiesto correspondiente.
+Para construir el conjunto sintético se asigna una semilla propia a cada muestra y se genera la señal a partir de una de las familias descritas. Tras la aceptación, las muestras se distribuyen entre entrenamiento, validación y prueba. Las imágenes y su manifiesto se almacenan conjuntamente.
 
-Cada muestra queda asociada a su imagen, partición, familia generadora, semilla, subtipo cuando procede, número de intento e índices internos, junto con las etiquetas binarias correspondientes. Además, se guardan ficheros auxiliares con el esquema de etiquetas y resúmenes de frecuencia por partición, familia y combinación de clases. De este modo, el entrenamiento puede realizarse directamente desde los manifiestos CSV, sin depender de la organización física de las carpetas, y los ficheros JSON quedan como apoyo para revisar el proceso o elaborar resultados.
+El manifiesto relaciona cada muestra con su imagen, partición, familia generadora, semilla, subtipo cuando corresponde, número de intento, índices internos y etiquetas binarias. Otros ficheros recogen el esquema de etiquetas y las frecuencias por partición, familia y combinación de clases. El entrenamiento puede leer directamente los manifiestos CSV, sin depender de la organización de las carpetas, mientras que los ficheros JSON facilitan la revisión del proceso y la elaboración de resultados.
 
 \section{Comprobación de integración}
 
-La configuración final se ejecutó para generar 100 pacientes sintéticos, 300 imágenes, pliegues LOOCV y resúmenes de etiquetas. El conjunto contiene 20 pacientes con los tres hallazgos presentes y 80 pacientes normales o incompletos. Las combinaciones observadas incluyen NORMAL, RBBB, RBBB+ST, RBBB+ST+TWI, RBBB+TWI y TWI.
+La configuración final consta de 100 pacientes sintéticos, cada uno con una imagen V1, sus pliegues LOOCV y los resúmenes de etiquetas. Veinte pacientes presentan los tres hallazgos; los 80 restantes son normales o contienen combinaciones parciales. Como cada configuración se repite con tres semillas, las matrices de confusión agregadas reúnen 300 predicciones.
 
-El conjunto generado constituye la base de la evaluación sintética posterior. La comprobación de integración confirma que la generación de señales, la aceptación por validadores, la partición por paciente y la escritura de manifiestos producen un artefacto experimental reutilizable. La presencia de varias combinaciones de etiquetas permite estudiar la evolución del rendimiento al variar \(K\) sin reducir la tarea a una separación trivial entre normalidad y un único patrón patológico.
+Este conjunto constituye la base de la evaluación sintética. La prueba de integración abarca la generación de las señales, su aceptación mediante validadores, la partición por paciente y la escritura de los manifiestos. La coexistencia de varias combinaciones permite estudiar la evolución del rendimiento con \(K\) sin limitar la tarea a distinguir entre normalidad y un único patrón patológico.
 
-La revisión de los ejemplos generados confirma que la familia de origen y las etiquetas finales cumplen funciones distintas. Una familia modifica los rangos de muestreo para favorecer una morfología concreta, pero los validadores se aplican después sobre la señal resultante. Por eso una señal orientada a elevación del ST puede activar también RBBB, y una señal con inversión de T puede conservar una deflexión terminal compatible con otros hallazgos. La tarea experimental queda definida por los rasgos detectados en la señal, no por el nombre de la familia que inició la generación.
+La familia de origen y las etiquetas finales desempeñan funciones diferentes. La primera modifica los rangos de muestreo para favorecer una morfología, pero los validadores actúan después sobre la señal resultante. Así, una muestra generada desde la familia con elevación del ST puede activar también RBBB, y otra orientada a la inversión de T puede conservar una deflexión terminal asociada a otros hallazgos. La tarea queda definida por los rasgos detectados en la señal, no por el nombre de la familia inicial. La Figura~\ref{fig:label_distribution} muestra las combinaciones obtenidas.
 
 \begin{figure}[H]
   \centering
@@ -265,18 +267,18 @@ La revisión de los ejemplos generados confirma que la familia de origen y las e
 
 \section{Riesgos de atajos visuales}
 
-Un modelo puede obtener resultados altos sin aprender la morfología pretendida. Entre los atajos posibles se encuentran límites automáticos del eje, diferencias de antialiasing, márgenes asociados a la amplitud, densidad de cuadrícula, nombres de fichero y estructura de carpetas.
+Un resultado alto no implica necesariamente que el modelo haya aprendido la morfología de interés. También podría aprovechar límites automáticos de los ejes, diferencias de antialiasing, márgenes ligados a la amplitud, cambios en la densidad de la cuadrícula, nombres de fichero o la propia estructura de carpetas.
 
-Para reducir estos riesgos, las imágenes se cargarán desde el manifiesto y la familia no se entregará al modelo. Los límites visuales serán constantes. Los nombres de fichero solo contendrán un contador. La evaluación incluirá recortes de la zona de trazado y versiones sin texto de ejes como análisis de sensibilidad. Si el rendimiento cae de forma drástica al retirar elementos no fisiológicos, se investigará el origen antes de interpretar los resultados.
+Para reducir estos riesgos, las imágenes se leen desde el manifiesto sin proporcionar al modelo la familia de origen. Los límites visuales son constantes y los nombres de fichero solo contienen un contador. Como controles de sensibilidad se contemplan recortes de la zona del trazado y versiones sin el texto de los ejes. Una caída marcada al retirar elementos ajenos a la señal indicaría la necesidad de investigar posibles atajos antes de interpretar el rendimiento.
 
-También se comprobará la atención espacial de las CNN mediante Grad CAM \cite{selvaraju2017}. La finalidad no es demostrar causalidad, sino detectar si las regiones activas se concentran en QRS, ST y T o en elementos periféricos.
+La atención espacial de la CNN se examina además mediante Grad-CAM \cite{selvaraju2017}. Este análisis no permite establecer relaciones causales; sirve para observar si las activaciones se concentran en QRS, ST y T o en elementos periféricos de la imagen.
 
 \section{Limitaciones del simulador}
 
-El simulador representa un beat aislado y una geometría semejante a una derivación precordial. No modela doce derivaciones ni una transformación eléctrica común entre ellas. No incluye variabilidad entre beats, arritmias, intervalos dependientes de frecuencia, ruido muscular, deriva de línea base, interferencia de red, pérdida de electrodos ni compresión de documentos.
+El simulador representa un latido aislado con una geometría semejante a la de una derivación precordial. No modela las doce derivaciones ni una transformación eléctrica común entre ellas. Tampoco incorpora variabilidad entre latidos, arritmias, intervalos dependientes de la frecuencia, ruido muscular, deriva de la línea base, interferencia de red, pérdida de electrodos o compresión de documentos.
 
-La forma de cada onda se construye con gaussianas. Esta elección produce curvas suaves y puede simplificar bordes que en un ECG real son más irregulares. Los validadores se basan en ventanas y umbrales creados para este dominio. Una señal clínica no debe procesarse con ellos como si fueran reglas diagnósticas.
+La construcción mediante gaussianas produce curvas suaves y simplifica bordes que pueden ser más irregulares en un ECG real. A su vez, los validadores utilizan ventanas y umbrales diseñados exclusivamente para este dominio. Aplicarlos a una señal clínica como si fueran reglas diagnósticas carecería de justificación.
 
-En la familia Brugada se modela de forma simplificada una elevación del ST con morfología convexa, asociada al patrón de Brugada tipo 1. No representa la heterogeneidad del síndrome, la variación entre derivaciones ni la posibilidad de patrones intermitentes. Su uso se limita a estudiar la composición visual de los tres hallazgos.
+La familia Brugada simplifica una elevación del ST de morfología convexa asociada al patrón tipo 1. No representa la heterogeneidad del síndrome, la variación entre derivaciones ni su posible carácter intermitente. Se utiliza únicamente para estudiar la composición visual de los tres hallazgos.
 
-Estas limitaciones no invalidan el laboratorio sintético. Delimitan qué afirmaciones puede sostener. El dominio permite comparar eficiencia de ejemplos bajo condiciones sintéticas. La validez clínica dependerá de la evaluación externa descrita en el capítulo de datos reales.
+Estas limitaciones delimitan el alcance del experimento. El dominio sintético permite comparar la eficiencia en el uso de ejemplos bajo condiciones controladas, pero no establece validez clínica. Esta última debe juzgarse a partir de la evaluación con la cohorte del HUCA y de una validación externa posterior.

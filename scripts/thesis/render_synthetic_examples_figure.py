@@ -15,7 +15,6 @@ from matplotlib.patches import FancyBboxPatch
 
 from ecg_few.simulator import generate_beat
 
-
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
@@ -193,7 +192,10 @@ def draw_attention_marks(ax: plt.Axes, family: str, waveform: np.ndarray) -> Non
         "T_WAVE_INVERSION": [("min", 590, 830)],
         "BRUGADA": [("max", 380, 470), ("at", 500, 500), ("min", 590, 830)],
     }
-    points = [window_point(t_ms, waveform, mode, start, end) for mode, start, end in windows.get(family, [])]
+    points = [
+        window_point(t_ms, waveform, mode, start, end)
+        for mode, start, end in windows.get(family, [])
+    ]
     if not points:
         return
 
@@ -203,7 +205,7 @@ def draw_attention_marks(ax: plt.Axes, family: str, waveform: np.ndarray) -> Non
 
 def add_heat_spot(ax: plt.Axes, x: float, y: float) -> None:
     size = 80
-    yy, xx = np.mgrid[-1:1:complex(size), -1:1:complex(size)]
+    yy, xx = np.mgrid[-1 : 1 : complex(size), -1 : 1 : complex(size)]
     heat = np.exp(-2.8 * (xx**2 + yy**2))
     color = np.array(to_rgba(ATTENTION))
     rgba = np.zeros((size, size, 4), dtype=float)
@@ -219,7 +221,9 @@ def add_heat_spot(ax: plt.Axes, x: float, y: float) -> None:
     )
 
 
-def window_point(t_ms: np.ndarray, waveform: np.ndarray, mode: str, start: float, end: float) -> tuple[float, float]:
+def window_point(
+    t_ms: np.ndarray, waveform: np.ndarray, mode: str, start: float, end: float
+) -> tuple[float, float]:
     mask = (t_ms >= start) & (t_ms <= end)
     if not np.any(mask):
         raise ValueError(f"Empty time window: {start}-{end} ms")

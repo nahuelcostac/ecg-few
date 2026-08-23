@@ -14,12 +14,13 @@ Este apéndice recoge los parámetros principales de la configuración experimen
     \midrule
     Fuente & Simulador QRS/ST descrito en el capítulo~\ref{chap:simulador} \\
     Pacientes & 100 \\
-    Imágenes & 300 \\
-    Familias fuente & NORMAL, RBBB, ST\_ELEVATION, T\_WAVE\_INVERSION, COMBINED\_QRS\_ST \\
+    Imágenes únicas & 100 \\
+    Predicciones agregadas & 300, correspondientes a tres semillas \\
+    Familias fuente & Cinco familias morfológicas descritas en el capítulo~\ref{chap:simulador} \\
     Pacientes por familia & 20 \\
     Derivaciones renderizadas & V1 \\
     Frecuencia de muestreo & 500 Hz \\
-    Duración del beat & 900 ms \\
+    Duración del latido & 900 ms \\
     Resolución de guardado & 130 ppp \\
     Positivos derivados & 20 \\
     Negativos o incompletos & 80 \\
@@ -31,9 +32,9 @@ Este apéndice recoge los parámetros principales de la configuración experimen
   \label{tab:config_sintetico_final}
 \end{table}
 
-La etiqueta positiva se obtiene cuando RBBB, elevación ST e inversión T están presentes simultáneamente. La decisión de paciente usa únicamente las probabilidades de V1 y después aplica el umbral seleccionado.
+La etiqueta positiva se obtiene cuando RBBB, elevación del ST e inversión de T están presentes de forma simultánea. La decisión por paciente utiliza únicamente la imagen V1 y aplica después el umbral seleccionado.
 
-\section{Datos reales del HUCA}
+\section{Cohorte del HUCA}
 
 \begin{table}[H]
   \centering
@@ -46,9 +47,10 @@ La etiqueta positiva se obtiene cuando RBBB, elevación ST e inversión T están
     Pacientes brutos & 363 \\
     Pacientes excluidos & 46 por patrón basal limítrofe \\
     Pacientes incluidos & 317 \\
-    Imágenes incluidas & 951 \\
-    Casos confirmados & 116 \\
-    Normales & 201 \\
+    Imágenes únicas incluidas & 317 \\
+    Predicciones agregadas & 951, correspondientes a tres semillas \\
+Referencias positivas & 116 \\
+Referencias negativas & 201 \\
     Derivaciones & V1 \\
     Ventana & 300 ms antes de R y 600 ms después de R \\
     Frecuencia de origen & 100 Hz \\
@@ -56,11 +58,11 @@ La etiqueta positiva se obtiene cuando RBBB, elevación ST e inversión T están
     Separación & Leave-one-out por paciente \\
     \bottomrule
   \end{tabularx}
-  \caption{Configuración del conjunto real procesado.}
+  \caption{Configuración de la cohorte procesada del HUCA.}
   \label{tab:config_huca_final}
 \end{table}
 
-Los datos reales del HUCA no contienen anotaciones independientes para las tres etiquetas morfológicas del simulador. La tarea real utiliza la etiqueta clínica \texttt{clinical\_brugada}, recogida a nivel de paciente mediante revisión especializada.
+La cohorte procesada del HUCA no incluye anotaciones independientes de los tres hallazgos morfológicos simulados. La evaluación emplea una referencia clínica por paciente. Esta variable, almacenada en \texttt{clinical\_brugada}, procede de una revisión especializada.
 
 \section{Configuración CNN}
 
@@ -80,9 +82,9 @@ Los datos reales del HUCA no contienen anotaciones independientes para las tres 
     Tasa de aprendizaje & \(3\times10^{-4}\) \\
     Lote & 32 \\
     Épocas máximas & 20 \\
-    Estrategia de umbral & Selección en validación mediante exactitud equilibrada \\
-    Métrica principal & Exactitud equilibrada por paciente \\
-    Grad CAM & 12 paneles en sintético y 6 en datos reales por ejecución agregada \\
+    Estrategia de umbral & Selección en validación mediante Balanced Accuracy \\
+    Métrica principal & Balanced Accuracy por paciente \\
+    Grad-CAM & Límite de 12 paneles por ejecución sintética y 6 por ejecución sobre el HUCA \\
     \bottomrule
   \end{tabularx}
   \caption{Hiperparámetros de la CNN final.}
@@ -99,7 +101,7 @@ Los datos reales del HUCA no contienen anotaciones independientes para las tres 
     Propiedad & Valor \\
     \midrule
     Origen etiquetado & Conjunto sintético QRS/ST \\
-    Destino no etiquetado & Datos reales del HUCA \\
+    Destino no etiquetado & Cohorte del HUCA \\
     Métodos & SSL, CORAL, MMD y DANN \cite{chen2020simclr,sun2016deepcoral,long2015dan,ganin2016} \\
     Valores de \(K\) & \(K=16\) y \(K=32\) \\
     Semillas & 42, 123 y 2026 \\
@@ -113,9 +115,10 @@ Los datos reales del HUCA no contienen anotaciones independientes para las tres 
   \label{tab:config_domain_appendix}
 \end{table}
 
+\clearpage
 \section{Configuración VLM/ICL}
 
-El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métricas por paciente que la CNN. La evaluación final corresponde a Gemma~4, ejecutado con temperatura 0 y salida estructurada.
+El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métricas por paciente que la CNN. La evaluación final corresponde a Gemma~4, servido mediante vLLM en infraestructura universitaria, con temperatura 0 y salida estructurada.
 
 \begin{table}[H]
   \centering
@@ -124,14 +127,15 @@ El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métr
     \toprule
     Elemento & Valor \\
     \midrule
-    Modelo informado & Gemma~4 \\
+    Modelo informado & \texttt{google/gemma-4-E4B-it} \\
+    Servicio & vLLM en infraestructura universitaria \\
     Entrada & Imagen ECG y demostraciones imagen-etiqueta \\
     Valores de \(K\) & \(K=\{0,2,4,8,16,32\}\) \\
     Condiciones informadas & Zero-shot, ICL estándar e ICL balanceado \\
-    Contextos sobre datos reales & Contexto tomado de la cohorte real del HUCA y contexto sintético del simulador \\
-    Salida morfológica & RBBB, elevación ST e inversión de T \\
+    Contextos sobre la cohorte del HUCA & Demostraciones de la propia cohorte o del simulador \\
+    Salida morfológica & RBBB, elevación del ST e inversión de T \\
     Salida clínica & Caso Brugada confirmado frente a normal \\
-    Métrica principal & Exactitud equilibrada por paciente \\
+    Métrica principal & Balanced Accuracy por paciente \\
     \bottomrule
   \end{tabularx}
   \caption{Configuración resumida del enfoque VLM/ICL.}

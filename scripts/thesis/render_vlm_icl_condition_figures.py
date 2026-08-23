@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 # ruff: noqa: I001
-"""Render VLM/ICL figures from Archive (10).zip.
-
-The final thesis reports the zero-shot, standard ICL and balanced ICL
-conditions, in that order.
-"""
+"""Render thesis-ready VLM/ICL curves from final LOOCV reports."""
 
 from __future__ import annotations
 
 import argparse
 import csv
-import io
-import zipfile
 from pathlib import Path
 
 import matplotlib
@@ -22,9 +16,8 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
-ZIP_PATH = ROOT / "Archive (10).zip"
-DEFAULT_RESULTS_DIR = Path.home() / "Downloads" / "vlm-results"
-OUT = ROOT / "thesis" / "thesis" / "assets" / "results"
+DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_OUTPUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
 BLUE = "#005BBB"
 RED = "#D71920"
@@ -37,11 +30,11 @@ GRID = "#B8B8B8"
 TASKS = {
     "sim": {
         "label": "Simulador QRS/ST",
-        "csv": "reports/loocv/vlm_simulator_qrs/vlm_summary_by_k.csv",
+        "csv": "vlm_simulator_qrs/vlm_summary_by_k.csv",
     },
     "real": {
         "label": "HUCA, V1",
-        "csv": "reports/loocv/vlm_real_context/vlm_summary_by_k.csv",
+        "csv": "vlm_real_context/vlm_summary_by_k.csv",
     },
 }
 
@@ -49,44 +42,29 @@ TASKS = {
 def main() -> None:
     args = parse_args()
     set_style()
-    source = CsvSource(report_root=args.results_dir, zip_path=args.zip_path)
-    rows = {key: selected_rows(source.read_csv(meta["csv"])) for key, meta in TASKS.items()}
-    plot_icl_conditions(rows)
-    plot_clinical_sensitivity_specificity(rows["real"])
+    rows = {
+        key: selected_rows(read_path_csv(args.loocv_dir / meta["csv"]))
+        for key, meta in TASKS.items()
+    }
+    plot_icl_conditions(rows, args.output_dir)
+    plot_clinical_sensitivity_specificity(rows["real"], args.output_dir)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Render thesis VLM/ICL condition figures.")
     parser.add_argument(
-        "--results-dir",
+        "--loocv-dir",
         type=Path,
-        default=DEFAULT_RESULTS_DIR if DEFAULT_RESULTS_DIR.exists() else None,
-        help="Directory containing reports/loocv. Defaults to ~/Downloads/vlm-results if present.",
+        default=DEFAULT_LOOCV_DIR,
+        help="Directory containing the final LOOCV report folders.",
     )
     parser.add_argument(
-        "--zip-path",
+        "--output-dir",
         type=Path,
-        default=ZIP_PATH,
-        help="Fallback archive containing reports/loocv.",
+        default=DEFAULT_OUTPUT_DIR,
+        help="Directory where thesis-ready figures are written.",
     )
     return parser.parse_args()
-
-
-class CsvSource:
-    def __init__(self, *, report_root: Path | None, zip_path: Path) -> None:
-        self.report_root = report_root
-        self.zip_path = zip_path
-
-    def read_csv(self, member: str) -> list[dict[str, str]]:
-        if self.report_root is not None:
-            path = self.report_root / member
-            if path.exists():
-                return read_path_csv(path)
-        if self.zip_path.exists():
-            return read_zip_csv(self.zip_path, member)
-        raise FileNotFoundError(
-            "No VLM report source found. Provide --results-dir or --zip-path."
-        )
 
 
 def set_style() -> None:
@@ -115,12 +93,6 @@ def set_style() -> None:
 def read_path_csv(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
-
-
-def read_zip_csv(zip_path: Path, member: str) -> list[dict[str, str]]:
-    with zipfile.ZipFile(zip_path) as archive:
-        raw = archive.read(member).decode("utf-8")
-    return list(csv.DictReader(io.StringIO(raw)))
 
 
 def selected_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -212,13 +184,13 @@ def plot_condition_curves(
         )
 
 
-def plot_icl_conditions(rows: dict[str, list[dict[str, str]]]) -> None:
+def plot_icl_conditions(rows: dict[str, list[dict[str, str]]], output_dir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(6.95, 4.35), sharex=True)
 
     panels = (
-        (axes[0, 0], rows["sim"], "balanced_accuracy", "Simulador: BA", "Exactitud equilibrada"),
+        (axes[0, 0], rows["sim"], "balanced_accuracy", "Simulador: BA", "Balanced Accuracy (BA)"),
         (axes[0, 1], rows["sim"], "f1", "Simulador: F1", "F1"),
-        (axes[1, 0], rows["real"], "balanced_accuracy", "HUCA V1: BA", "Exactitud equilibrada"),
+        (axes[1, 0], rows["real"], "balanced_accuracy", "HUCA V1: BA", "Balanced Accuracy (BA)"),
         (axes[1, 1], rows["real"], "f1", "HUCA V1: F1", "F1"),
     )
     for ax, panel_rows, metric, title, ylabel in panels:
@@ -244,10 +216,10 @@ def plot_icl_conditions(rows: dict[str, list[dict[str, str]]]) -> None:
     )
     fig.tight_layout(rect=(0, 0.11, 1, 1), pad=0.35)
 
-    save(fig, OUT / "vlm_icl_conditions_by_k.png")
+    save(fig, output_dir / "vlm_icl_conditions_by_k.png")
 
 
-def plot_clinical_sensitivity_specificity(rows: list[dict[str, str]]) -> None:
+def plot_clinical_sensitivity_specificity(rows: list[dict[str, str]], output_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(6.95, 2.65), sharex=True)
 
     for ax, metric, ylabel in (
@@ -294,7 +266,7 @@ def plot_clinical_sensitivity_specificity(rows: list[dict[str, str]]) -> None:
             borderpad=0.25,
             handlelength=1.4,
         )
-    save(fig, OUT / "vlm_clinical_sensitivity_specificity.png")
+    save(fig, output_dir / "vlm_clinical_sensitivity_specificity.png")
 
 
 def save(fig: plt.Figure, path: Path) -> None:

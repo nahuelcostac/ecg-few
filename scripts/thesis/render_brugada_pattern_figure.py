@@ -11,7 +11,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "thesis" / "thesis" / "assets" / "results"
 
@@ -76,7 +75,9 @@ def draw_ecg_grid(ax: plt.Axes, xmin: float, xmax: float, ymin: float, ymax: flo
     ax.set_xticks(np.arange(np.floor(xmin), np.ceil(xmax) + 0.001, 1.0))
     ax.set_xticks(np.arange(np.floor(xmin), np.ceil(xmax) + 0.001, 0.2), minor=True)
     ax.set_yticks(np.arange(np.floor(ymin * 2) / 2, np.ceil(ymax * 2) / 2 + 0.001, 0.5))
-    ax.set_yticks(np.arange(np.floor(ymin * 10) / 10, np.ceil(ymax * 10) / 10 + 0.001, 0.1), minor=True)
+    ax.set_yticks(
+        np.arange(np.floor(ymin * 10) / 10, np.ceil(ymax * 10) / 10 + 0.001, 0.1), minor=True
+    )
     ax.grid(which="minor", color=GRID_MINOR, linewidth=0.35)
     ax.grid(which="major", color=GRID_MAJOR, linewidth=0.75)
     ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
@@ -129,7 +130,9 @@ def main() -> None:
     ax.plot(x, y_normal, color=BLUE, linewidth=1.35, label="Normal/RBBB incompleto")
     ax.plot(x, y_brugada, color=RED, linewidth=1.6, label="Patrón tipo 1 simplificado")
 
-    add_annotation(ax, "R' terminal", (3.46, y_normal[np.abs(x - 3.46).argmin()]), (2.82, 1.05), align="right")
+    add_annotation(
+        ax, "R' terminal", (3.46, y_normal[np.abs(x - 3.46).argmin()]), (2.82, 1.05), align="right"
+    )
     add_annotation(ax, "J elevado", (4.30, y_brugada[np.abs(x - 4.30).argmin()]), (4.72, 1.12))
     add_annotation(ax, "ST descendente", (5.20, y_brugada[np.abs(x - 5.20).argmin()]), (5.80, 0.74))
     add_annotation(ax, "T negativa", (6.70, y_brugada[np.abs(x - 6.70).argmin()]), (7.34, -0.42))

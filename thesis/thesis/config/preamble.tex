@@ -78,34 +78,34 @@
 \raggedbottom
 \emergencystretch=2.5em
 
-\titleformat{\chapter}
-  {\normalfont\bfseries\fontsize{28}{34}\selectfont\color{Ink}}
-  {\thechapter}
-  {1em}
+\titleformat{\chapter}[block]
+  {\normalfont\fontsize{28}{34}\selectfont\color{Ink}\raggedright}
+  {\chaptername\ \thechapter.}
+  {0.55em}
   {}
 
-\titleformat{name=\chapter,numberless}
-  {\normalfont\bfseries\fontsize{28}{34}\selectfont\color{Ink}}
+\titleformat{name=\chapter,numberless}[block]
+  {\normalfont\fontsize{28}{34}\selectfont\color{Ink}\raggedright}
   {}
   {0pt}
   {}
 
 \titlespacing*{\chapter}{0pt}{0pt}{1.0\baselineskip}
 
-\titleformat{\section}
-  {\normalfont\bfseries\fontsize{14}{17}\selectfont\color{Ink}\raggedright}
+\titleformat{\section}[block]
+  {\normalfont\fontsize{14}{17}\selectfont\color{Ink}\raggedright}
   {\thesection.-}
   {0.75em}
   {\MakeUppercase}
 
-\titleformat{\subsection}
-  {\normalfont\bfseries\normalsize\color{Ink}\raggedright}
+\titleformat{\subsection}[block]
+  {\normalfont\normalsize\color{Ink}\raggedright}
   {\thesubsection.-}
   {0.75em}
   {}
 
-\titleformat{\subsubsection}
-  {\normalfont\bfseries\normalsize\color{Ink}\raggedright}
+\titleformat{\subsubsection}[block]
+  {\normalfont\normalsize\color{Ink}\raggedright}
   {\thesubsubsection.-}
   {0.7em}
   {}
@@ -120,11 +120,20 @@
     \makebox[\linewidth][r]{%
       \begin{tabular}[c]{@{}r@{}}
         \footnotesize\bfseries \UniversityName{} - \SchoolName\\[-0.05em]
-        \scriptsize\itshape \MakeUppercase{\ThesisRunningTitle}
+        \scriptsize\itshape
+        \ifnum\value{chapter}>0\relax
+          \leftmark
+        \else
+          \MakeUppercase{\ThesisRunningTitle}
+        \fi
       \end{tabular}%
     }
   \end{tabularx}%
   \vspace{0.2em}\par\noindent{\color{MidGray}\rule{\headwidth}{0.45pt}}%
+}
+
+\renewcommand{\chaptermark}[1]{%
+  \markboth{\chaptername\ \thechapter.\ #1}{}
 }
 
 \pagestyle{fancy}
@@ -137,7 +146,6 @@
 
 \fancypagestyle{plain}{
   \fancyhf{}
-  \fancyhead[C]{\documentheader}
   \fancyfoot[C]{\footnotesize\AuthorName}
   \fancyfoot[R]{\footnotesize Hoja \number\numexpr\value{abspage}+1\relax\ de \ztotpages}
   \renewcommand{\headrulewidth}{0pt}
@@ -228,15 +236,15 @@
   }
 }
 
-\newcommand{\safetitlelogo}{
+\newcommand{\safetitlelogo}[1][5.0cm]{
   \IfFileExists{assets/logo_uniovi_portada.png}{
-    \includegraphics[width=5.0cm]{logo_uniovi_portada.png}
+    \includegraphics[width=#1]{logo_uniovi_portada.png}
   }{
   \IfFileExists{assets/logo_uniovi.png}{
-    \includegraphics[width=5.0cm]{logo_uniovi.png}
+    \includegraphics[width=#1]{logo_uniovi.png}
   }{
     \fcolorbox{MidGray}{PaperGray}{
-      \parbox[c][2.8cm][c]{5.0cm}{
+      \parbox[c][2.8cm][c]{#1}{
         \centering
         \small\textbf{Universidad de Oviedo}\\[0.4em]
         \footnotesize Logotipo no disponible

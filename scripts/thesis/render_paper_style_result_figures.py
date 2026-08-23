@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 from pathlib import Path
 
@@ -12,10 +13,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 ROOT = Path(__file__).resolve().parents[2]
-REPORTS = ROOT / "reports" / "loocv"
-OUT = ROOT / "thesis" / "thesis" / "assets" / "results"
+DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_OUTPUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
 BLUE = "#005BBB"
 RED = "#D71920"
@@ -25,64 +25,83 @@ GRID = "#B8B8B8"
 
 
 def main() -> None:
+    args = parse_args()
     set_style()
 
-    sim_rows = read_csv(REPORTS / "cnn_simulator_qrs" / "cnn_summary_by_k.csv")
-    real_rows = read_csv(REPORTS / "cnn" / "cnn_summary_by_k.csv")
-    comparison_rows = read_csv(REPORTS / "cnn_comparison" / "cnn_simulated_vs_real_by_k.csv")
+    sim_rows = read_csv(args.loocv_dir / "cnn_simulator_qrs" / "cnn_summary_by_k.csv")
+    real_rows = read_csv(args.loocv_dir / "cnn" / "cnn_summary_by_k.csv")
+    comparison_rows = read_csv(args.loocv_dir / "cnn_comparison" / "cnn_simulated_vs_real_by_k.csv")
     domain_rows = read_csv(
-        REPORTS / "cnn_domain_adaptation" / "comparison" / "cnn_domain_adaptation_by_k.csv"
+        args.loocv_dir / "cnn_domain_adaptation" / "comparison" / "cnn_domain_adaptation_by_k.csv"
     )
 
     plot_single_metric(
-        OUT / "cnn_simulator_qrs_balanced_accuracy_by_k.png",
+        args.output_dir / "cnn_simulator_qrs_balanced_accuracy_by_k.png",
         sim_rows,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         label="CNN",
     )
     plot_single_metric(
-        OUT / "cnn_huca_balanced_accuracy_by_k.png",
+        args.output_dir / "cnn_huca_balanced_accuracy_by_k.png",
         real_rows,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         label="CNN",
     )
     plot_comparison(
-        OUT / "cnn_balanced_accuracy_sim_vs_real.png",
+        args.output_dir / "cnn_balanced_accuracy_sim_vs_real.png",
         comparison_rows,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_comparison(
-        OUT / "cnn_f1_sim_vs_real.png",
+        args.output_dir / "cnn_f1_sim_vs_real.png",
         comparison_rows,
         metric="f1",
         ylabel="F1",
     )
     plot_domain_adaptation(
-        OUT / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
+        args.output_dir / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
         domain_rows,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_domain_adaptation(
-        OUT / "cnn_domain_adaptation_f1_by_k.png",
+        args.output_dir / "cnn_domain_adaptation_f1_by_k.png",
         domain_rows,
         metric="f1",
         ylabel="F1",
     )
 
-    plot_confusion(
-        OUT / "cnn_simulator_qrs_k32_confusion_matrix.png",
-        row_for_k(sim_rows, 32),
-        title="Sintético, K=32",
+    for prefix, rows in (
+        ("cnn_simulator_qrs", sim_rows),
+        ("cnn_huca", real_rows),
+    ):
+        row = best_row(rows)
+        k = int(row["k"])
+        plot_confusion(
+            args.output_dir / f"{prefix}_k{k}_confusion_matrix.png",
+            row,
+            title=f"CNN, K={k}",
+        )
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Render CNN figures for the thesis.")
+    parser.add_argument(
+        "--loocv-dir",
+        type=Path,
+        default=DEFAULT_LOOCV_DIR,
+        help="Directory containing the final LOOCV report folders.",
     )
-    plot_confusion(
-        OUT / "cnn_huca_k16_confusion_matrix.png",
-        row_for_k(real_rows, 16),
-        title="HUCA, K=16",
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_OUTPUT_DIR,
+        help="Directory where thesis-ready figures are written.",
     )
+    return parser.parse_args()
 
 
 def set_style() -> None:
@@ -118,6 +137,10 @@ def row_for_k(rows: list[dict[str, str]], k: int) -> dict[str, str]:
         if int(row["k"]) == k:
             return row
     raise ValueError(f"k={k} not found")
+
+
+def best_row(rows: list[dict[str, str]]) -> dict[str, str]:
+    return max(rows, key=lambda row: float(row["balanced_accuracy_mean"]))
 
 
 def as_float(row: dict[str, str], key: str) -> float:
@@ -264,11 +287,11 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
             [int(row["fn"]), int(row["tp"])],
         ]
     )
-    fig, ax = plt.subplots(figsize=(2.45, 2.35))
-    image = ax.imshow(matrix, cmap="Blues", vmin=0)
+    fig, ax = plt.subplots(figsize=(2.55, 2.35))
+    ax.imshow(matrix, cmap="Blues", vmin=0)
     ax.set_title(title, pad=4)
-    ax.set_xticks([0, 1], labels=["pred. 0", "pred. 1"])
-    ax.set_yticks([0, 1], labels=["real 0", "real 1"])
+    ax.set_xticks([0, 1], labels=["Pred.\nnegativa", "Pred.\npositiva"])
+    ax.set_yticks([0, 1], labels=["Ref.\nnegativa", "Ref.\npositiva"])
     threshold = matrix.max() * 0.5
     for i in range(2):
         for j in range(2):
@@ -277,9 +300,6 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
     ax.tick_params(length=0)
     for spine in ax.spines.values():
         spine.set_linewidth(0.65)
-    cbar = fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
-    cbar.outline.set_linewidth(0.55)
-    cbar.ax.tick_params(width=0.55, length=2.5, labelsize=7)
     save(fig, path)
 
 

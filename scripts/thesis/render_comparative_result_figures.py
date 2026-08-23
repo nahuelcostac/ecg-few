@@ -6,8 +6,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import io
-import zipfile
 from pathlib import Path
 
 import matplotlib
@@ -18,9 +16,8 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "thesis" / "thesis" / "assets" / "results"
-DEFAULT_RESULTS_DIR = Path.home() / "Downloads" / "vlm-results"
-DEFAULT_ZIP = ROOT / "Archive (10).zip"
+DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_OUTPUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
 MODEL = "google/gemma-4-E4B-it"
 KEEP_CONDITIONS = ("zero_shot", "estandar", "balanced")
@@ -33,7 +30,7 @@ BLACK = "#111111"
 GRAY = "#666666"
 GRID = "#B8B8B8"
 DOMAIN_GAP_YLIMS = {
-    "balanced_accuracy": (0.42, 0.90),
+    "balanced_accuracy": (0.42, 0.93),
     "f1": (0.00, 0.75),
 }
 DOMAIN_GAP_HUCA_COLORS = {
@@ -67,259 +64,163 @@ CONDITION_STYLE = {
 }
 
 
-def cnn_row(
-    k: int,
-    ba: float,
-    ba_std: float,
-    f1: float,
-    f1_std: float,
-    sensitivity: float,
-    specificity: float,
-    **counts: int,
-) -> dict[str, object]:
-    row: dict[str, object] = {
-        "k": k,
-        "balanced_accuracy_mean": ba,
-        "balanced_accuracy_std": ba_std,
-        "f1_mean": f1,
-        "f1_std": f1_std,
-        "sensitivity_mean": sensitivity,
-        "specificity_mean": specificity,
-    }
-    row.update(counts)
-    return row
-
-
-CNN_SIM = [
-    cnn_row(2, 0.625, 0.022, 0.401, 0.023, 0.650, 0.600),
-    cnn_row(4, 0.631, 0.042, 0.407, 0.044, 0.617, 0.646),
-    cnn_row(8, 0.685, 0.023, 0.468, 0.028, 0.683, 0.688),
-    cnn_row(16, 0.773, 0.013, 0.569, 0.021, 0.800, 0.746),
-    cnn_row(32, 0.848, 0.030, 0.673, 0.048, 0.883, 0.812),
-]
-
-CNN_REAL = [
-    cnn_row(2, 0.509, 0.010, 0.484, 0.005, 0.693, 0.325),
-    cnn_row(4, 0.509, 0.023, 0.493, 0.011, 0.730, 0.289),
-    cnn_row(8, 0.490, 0.018, 0.469, 0.011, 0.672, 0.308),
-    cnn_row(
-        16,
-        0.516,
-        0.023,
-        0.480,
-        0.015,
-        0.658,
-        0.375,
-        tn=226,
-        fp=377,
-        fn=119,
-        tp=229,
-    ),
-    cnn_row(32, 0.499, 0.012, 0.466, 0.010, 0.644, 0.355),
-]
-
-
-def domain_row(
-    method: str,
-    k: int,
-    accuracy: float,
-    ba: float,
-    ba_std: float,
-    f1: float,
-    precision: float,
-    sensitivity: float,
-    specificity: float,
-) -> dict[str, object]:
-    return {
-        "method": method,
-        "k": k,
-        "accuracy_mean": accuracy,
-        "balanced_accuracy_mean": ba,
-        "balanced_accuracy_std": ba_std,
-        "f1_mean": f1,
-        "f1_std": "",
-        "precision_mean": precision,
-        "sensitivity_mean": sensitivity,
-        "specificity_mean": specificity,
-    }
-
-
-CNN_DOMAIN_ADAPTATION = [
-    domain_row("baseline", 16, 0.478, 0.516, 0.023, 0.480, 0.379, 0.658, 0.375),
-    domain_row("ssl", 16, 0.429, 0.477, 0.027, 0.458, 0.351, 0.658, 0.297),
-    domain_row("coral", 16, 0.493, 0.524, 0.008, 0.481, 0.384, 0.641, 0.408),
-    domain_row("mmd", 16, 0.484, 0.516, 0.019, 0.474, 0.378, 0.635, 0.396),
-    domain_row("dann", 16, 0.487, 0.515, 0.019, 0.470, 0.378, 0.621, 0.410),
-    domain_row("baseline", 32, 0.461, 0.499, 0.012, 0.466, 0.366, 0.644, 0.355),
-    domain_row("ssl", 32, 0.457, 0.503, 0.014, 0.476, 0.368, 0.672, 0.333),
-    domain_row("coral", 32, 0.499, 0.528, 0.013, 0.480, 0.388, 0.632, 0.423),
-    domain_row("mmd", 32, 0.522, 0.549, 0.029, 0.498, 0.404, 0.649, 0.448),
-    domain_row("dann", 32, 0.473, 0.509, 0.028, 0.472, 0.373, 0.644, 0.375),
-]
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Render thesis comparison figures.")
     parser.add_argument(
-        "--results-dir",
+        "--loocv-dir",
         type=Path,
-        default=DEFAULT_RESULTS_DIR if DEFAULT_RESULTS_DIR.exists() else None,
-        help="Directory containing reports/loocv. Defaults to ~/Downloads/vlm-results if present.",
+        default=DEFAULT_LOOCV_DIR,
+        help="Directory containing the final LOOCV report folders.",
     )
     parser.add_argument(
-        "--zip-path",
+        "--output-dir",
         type=Path,
-        default=DEFAULT_ZIP,
-        help="Fallback archive containing VLM reports.",
+        default=DEFAULT_OUTPUT_DIR,
+        help="Directory where thesis-ready figures are written.",
     )
     parser.add_argument("--model", default=MODEL)
     return parser.parse_args()
 
 
-class CsvSource:
-    def __init__(self, *, report_root: Path | None, zip_path: Path) -> None:
-        self.report_root = report_root
-        self.zip_path = zip_path
-
-    def read_csv(self, member: str) -> list[dict[str, str]]:
-        if self.report_root is not None:
-            path = self.report_root / member
-            if path.exists():
-                return read_path_csv(path)
-        if self.zip_path.exists():
-            return read_zip_csv(self.zip_path, member)
-        raise FileNotFoundError(
-            "No VLM report source found. Provide --results-dir or --zip-path."
-        )
-
-
 def main() -> None:
     args = parse_args()
     set_style()
-    source = CsvSource(report_root=args.results_dir, zip_path=args.zip_path)
+    cnn_sim = read_path_csv(args.loocv_dir / "cnn_simulator_qrs" / "cnn_summary_by_k.csv")
+    cnn_real = read_path_csv(args.loocv_dir / "cnn" / "cnn_summary_by_k.csv")
+    cnn_domain_adaptation = read_path_csv(
+        args.loocv_dir / "cnn_domain_adaptation" / "comparison" / "cnn_domain_adaptation_by_k.csv"
+    )
     sim_vlm = selected_vlm_rows(
-        source.read_csv("reports/loocv/vlm_simulator_qrs/vlm_summary_by_model_condition_k.csv"),
+        read_path_csv(
+            args.loocv_dir / "vlm_simulator_qrs" / "vlm_summary_by_model_condition_k.csv"
+        ),
         model=args.model,
     )
     real_vlm = selected_vlm_rows(
-        source.read_csv("reports/loocv/vlm_real_context/vlm_summary_by_model_condition_k.csv"),
+        read_path_csv(args.loocv_dir / "vlm_real_context" / "vlm_summary_by_model_condition_k.csv"),
         model=args.model,
     )
     huca_sim_context_vlm = selected_vlm_rows(
-        source.read_csv("reports/loocv/vlm/vlm_summary_by_model_condition_k.csv"),
+        read_path_csv(args.loocv_dir / "vlm" / "vlm_summary_by_model_condition_k.csv"),
         model=args.model,
     )
 
     plot_vlm_metric(
-        OUT / "vlm_simulator_qrs_ba_by_k.png",
+        args.output_dir / "vlm_simulator_qrs_ba_by_k.png",
         sim_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         title="VLM/ICL en simulador QRS/ST",
     )
     plot_vlm_metric(
-        OUT / "vlm_simulator_qrs_f1_by_k.png",
+        args.output_dir / "vlm_simulator_qrs_f1_by_k.png",
         sim_vlm,
         metric="f1",
         ylabel="F1",
         title="VLM/ICL en simulador QRS/ST",
     )
     plot_vlm_metric(
-        OUT / "vlm_huca_v1_ba_by_k.png",
+        args.output_dir / "vlm_huca_v1_ba_by_k.png",
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         title="VLM/ICL en V1 real",
     )
     plot_vlm_metric(
-        OUT / "vlm_huca_v1_f1_by_k.png",
+        args.output_dir / "vlm_huca_v1_f1_by_k.png",
         real_vlm,
         metric="f1",
         ylabel="F1",
         title="VLM/ICL en V1 real",
     )
     plot_vlm_metric(
-        OUT / "vlm_huca_synthetic_context_ba_by_k.png",
+        args.output_dir / "vlm_huca_synthetic_context_ba_by_k.png",
         huca_sim_context_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
-        title="Contexto sintético en datos reales",
+        ylabel="Balanced Accuracy (BA)",
+        title="Contexto sintético en la cohorte del HUCA",
     )
     plot_vlm_metric(
-        OUT / "vlm_huca_synthetic_context_f1_by_k.png",
+        args.output_dir / "vlm_huca_synthetic_context_f1_by_k.png",
         huca_sim_context_vlm,
         metric="f1",
         ylabel="F1",
-        title="Contexto sintético en datos reales",
+        title="Contexto sintético en la cohorte del HUCA",
     )
 
     plot_comparison_metric(
-        OUT / "comparison_simulator_ba_by_k.png",
-        CNN_SIM,
+        args.output_dir / "comparison_simulator_ba_by_k.png",
+        cnn_sim,
         sim_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         title="Comparación en simulador QRS/ST",
     )
     plot_comparison_metric(
-        OUT / "comparison_simulator_f1_by_k.png",
-        CNN_SIM,
+        args.output_dir / "comparison_simulator_f1_by_k.png",
+        cnn_sim,
         sim_vlm,
         metric="f1",
         ylabel="F1",
         title="Comparación en simulador QRS/ST",
     )
     plot_comparison_metric(
-        OUT / "comparison_huca_ba_by_k.png",
-        CNN_REAL,
+        args.output_dir / "comparison_huca_ba_by_k.png",
+        cnn_real,
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
-        title="Comparación en datos reales",
+        ylabel="Balanced Accuracy (BA)",
+        title="Comparación en la cohorte del HUCA",
     )
     plot_comparison_metric(
-        OUT / "comparison_huca_f1_by_k.png",
-        CNN_REAL,
+        args.output_dir / "comparison_huca_f1_by_k.png",
+        cnn_real,
         real_vlm,
         metric="f1",
         ylabel="F1",
-        title="Comparación en datos reales",
+        title="Comparación en la cohorte del HUCA",
     )
-    plot_huca_sens_spec_best(OUT / "comparison_huca_sens_spec_best.png", real_vlm)
+    plot_huca_sens_spec_best(
+        args.output_dir / "comparison_huca_sens_spec_best.png", cnn_real, real_vlm
+    )
     plot_cnn_domain_gap_metric(
-        OUT / "domain_gap_cnn_ba_by_k.png",
+        args.output_dir / "domain_gap_cnn_ba_by_k.png",
+        cnn_sim,
+        cnn_real,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_cnn_domain_gap_metric(
-        OUT / "domain_gap_cnn_f1_by_k.png",
+        args.output_dir / "domain_gap_cnn_f1_by_k.png",
+        cnn_sim,
+        cnn_real,
         metric="f1",
         ylabel="F1",
     )
     plot_icl_domain_gap_metric(
-        OUT / "domain_gap_icl_ba_by_k.png",
+        args.output_dir / "domain_gap_icl_ba_by_k.png",
         sim_vlm,
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_icl_domain_gap_metric(
-        OUT / "domain_gap_icl_f1_by_k.png",
+        args.output_dir / "domain_gap_icl_f1_by_k.png",
         sim_vlm,
         real_vlm,
         metric="f1",
         ylabel="F1",
     )
     plot_icl_context_transfer_metric(
-        OUT / "domain_gap_icl_context_ba_by_k.png",
+        args.output_dir / "domain_gap_icl_context_ba_by_k.png",
         sim_vlm,
         real_vlm,
         huca_sim_context_vlm,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_icl_context_transfer_metric(
-        OUT / "domain_gap_icl_context_f1_by_k.png",
+        args.output_dir / "domain_gap_icl_context_f1_by_k.png",
         sim_vlm,
         real_vlm,
         huca_sim_context_vlm,
@@ -327,49 +228,42 @@ def main() -> None:
         ylabel="F1",
     )
     plot_huca_context_sens_spec(
-        OUT / "vlm_huca_context_sens_spec.png",
+        args.output_dir / "vlm_huca_context_sens_spec.png",
         real_vlm,
         huca_sim_context_vlm,
     )
     plot_domain_adaptation_metric(
-        OUT / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
+        args.output_dir / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
+        cnn_domain_adaptation,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
     )
     plot_domain_adaptation_metric(
-        OUT / "cnn_domain_adaptation_f1_by_k.png",
+        args.output_dir / "cnn_domain_adaptation_f1_by_k.png",
+        cnn_domain_adaptation,
         metric="f1",
         ylabel="F1",
     )
     plot_transfer_controls_summary(
-        OUT / "transfer_controls_synthetic_to_real_summary.png",
+        args.output_dir / "transfer_controls_synthetic_to_real_summary.png",
+        cnn_domain_adaptation,
         huca_sim_context_vlm,
     )
 
     plot_confusion(
-        OUT / "vlm_simulator_qrs_estandar_k16_confusion_matrix.png",
-        row_for(sim_vlm, "estandar", 16),
-        title="ICL estándar, K=16",
+        args.output_dir / "vlm_simulator_qrs_balanced_k32_confusion_matrix.png",
+        row_for(sim_vlm, "balanced", 32),
+        title="ICL balanceado, K=32",
     )
     plot_confusion(
-        OUT / "vlm_simulator_qrs_balanced_k8_confusion_matrix.png",
-        row_for(sim_vlm, "balanced", 8),
-        title="ICL balanceado, K=8",
+        args.output_dir / "vlm_huca_v1_balanced_k32_confusion_matrix.png",
+        row_for(real_vlm, "balanced", 32),
+        title="ICL balanceado, K=32",
     )
     plot_confusion(
-        OUT / "vlm_huca_v1_estandar_k16_confusion_matrix.png",
-        row_for(real_vlm, "estandar", 16),
-        title="ICL estándar, K=16",
-    )
-    plot_confusion(
-        OUT / "vlm_huca_v1_balanced_k16_confusion_matrix.png",
-        row_for(real_vlm, "balanced", 16),
-        title="ICL balanceado, K=16",
-    )
-    plot_confusion(
-        OUT / "vlm_huca_synthetic_context_balanced_k32_confusion_matrix.png",
-        row_for(huca_sim_context_vlm, "balanced", 32),
-        title="Contexto sintético, K=32",
+        args.output_dir / "vlm_huca_synthetic_context_balanced_k16_confusion_matrix.png",
+        row_for(huca_sim_context_vlm, "balanced", 16),
+        title="Contexto sintético, K=16",
     )
 
 
@@ -401,18 +295,10 @@ def read_path_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def read_zip_csv(zip_path: Path, member: str) -> list[dict[str, str]]:
-    with zipfile.ZipFile(zip_path) as archive:
-        raw = archive.read(member).decode("utf-8")
-    return list(csv.DictReader(io.StringIO(raw)))
-
-
 def selected_vlm_rows(rows: list[dict[str, str]], *, model: str) -> list[dict[str, str]]:
     rows = normalize_condition_rows(rows)
     selected = [
-        row
-        for row in rows
-        if row.get("model") == model and row.get("condition") in KEEP_CONDITIONS
+        row for row in rows if row.get("model") == model and row.get("condition") in KEEP_CONDITIONS
     ]
     if not selected:
         raise ValueError(f"No VLM rows found for model {model!r}")
@@ -448,6 +334,14 @@ def row_for(rows: list[dict[str, str]], condition: str, k: int) -> dict[str, str
         if row["condition"] == condition and int(row["k"]) == k:
             return row
     raise ValueError(f"Missing condition={condition} k={k}")
+
+
+def best_row(rows: list[dict[str, str]]) -> dict[str, str]:
+    return max(rows, key=lambda row: f(row, "balanced_accuracy_mean"))
+
+
+def best_condition_row(rows: list[dict[str, str]], condition: str) -> dict[str, str]:
+    return best_row(rows_for_condition(rows, condition))
 
 
 def rows_for_condition(rows: list[dict[str, str]], condition: str) -> list[dict[str, str]]:
@@ -548,16 +442,32 @@ def plot_comparison_metric(
     save(fig, path)
 
 
-def plot_huca_sens_spec_best(path: Path, vlm_rows: list[dict[str, str]]) -> None:
-    cnn = next(row for row in CNN_REAL if int(row["k"]) == 16)
+def plot_huca_sens_spec_best(
+    path: Path,
+    cnn_rows: list[dict[str, str]],
+    vlm_rows: list[dict[str, str]],
+) -> None:
+    cnn = best_row(cnn_rows)
     zero_shot = row_for(vlm_rows, "zero_shot", 0)
-    estandar = row_for(vlm_rows, "estandar", 16)
-    balanced = row_for(vlm_rows, "balanced", 16)
+    estandar = best_condition_row(vlm_rows, "estandar")
+    balanced = best_condition_row(vlm_rows, "balanced")
     rows = [
-        ("CNN K=16", f(cnn, "sensitivity_mean"), f(cnn, "specificity_mean")),
+        (
+            f"CNN\nK={cnn['k']}",
+            f(cnn, "sensitivity_mean"),
+            f(cnn, "specificity_mean"),
+        ),
         ("Zero-shot", f(zero_shot, "sensitivity_mean"), f(zero_shot, "specificity_mean")),
-        ("ICL estándar K=16", f(estandar, "sensitivity_mean"), f(estandar, "specificity_mean")),
-        ("ICL bal. K=16", f(balanced, "sensitivity_mean"), f(balanced, "specificity_mean")),
+        (
+            f"ICL estándar\nK={estandar['k']}",
+            f(estandar, "sensitivity_mean"),
+            f(estandar, "specificity_mean"),
+        ),
+        (
+            f"ICL balanceado\nK={balanced['k']}",
+            f(balanced, "sensitivity_mean"),
+            f(balanced, "specificity_mean"),
+        ),
     ]
     labels = [row[0] for row in rows]
     sensitivity = [row[1] for row in rows]
@@ -570,7 +480,7 @@ def plot_huca_sens_spec_best(path: Path, vlm_rows: list[dict[str, str]]) -> None
     ax.bar(x + width / 2, specificity, width, label="Especificidad", color=BLUE)
     ax.set_ylim(0.0, 1.05)
     ax.set_ylabel("Valor")
-    ax.set_xticks(x, labels=labels, rotation=18, ha="right")
+    ax.set_xticks(x, labels=labels, rotation=0, ha="center")
     ax.grid(True, axis="y", color=GRID, linewidth=0.45, alpha=0.85)
     ax.set_axisbelow(True)
     ax.legend(loc="upper right", frameon=True, framealpha=1.0, borderpad=0.25)
@@ -579,12 +489,19 @@ def plot_huca_sens_spec_best(path: Path, vlm_rows: list[dict[str, str]]) -> None
     save(fig, path)
 
 
-def plot_cnn_domain_gap_metric(path: Path, *, metric: str, ylabel: str) -> None:
+def plot_cnn_domain_gap_metric(
+    path: Path,
+    cnn_sim: list[dict[str, str]],
+    cnn_real: list[dict[str, str]],
+    *,
+    metric: str,
+    ylabel: str,
+) -> None:
     fig, ax = plt.subplots(figsize=(3.95, 2.45))
     plot_domain_pair(
         ax,
-        CNN_SIM,
-        CNN_REAL,
+        cnn_sim,
+        cnn_real,
         metric=metric,
         label="CNN",
         color=BLUE,
@@ -645,14 +562,14 @@ def plot_icl_context_transfer_metric(
             (rows_for_condition(sim_vlm, condition), "Simulador", "-", color, 1.0),
             (
                 rows_for_condition(real_vlm, condition),
-                "Real contexto real",
+                "HUCA, contexto HUCA",
                 "--",
                 DOMAIN_GAP_HUCA_COLORS[color],
                 1.0,
             ),
             (
                 rows_for_condition(huca_sim_context_vlm, condition),
-                "Real contexto sintético",
+                "HUCA, contexto sintético",
                 ":",
                 GRAY,
                 1.0,
@@ -694,10 +611,10 @@ def plot_huca_context_sens_spec(
     huca_sim_context_vlm: list[dict[str, str]],
 ) -> None:
     rows = [
-        ("Real estándar K=16", row_for(real_vlm, "estandar", 16)),
-        ("Real bal. K=16", row_for(real_vlm, "balanced", 16)),
-        ("Sint. estándar K=16", row_for(huca_sim_context_vlm, "estandar", 16)),
-        ("Sint. bal. K=32", row_for(huca_sim_context_vlm, "balanced", 32)),
+        ("HUCA estándar K=32", row_for(real_vlm, "estandar", 32)),
+        ("HUCA balanceado K=32", row_for(real_vlm, "balanced", 32)),
+        ("Sintético estándar K=32", row_for(huca_sim_context_vlm, "estandar", 32)),
+        ("Sintético balanceado K=16", row_for(huca_sim_context_vlm, "balanced", 16)),
     ]
     labels = [label for label, _ in rows]
     sensitivity = [f(row, "sensitivity_mean") for _, row in rows]
@@ -719,7 +636,13 @@ def plot_huca_context_sens_spec(
     save(fig, path)
 
 
-def plot_domain_adaptation_metric(path: Path, *, metric: str, ylabel: str) -> None:
+def plot_domain_adaptation_metric(
+    path: Path,
+    domain_rows: list[dict[str, str]],
+    *,
+    metric: str,
+    ylabel: str,
+) -> None:
     fig, ax = plt.subplots(figsize=(4.35, 2.55))
     method_order = ("baseline", "ssl", "coral", "mmd", "dann")
     method_labels = {
@@ -731,7 +654,7 @@ def plot_domain_adaptation_metric(path: Path, *, metric: str, ylabel: str) -> No
     }
     for method in method_order:
         method_rows = sorted(
-            [row for row in CNN_DOMAIN_ADAPTATION if row["method"] == method],
+            [row for row in domain_rows if row["method"] == method],
             key=lambda row: int(row["k"]),
         )
         ax.errorbar(
@@ -763,13 +686,15 @@ def plot_domain_adaptation_metric(path: Path, *, metric: str, ylabel: str) -> No
 
 def plot_transfer_controls_summary(
     path: Path,
+    domain_rows: list[dict[str, str]],
     huca_sim_context_vlm: list[dict[str, str]],
 ) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(7.0, 4.45), sharey="row")
     plot_domain_adaptation_on_axis(
         axes[0, 0],
+        domain_rows,
         metric="balanced_accuracy",
-        ylabel="Exactitud equilibrada",
+        ylabel="Balanced Accuracy (BA)",
         title="CNN con adaptación de dominio",
     )
     plot_vlm_on_axis(
@@ -781,6 +706,7 @@ def plot_transfer_controls_summary(
     )
     plot_domain_adaptation_on_axis(
         axes[1, 0],
+        domain_rows,
         metric="f1",
         ylabel="F1",
         title="CNN con adaptación de dominio",
@@ -801,6 +727,7 @@ def plot_transfer_controls_summary(
 
 def plot_domain_adaptation_on_axis(
     ax: plt.Axes,
+    domain_rows: list[dict[str, str]],
     *,
     metric: str,
     ylabel: str,
@@ -816,7 +743,7 @@ def plot_domain_adaptation_on_axis(
     }
     for method in method_order:
         method_rows = sorted(
-            [row for row in CNN_DOMAIN_ADAPTATION if row["method"] == method],
+            [row for row in domain_rows if row["method"] == method],
             key=lambda row: int(row["k"]),
         )
         ax.errorbar(
@@ -925,8 +852,8 @@ def plot_domain_pair(
     marker: str,
 ) -> None:
     for rows, domain_label, linestyle, domain_color, alpha in (
-        (sim_rows, "sintético", "-", color, 1.0),
-        (real_rows, "datos reales", "--", DOMAIN_GAP_HUCA_COLORS[color], 1.0),
+        (sim_rows, "simulador", "-", color, 1.0),
+        (real_rows, "cohorte del HUCA", "--", DOMAIN_GAP_HUCA_COLORS[color], 1.0),
     ):
         ordered = sorted(rows, key=lambda row: int(row["k"]))
         ax.errorbar(
@@ -941,7 +868,7 @@ def plot_domain_pair(
             capsize=2.2,
             elinewidth=0.65,
             alpha=alpha,
-            label=f"{label} {domain_label}",
+            label=f"{label}, {domain_label}",
         )
 
 
@@ -952,11 +879,11 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
             [int(row["fn"]), int(row["tp"])],
         ]
     )
-    fig, ax = plt.subplots(figsize=(2.45, 2.35))
-    image = ax.imshow(matrix, cmap="Blues", vmin=0)
+    fig, ax = plt.subplots(figsize=(2.55, 2.35))
+    ax.imshow(matrix, cmap="Blues", vmin=0)
     ax.set_title(title, pad=4)
-    ax.set_xticks([0, 1], labels=["pred. 0", "pred. 1"])
-    ax.set_yticks([0, 1], labels=["real 0", "real 1"])
+    ax.set_xticks([0, 1], labels=["Pred.\nnegativa", "Pred.\npositiva"])
+    ax.set_yticks([0, 1], labels=["Ref.\nnegativa", "Ref.\npositiva"])
     threshold = matrix.max() * 0.5
     for i in range(2):
         for j in range(2):
@@ -965,9 +892,6 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
     ax.tick_params(length=0)
     for spine in ax.spines.values():
         spine.set_linewidth(0.65)
-    cbar = fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
-    cbar.outline.set_linewidth(0.55)
-    cbar.ax.tick_params(width=0.55, length=2.5, labelsize=7)
     save(fig, path)
 
 
