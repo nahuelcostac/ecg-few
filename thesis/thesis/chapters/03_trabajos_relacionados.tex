@@ -1,13 +1,9 @@
 \chapter{Antecedentes y estado del arte}
 \label{chap:relacionados}
 
-\section{Alcance de la revisión}
+Este capítulo sitúa la pregunta experimental en relación con la literatura sobre análisis automático de ECG. El recorrido parte de los modelos que trabajan con señales temporales y continúa con los enfoques que emplean el trazado como imagen. A partir de esa base, se revisan la generación de datos sintéticos, los recursos que combinan señal, imagen y texto, los modelos multimodales especializados y el aprendizaje en contexto. El objetivo es establecer qué resultados sustentan el diseño del estudio y qué aspectos siguen sin resolverse cuando solo se dispone de unas pocas decenas de pacientes etiquetados.
 
-La revisión reúne los trabajos necesarios para situar la pregunta experimental del TFG. Se organiza en cinco líneas: diagnóstico automático a partir de señales de ECG, análisis del trazado como imagen, generación de datos sintéticos, modelos multimodales aplicados a imágenes electrocardiográficas y aprendizaje en contexto con demostraciones visuales. Las dos últimas se desarrollan con mayor detalle por su relación directa con los experimentos del proyecto.
-
-Se priorizan artículos revisados por pares, conjuntos de datos con documentación técnica, guías clínicas y documentación oficial de los modelos. Los resultados se interpretan dentro de cada estudio, ya que las cohortes, las etiquetas, las tareas y las métricas no coinciden.
-
-Una Accuracy alta en una tarea binaria no es directamente comparable con el rendimiento de una clasificación multietiqueta. Tampoco equivale evaluar imágenes renderizadas desde señales limpias y fotografías de documentos clínicos. La revisión se utiliza, por tanto, para justificar decisiones de diseño e identificar el hueco metodológico, no para ordenar los métodos mediante una única cifra.
+La revisión se basa principalmente en publicaciones científicas, documentación técnica de los conjuntos de datos, guías clínicas y fuentes oficiales de los modelos. Los estudios se comparan atendiendo a la representación de entrada, el tamaño y el origen de la muestra, el significado de las etiquetas, el esquema de validación y las métricas. Estas diferencias impiden equiparar directamente, por ejemplo, una tarea binaria con una clasificación multietiqueta o imágenes obtenidas de señales limpias con fotografías de documentos clínicos. La síntesis destaca, por ello, las aportaciones y limitaciones relevantes para el protocolo y conduce al hueco de investigación que aborda el TFG.
 
 \section{Aprendizaje profundo sobre señales electrocardiográficas}
 
@@ -19,7 +15,7 @@ Esa escala no está disponible para todas las enfermedades. Reunir millones de r
 
 PTB XL proporcionó un punto de referencia abierto con 21 837 ECG de doce derivaciones y 71 enunciados potencialmente multietiqueta \cite{wagner2020}. Sus particiones recomendadas facilitan comparaciones reproducibles. MIMIC IV ECG amplió la escala hasta aproximadamente 800 000 registros vinculables con información clínica \cite{gow2023}. Ambos recursos son útiles para preentrenamiento y validación, pero pueden contener pocos ejemplos de una condición rara concreta.
 
-Estos trabajos aportan dos referencias para el TFG. Por una parte, una arquitectura supervisada puede aprender morfología electrocardiográfica si dispone de datos adecuados. Por otra, su rendimiento depende de la correspondencia entre el dominio de entrenamiento y la población objetivo. El simulador estudia un régimen de datos escasos y no pretende competir con sistemas entrenados sobre millones de registros.
+Estos trabajos aportan dos referencias para el TFG. Por una parte, una arquitectura supervisada puede aprender morfología electrocardiográfica si dispone de datos adecuados. Por otra, su rendimiento depende de la correspondencia entre el dominio de entrenamiento y la población objetivo.
 
 \section{Análisis directo de imágenes de ECG}
 
@@ -27,7 +23,7 @@ El análisis directo de imágenes resulta pertinente cuando el trazado solo est�
 
 Sangha y colaboradores desarrollaron una CNN multietiqueta a partir de 2 228 236 registros brasileños convertidos en imágenes \cite{sangha2022}. El modelo predijo seis etiquetas clínicas y se evaluó en un conjunto externo alemán y en ECG impresos. Sus resultados muestran que la representación visual puede mantener rendimiento fuera del conjunto de entrenamiento cuando este incorpora escala, diversidad y variaciones de formato.
 
-La principal diferencia con este TFG es la cantidad de datos disponible. Sangha y colaboradores estudian aprendizaje supervisado a gran escala. Aquí se analiza un escenario previo, con pocos pacientes etiquetados, y se compara el entrenamiento de una CNN con el uso de demostraciones en un modelo abierto.
+La principal diferencia con este TFG es la cantidad de datos disponible. Sangha y colaboradores estudian aprendizaje supervisado a gran escala, por lo que sus resultados no resuelven qué rendimiento cabe esperar cuando solo se dispone de unas pocas decenas de pacientes etiquetados.
 
 La imagen también puede convertirse de nuevo en señal. Wu y colaboradores desarrollaron un sistema automático de digitalización y evaluaron la correlación entre la señal reconstruida y la original \cite{wu2022digitization}. La correlación fue alta en formatos favorables y disminuyó cuando las derivaciones se solapaban, lo que muestra que la digitalización introduce errores propios.
 
@@ -41,29 +37,27 @@ Los modelos electrofisiológicos, en cambio, simulan la propagación eléctrica 
 
 Una tercera línea utiliza modelos generativos aprendidos. Los modelos de difusión condicionados pueden producir señales asociadas a enunciados diagnósticos \cite{alcaraz2023}. Ofrecen más flexibilidad que un simulador manual, pero dificultan la relación directa entre cada parámetro y la morfología obtenida. Su evaluación debe considerar la diversidad, la fidelidad clínica y la utilidad en tareas posteriores.
 
-El simulador del proyecto adopta una representación más sencilla. No reproduce el torso, una geometría cardíaca tridimensional ni una distribución clínica completa, sino un latido con tres hallazgos localizados. Esta simplificación reduce el realismo, pero permite auditar cada regla de generación.
+El simulador del proyecto genera una representación más sencilla: un latido con tres hallazgos localizados. Quedan fuera el torso, la geometría cardíaca tridimensional y una distribución clínica completa.
 
-Los datos generados pueden amplificar los supuestos del simulador. Si la variabilidad omite ruido, cambios de escala y formas intermedias, el clasificador aprenderá una frontera más limpia que la presente en la práctica clínica. Por ello, los resultados sintéticos deben contrastarse con una cohorte clínica.
+Los datos generados pueden amplificar los supuestos del simulador. Si la variabilidad omite ruido, cambios de escala y formas intermedias, el clasificador aprenderá una frontera más limpia que la presente en la práctica clínica. Por ello, los resultados sintéticos deben contrastarse con una muestra clínica.
 
 \section{Conjuntos que integran señal, imagen y texto}
 
-Los modelos multimodales requieren datos alineados. Una imagen sin informe permite entrenar un clasificador, pero no relaciona de forma detallada la morfología con el lenguaje. Del mismo modo, un informe sin trazado impide comprobar si la explicación se apoya en evidencia visual.
+Los modelos multimodales requieren datos alineados. Una imagen sin informe permite entrenar un clasificador. La relación detallada entre la morfología y el lenguaje exige disponer también del informe. Del mismo modo, un informe sin trazado impide comprobar si la explicación se apoya en evidencia visual.
 
 MEETI, publicado en 2026 como extensión de MIMIC IV ECG, sincroniza señales, imágenes renderizadas, parámetros por latido e interpretaciones textuales \cite{zhang2026meeti}. Incluye hasta 784 680 registros de 160 597 pacientes. Las imágenes mantienen una escala estándar y las interpretaciones detalladas se generan con un modelo de lenguaje a partir de informes y parámetros.
 
-El recurso facilita el estudio del alineamiento multimodal a gran escala, pero exige distinguir el origen de cada anotación. Parte del texto procede de un modelo y no constituye una nueva valoración clínica independiente. MEETI puede utilizarse para preentrenamiento, recuperación y generación de informes; una evaluación diagnóstica, sin embargo, debe mantener etiquetas y conjuntos de referencia validados.
+El recurso facilita el estudio del alineamiento multimodal a gran escala, pero exige distinguir el origen de cada anotación. Parte del texto procede de un modelo y no constituye una nueva valoración clínica independiente. MEETI puede utilizarse para preentrenamiento, recuperación y generación de informes. Una evaluación diagnóstica, sin embargo, debe mantener etiquetas y conjuntos de referencia validados.
 
 MEETI no se utiliza en los experimentos porque la tarea de esta memoria se limita a un latido sintético y tres hallazgos. El conjunto sí ofrece una posible ampliación hacia doce derivaciones y permitiría comparar imagen, señal y texto sobre los mismos registros.
 
 \section{Modelos multimodales especializados en ECG}
 
-Los modelos generalistas de visión y lenguaje se entrenan principalmente con imágenes naturales, documentos y contenido web. Un ECG presenta una estructura distinta: la información se distribuye entre deflexiones delgadas, relaciones temporales y comparaciones entre derivaciones. Esta distancia de dominio motiva dos aproximaciones. La primera adapta un modelo de gran tamaño al ámbito médico; la segunda utiliza un modelo generalista sin modificar sus pesos. El TFG revisa ambas y evalúa cuantitativamente la segunda.
+Los modelos generalistas de visión y lenguaje se entrenan principalmente con imágenes naturales, documentos y contenido web. Un ECG presenta una estructura distinta: la información se distribuye entre deflexiones delgadas, relaciones temporales y comparaciones entre derivaciones. Esta distancia de dominio motiva dos aproximaciones. La primera adapta un modelo de gran tamaño al ámbito médico. La segunda utiliza un modelo generalista sin modificar sus pesos. El TFG revisa ambas y evalúa cuantitativamente la segunda.
 
 Liu y colaboradores presentaron ECGInstruct, PULSE y ECGBench \cite{liu2026}. ECGInstruct reúne más de un millón de pares de imagen y texto sobre reconocimiento de características, ritmo, morfología y generación de informes. PULSE es un modelo de siete mil millones de parámetros adaptado a ECG. ECGBench evalúa cuatro tareas en nueve conjuntos con imágenes sintéticas y reales.
 
-Los autores informan de que PULSE supera a varios modelos multimodales generalistas en ECGBench \cite{liu2026}, un resultado consistente con el valor de la especialización visual. Sin embargo, PULSE se entrena con una colección masiva de instrucciones y responde a una pregunta distinta. Este TFG evalúa un modelo generalista abierto \emph{sin ajuste} de pesos y con pocos ejemplos de una condición rara como Brugada.
-
-PULSE representa un nivel adicional de especialización. Incorporarlo al protocolo permitiría comparar una CNN supervisada con pocas muestras, un modelo generalista mediante ICL y un modelo multimodal ya adaptado a ECG. Este experimento ayudaría a aislar el efecto de cada nivel de especialización en una tarea de baja prevalencia.
+Los autores informan de que PULSE supera a varios modelos multimodales generalistas en ECGBench \cite{liu2026}, un resultado consistente con el valor de la especialización visual. Sin embargo, PULSE se entrena con una colección masiva de instrucciones y responde a una pregunta distinta. Este TFG evalúa un modelo generalista abierto \emph{sin ajuste} de pesos y con pocos ejemplos de una condición rara como el síndrome de Brugada.
 
 La existencia de un modelo especializado no resuelve todos los escenarios. Puede no cubrir una modalidad infrecuente, una definición local o un nuevo protocolo de anotación. El ICL permite realizar una primera evaluación sin entrenar un modelo específico, aunque sus resultados deben compararse después con métodos especializados cuando estos estén disponibles.
 
@@ -84,7 +78,7 @@ Estudios posteriores han mostrado que la contribución de cada componente de las
 
 Qin y colaboradores estudiaron la selección, el orden y la construcción de los ejemplos \cite{zhang2024mmicl}. Sus resultados indican que la recuperación multimodal, la posición de la instrucción y la diversidad de las demostraciones afectan al rendimiento. Por tanto, \(K\) no describe por sí solo la información del contexto: dos selecciones con el mismo número de ejemplos pueden producir resultados distintos.
 
-El protocolo repite cada valor positivo de \(K\) con tres semillas para estimar la variabilidad asociada a la selección. Además, distingue zero-shot, ICL estándar e ICL balanceado. Esta comparación permite valorar si las demostraciones modifican el rendimiento y cómo influye su composición de clases en la sensibilidad y la especificidad.
+Estas observaciones aconsejan controlar y documentar la selección de las demostraciones. Informar solo del número de ejemplos ocultaría variaciones debidas a su composición, orden o relación con la consulta.
 
 Aplicar ICL a ECG añade una dificultad de dominio. El modelo debe interpretar deflexiones de pocos milímetros, elevaciones del segmento ST y relaciones temporales entre ondas, en lugar de los objetos habituales de los conjuntos de imágenes naturales. No puede presuponerse que una representación preentrenada con fotografías y documentos capture estas diferencias. El trabajo evalúa esta cuestión sobre imágenes de un solo latido y una condición rara.
 
@@ -100,14 +94,10 @@ Gemma 4 es la familia abierta y multimodal elegida para la evaluación cuantitat
 
 \section{Hueco de investigación}
 
-La literatura revisada muestra que el ECG puede analizarse como señal o como imagen cuando existen suficientes datos etiquetados. Los resultados, sin embargo, no son directamente comparables por las diferencias de tarea, cohorte y métrica. Tampoco representan el escenario de este TFG, limitado a unas pocas decenas de ejemplos de una condición de baja prevalencia.
+La literatura revisada muestra que el ECG puede analizarse como señal o como imagen cuando existen suficientes datos etiquetados. Los resultados, sin embargo, no son directamente comparables por las diferencias de tarea, conjunto de datos y métrica. Tampoco representan el escenario de este TFG, limitado a unas pocas decenas de ejemplos de una condición de baja prevalencia.
 
-La CNN proporciona la referencia supervisada para este escenario. Permite medir el rendimiento con un \(K\) reducido y comprobar qué se conserva al transferir una regla sintética al dominio real. Su función no es demostrar capacidad diagnóstica, sino caracterizar las limitaciones del entrenamiento específico cuando los datos son escasos.
+En la literatura revisada no se ha identificado una comparación directa que mantenga el mismo número de imágenes de ECG para contrastar aprendizaje supervisado e ICL en una condición de baja prevalencia. Ribeiro et al. \cite{ribeiro2020} y Sangha et al. \cite{sangha2022} estudian entrenamiento a gran escala. Alayrac et al. \cite{alayrac2022}, Chen et al. \cite{chen2024} y Qin et al. \cite{zhang2024mmicl} analizan ICL multimodal sobre otras tareas. Liu et al. \cite{liu2026} especializan un modelo mediante más de un millón de instrucciones.
 
-El VLM ofrece una forma distinta de utilizar los mismos datos. En lugar de actualizar sus pesos, recibe los \(K\) ejemplos como demostraciones dentro de la ventana de contexto. Así se evita un ciclo de entrenamiento específico, aunque el resultado sigue dependiendo de la selección y del orden de los ejemplos. El experimento comprueba si las representaciones adquiridas durante el preentrenamiento aportan alguna ventaja en este régimen.
+El hueco de investigación comprende también la transferencia entre dominios. Los trabajos disponibles no establecen si ejemplos sintéticos con etiquetas morfológicas pueden apoyar una referencia clínica distinta, ni si un contexto formado por pacientes de la población objetivo cambia el comportamiento de un VLM generalista. El diseño de esta memoria separa ambas preguntas mediante una evaluación controlada en el simulador, una transferencia sintético-real y una evaluación con demostraciones clínicas locales.
 
-En la literatura revisada no se ha identificado una comparación directa con el diseño de este TFG. La propuesta utiliza el mismo \(K\) de imágenes de ECG de una condición rara para entrenar una CNN o construir el contexto de un VLM abierto. Ribeiro et al. \cite{ribeiro2020} y Sangha et al. \cite{sangha2022} estudian entrenamiento supervisado a gran escala. Alayrac et al. \cite{alayrac2022}, Chen et al. \cite{chen2024} y Qin et al. \cite{zhang2024mmicl} analizan ICL multimodal sobre otras tareas. Liu et al. \cite{liu2026} especializan un modelo con más de un millón de instrucciones. Estos trabajos aportan las referencias de cada enfoque, pero no evalúan la comparación con el mismo \(K\) en este escenario.
-
-El diseño experimental ofrece el mismo número de ejemplos a ambos enfoques. La CNN emplea las \(K\) muestras para actualizar sus pesos y Gemma~4 las incorpora al contexto de inferencia. El simulador proporciona primero una tarea definida por reglas antes de introducir la variabilidad del dominio clínico.
-
-La contribución metodológica no consiste en una nueva arquitectura ni en un nuevo modelo entrenado, sino en comparar dos usos de los mismos ejemplos. La CNN caracteriza el entrenamiento de un modelo visual específico con pocos datos y su transferencia al dominio real. El VLM permite comprobar, con el mismo \(K\), cómo cambian la sensibilidad, la especificidad y el coste de inferencia cuando los ejemplos se utilizan como contexto.
+La principal contribución metodológica es un protocolo común y trazable para esas tres etapas. Esta organización permite analizar la pérdida de rendimiento según el cambio de dominio y el origen de los ejemplos.

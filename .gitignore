@@ -19,16 +19,13 @@ reports/**
 !reports/
 !reports/.gitkeep
 !reports/loocv/
-!reports/loocv/**/
-!reports/loocv/README.md
-!reports/loocv/**/cnn_summary_by_k.csv
-!reports/loocv/**/cnn_simulated_vs_real_by_k.csv
-!reports/loocv/**/cnn_domain_adaptation_by_k.csv
-!reports/loocv/**/vlm_summary_by_k.csv
-!reports/loocv/**/vlm_summary_by_model_condition_k.csv
-!reports/loocv/**/vlm_setup_validation.json
+!reports/loocv/**
 notebooks/
-outputs/
+outputs/**
+!outputs/
+!outputs/final_results_tfg/
+!outputs/final_results_tfg/README.md
+!outputs/final_results_tfg/SOURCE.sha256
 tmp/
 
 # Generated review renders; keep only the final deliverable.
@@ -39,7 +36,6 @@ output/**
 # Local task-board/tooling files for this workspace
 .obsidian/
 .codex
-AGENTS.md
 CLAUDE.md
 Project.canvas
 RULES.md

@@ -3,15 +3,15 @@
 
 \section{Aspectos éticos}
 
-El estudio es retrospectivo y metodológico. Compara formas de aprender con pocas imágenes de ECG etiquetadas, sin automatizar decisiones asistenciales ni sustituir la valoración clínica. Sus predicciones solo se interpretan como señales experimentales de priorización; no constituyen un diagnóstico, un descarte de enfermedad o una recomendación terapéutica.
+El estudio es retrospectivo y metodológico. Compara formas de aprender con pocas imágenes de ECG etiquetadas, sin automatizar decisiones asistenciales ni sustituir la valoración clínica. Sus predicciones solo se interpretan como señales experimentales de priorización. No constituyen un diagnóstico, un descarte de enfermedad o una recomendación terapéutica.
 
-La principal precaución ética consiste en no extender los resultados más allá del diseño. La valoración del síndrome de Brugada requiere especialistas, contexto clínico y, en pacientes seleccionados, pruebas complementarias. Las métricas describen únicamente el comportamiento de los modelos con los datos y protocolos utilizados.
+La principal precaución ética exige limitar los resultados al diseño evaluado. La valoración del síndrome de Brugada requiere especialistas, contexto clínico y, en pacientes seleccionados, pruebas complementarias. Las métricas describen únicamente el comportamiento de los modelos con los datos y protocolos utilizados.
 
-Esta distinción es especialmente importante para el VLM. El cambio de una predicción al introducir demostraciones no equivale a competencia clínica autónoma. La mejora frente al zero-shot caracteriza la adaptación al contexto dentro del experimento y no autoriza un uso sin revisión profesional.
+Esta distinción es especialmente importante para el VLM. La mejora frente al zero-shot caracteriza la adaptación al contexto dentro del experimento. Cualquier uso requiere revisión profesional.
 
-La adaptación de dominio de la CNN exige la misma cautela. Las mejoras observadas al incorporar imágenes del HUCA sin etiquetas morfológicas no constituyen una validación clínica. Solo describen una reducción parcial de la diferencia entre las representaciones sintéticas y reales en algunas configuraciones.
+La adaptación de dominio de la CNN exige la misma cautela. Las mejoras observadas al incorporar imágenes del HUCA sin etiquetas morfológicas describen una reducción parcial de la diferencia entre las representaciones sintéticas y reales en algunas configuraciones. Su alcance permanece restringido al experimento.
 
-También existe riesgo de sesgo de selección. La cohorte del HUCA procede de un único recurso y contiene 116 referencias positivas en el subconjunto procesado. La falta de análisis por subgrupos no implica que el rendimiento sea uniforme, sino que el tamaño disponible no permite estimarlo con precisión. Cualquier extensión clínica requeriría validación externa, evaluación prospectiva y supervisión profesional.
+También existe riesgo de sesgo de selección. La muestra del HUCA procede de un único recurso y contiene 116 referencias positivas en el subconjunto procesado. El tamaño disponible impide estimar con precisión el rendimiento por subgrupos. Cualquier extensión clínica requeriría validación externa, evaluación prospectiva y supervisión profesional.
 
 \section{Protección de datos}
 
@@ -19,4 +19,4 @@ El artículo 9 del Reglamento General de Protección de Datos considera los dato
 
 En España, la Ley Orgánica 3/2018 completa este marco e incorpora garantías para el tratamiento con fines de investigación, en particular cuando se emplean datos seudonimizados \cite{lopdgdd}. La Ley 14/2007 de Investigación biomédica añade principios de confidencialidad, supervisión ética y protección de las personas participantes \cite{ley142007}.
 
-Brugada HUCA se distribuye sin información identificativa y declara una anonimización mediante Safe Harbor \cite{costacortez2026brugada}. Aun así, las imágenes derivadas de ECG se tratan con prudencia: se conservan solo los campos necesarios, se excluyen identificadores directos de los materiales de difusión y los datos permanecen en entornos protegidos. La incorporación de información adicional no anónima exigiría revisar la base jurídica y valorar una evaluación de impacto antes del tratamiento.
+El recurso Brugada-HUCA se distribuye sin información identificativa y declara una anonimización mediante Safe Harbor \cite{costacortez2026brugada}. Aun así, las imágenes derivadas de ECG se tratan con prudencia: se conservan solo los campos necesarios, se excluyen identificadores directos de los materiales de difusión y los datos permanecen en entornos protegidos. La incorporación de información adicional no anónima exigiría revisar la base jurídica y valorar una evaluación de impacto antes del tratamiento.

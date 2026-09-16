@@ -1,11 +1,11 @@
-\section{Cohorte del HUCA}
+\section{Muestra clínica del HUCA}
 \label{chap:comparacion_real}
 
-La evaluación sobre la cohorte del HUCA introduce dos cambios respecto al simulador: las imágenes proceden de ECG clínicos y la referencia deja de ser una regla morfológica explícita. Para separar ambos efectos, el análisis distingue la transferencia desde el simulador del uso de demostraciones tomadas de la propia cohorte.
+La evaluación sobre la muestra clínica del HUCA introduce dos cambios respecto al simulador: las imágenes proceden de ECG clínicos y la referencia deja de ser una regla morfológica explícita. Para separar ambos efectos, el análisis distingue la transferencia desde el simulador del uso de demostraciones tomadas de la propia muestra.
 
-Primero se describe la cohorte del Hospital Universitario Central de Asturias (HUCA), incluida en el recurso Brugada-HUCA \cite{costacortez2026brugada}. Después se estudian la CNN con adaptación de dominio y Gemma~4 con contexto sintético. La comparación principal utiliza, por último, demostraciones de la propia cohorte del HUCA.
+Primero se describe el conjunto del Hospital Universitario Central de Asturias (HUCA), incluido en el recurso Brugada-HUCA \cite{costacortez2026brugada}. Después se estudian la CNN con adaptación de dominio y Gemma~4 con contexto sintético. La comparación principal utiliza, por último, demostraciones de la propia muestra del HUCA.
 
-\subsection{Cohorte y unidad experimental}
+\subsection{Muestra y unidad experimental}
 
 La campaña final parte de 363 pacientes y excluye 46 registros cuyo patrón basal es distinto de cero. Quedan 317 pacientes: 116 con referencia positiva y 201 con referencia negativa. Se genera una única imagen V1 por paciente y cada uno actúa como muestra de prueba en uno de los 317 pliegues LOOCV.
 
@@ -21,7 +21,7 @@ La campaña final parte de 363 pacientes y excluye 46 registros cuyo patrón bas
     Total evaluado & 317 & 317 \\
     \bottomrule
   \end{tabular}
-  \caption{Composición de la cohorte del HUCA utilizada en la evaluación.}
+  \caption{Composición de la muestra del HUCA utilizada en la evaluación.}
   \label{tab:huca_datos_finales}
 \end{table}
 
@@ -34,14 +34,14 @@ El preprocesamiento selecciona V1, detecta un latido central y recorta una venta
   \label{fig:huca_preprocesado}
 \end{figure}
 
-La variable disponible no equivale a las tres etiquetas morfológicas del simulador. La tarea real utiliza la referencia binaria por paciente almacenada en \texttt{clinical\_brugada}, por lo que las conclusiones se limitan a priorización para revisión especializada. Su distribución tampoco coincide con la documentación de Brugada-HUCA v1.0.0, que recoge 76 registros Brugada y 287 controles antes del procesamiento \cite{costacortez2026brugada}. Como el paquete final no contiene el manifiesto intermedio que explica el cambio, las métricas se atribuyen al subconjunto procesado de la campaña. Esta carencia se mantiene como una limitación de reproducibilidad.
+La variable disponible no equivale a las tres etiquetas morfológicas del simulador. La tarea real utiliza la referencia binaria por paciente almacenada en \texttt{clinical\_brugada}, por lo que las conclusiones se limitan a priorización para revisión especializada. Su distribución tampoco coincide con la documentación de Brugada-HUCA v1.0.0, que recoge 76 registros asociados al síndrome de Brugada y 287 registros normales antes del procesamiento \cite{costacortez2026brugada}. Como el paquete final no contiene el manifiesto intermedio que explica el cambio, las métricas se atribuyen al subconjunto procesado de la campaña. Esta carencia se mantiene como una limitación de reproducibilidad.
 
-La CNN no se entrena directamente con la cohorte del HUCA porque su cabeza multietiqueta requiere anotaciones de RBBB, elevación del ST e inversión de T que no están disponibles. Su evaluación mide una transferencia desde la regla sintética. Gemma~4, en cambio, puede incorporar la referencia binaria mediante demostraciones sin modificar sus pesos. La Figura~\ref{fig:synthetic_real_comparison} sitúa ambas estrategias entre los dos dominios.
+La incompatibilidad entre las etiquetas impide una comparación real-real con la arquitectura CNN definida. En consecuencia, sus métricas sobre el HUCA describen transferencia desde el simulador, mientras que el análisis con demostraciones clínicas caracteriza una adaptación local de Gemma~4. La Figura~\ref{fig:synthetic_real_comparison} sitúa ambas evaluaciones entre los dos dominios.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.94\textwidth]{results/fig_synthetic_real_comparison.drawio.png}
-  \caption{Relación entre el dominio sintético, la cohorte del HUCA y las dos estrategias de adaptación evaluadas.}
+  \caption{Relación entre el dominio sintético, el conjunto clínico del HUCA y las dos estrategias de adaptación evaluadas.}
   \label{fig:synthetic_real_comparison}
 \end{figure}
 
@@ -51,9 +51,9 @@ Los dos análisis siguientes mantienen el simulador como única fuente de etique
 
 \subsubsection{CNN y adaptación de dominio}
 
-La CNN base obtiene su mejor resultado real en \(K=4\), con una BA de \(0,551 \pm 0,034\). La curva no reproduce el crecimiento observado en el simulador: pasa de 0,531 en \(K=2\) a 0,551 en \(K=4\), pero desciende hasta 0,498 en \(K=32\). Aumentar los ejemplos sintéticos mejora el ajuste a la regla de origen, pero no se asocia aquí con una mayor concordancia con la referencia clínica.
+La CNN base obtiene su mejor resultado real en \(K=4\), con una BA de \(0,551 \pm 0,034\). La curva difiere del crecimiento observado en el simulador: pasa de 0,531 en \(K=2\) a 0,551 en \(K=4\) y después desciende hasta 0,498 en \(K=32\). Aumentar los ejemplos sintéticos mejora el ajuste a la regla de origen. En estos datos, la concordancia con la referencia clínica no aumenta.
 
-La adaptación de dominio se evaluó en \(K=16\) y \(K=32\). MMD eleva la BA de 0,498 a 0,546 en \(K=32\), mientras que CORAL pasa de 0,520 a 0,545 en \(K=16\). Ninguno supera el 0,551 de la CNN base con \(K=4\), y las comparaciones carecen de contraste inferencial. Los métodos corrigen parte de la caída en configuraciones concretas, pero no eliminan la discrepancia entre la regla sintética y la referencia clínica.
+La adaptación de dominio se evaluó en \(K=16\) y \(K=32\). MMD eleva la BA de 0,498 a 0,546 en \(K=32\), mientras que CORAL pasa de 0,520 a 0,545 en \(K=16\). Ninguno supera el 0,551 de la CNN base con \(K=4\), y las comparaciones carecen de contraste inferencial. Los métodos corrigen parte de la caída en configuraciones concretas. La discrepancia entre la regla sintética y la referencia clínica persiste.
 
 \begin{table}[H]
   \centering
@@ -67,30 +67,30 @@ La adaptación de dominio se evaluó en \(K=16\) y \(K=32\). MMD eleva la BA de 
     MMD & 32 & \(0,546 \pm 0,011\) & 0,502 & 0,678 & 0,413 \\
     \bottomrule
   \end{tabularx}
-  \caption{Puntos principales de la CNN sobre la cohorte del HUCA. CORAL y MMD se comparan con sus bases del mismo valor de \(K\).}
+  \caption{Puntos principales de la CNN sobre los datos del HUCA. CORAL y MMD se comparan con sus bases del mismo valor de \(K\).}
   \label{tab:domain_adaptation_summary}
 \end{table}
 
 \subsubsection{VLM con contexto sintético}
 
-En el análisis complementario, las demostraciones proceden del simulador y las consultas, de la cohorte del HUCA. El mejor punto corresponde al ICL balanceado con \(K=16\): BA de \(0,514 \pm 0,008\), sensibilidad de 0,063 y especificidad de 0,965. El modelo predice casi siempre la clase negativa, por lo que el contexto sintético apenas modifica la decisión inicial. La Figura~\ref{fig:transfer_summary} reúne las dos pruebas de transferencia.
+En el análisis complementario, las demostraciones proceden del simulador y las consultas, de la muestra clínica del HUCA. El mejor punto corresponde al ICL balanceado con \(K=16\): BA de \(0,514 \pm 0,008\), sensibilidad de 0,063 y especificidad de 0,965. El modelo predice casi siempre la clase negativa, por lo que el contexto sintético apenas modifica la decisión inicial. La Figura~\ref{fig:transfer_summary} reúne las dos pruebas de transferencia.
 
-Al aumentar el contexto balanceado de \(K=16\) a \(K=32\), la BA pasa de 0,514 a 0,512 y la \textit{Accuracy}, de 0,635 a 0,630. Al mismo tiempo, la sensibilidad sube de 0,063 a 0,072 y la especificidad baja de 0,965 a 0,952. La diferencia de BA es de solo 0,002 y queda por debajo de la desviación entre semillas de ambos puntos. Se interpreta como una meseta con otro equilibrio de errores, no como evidencia de un perjuicio causado por añadir demostraciones.
+Al aumentar el contexto balanceado de \(K=16\) a \(K=32\), la BA pasa de 0,514 a 0,512 y la \textit{Accuracy}, de 0,635 a 0,630. Al mismo tiempo, la sensibilidad sube de 0,063 a 0,072 y la especificidad baja de 0,965 a 0,952. La diferencia de BA es de solo 0,002 y queda por debajo de la desviación entre semillas de ambos puntos. Los valores describen una meseta con otro equilibrio de errores.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.95\textwidth]{results/transfer_controls_synthetic_to_real_summary.png}
-  \caption{Transferencia sintético-real. A la izquierda se comparan las variantes de adaptación de la CNN; a la derecha, Gemma~4 con demostraciones sintéticas.}
+  \caption{Transferencia sintético-real. A la izquierda se comparan las variantes de adaptación de la CNN. A la derecha se muestra Gemma~4 con demostraciones sintéticas.}
   \label{fig:transfer_summary}
 \end{figure}
 
 \subsection{Contexto clínico y comparación principal}
 
-La comparación principal toma las demostraciones de la propia cohorte, siempre dentro de cada pliegue. En zero-shot, Gemma~4 no recupera ningún positivo y obtiene una BA de 0,499. Esta predicción prácticamente monoclase describe el comportamiento del modelo sin ejemplos locales; no permite concluir que el ECG carezca de información relevante.
+La comparación principal toma las demostraciones de la propia muestra, siempre dentro de cada pliegue. En zero-shot, Gemma~4 no recupera ningún positivo y obtiene una BA de 0,499. Esta predicción prácticamente monoclase describe el comportamiento del modelo sin ejemplos locales. No permite concluir que el ECG carezca de información relevante.
 
-Las demostraciones reales cambian la distribución de las predicciones. Con \(K=2\) y \(K=4\), el ICL estándar obtiene una BA ligeramente mayor que el balanceado: 0,492 frente a 0,472 y 0,503 frente a 0,497, respectivamente. Este resultado no es contradictorio con el muestreo, porque la selección estándar ya contiene al menos un ejemplo de cada clase; el balance estricto controla la proporción, pero no la representatividad de cada demostración. Además, las diferencias son pequeñas y no se sometieron a un contraste inferencial.
+Las demostraciones reales cambian la distribución de las predicciones. Con \(K=2\) y \(K=4\), el ICL estándar obtiene una BA ligeramente mayor que el balanceado: 0,492 frente a 0,472 y 0,503 frente a 0,497, respectivamente. Este resultado no es contradictorio con el muestreo, porque la selección estándar ya contiene al menos un ejemplo de cada clase. El balance estricto controla la proporción. La representatividad de cada demostración permanece sujeta al muestreo. Además, las diferencias son pequeñas y no se sometieron a un contraste inferencial.
 
-A partir de \(K=8\), el contexto balanceado supera al estándar en los tres valores evaluados. Ambas variantes alcanzan su máximo en \(K=32\): \(0,743 \pm 0,011\) para el ICL estándar y \(0,761 \pm 0,011\) para el balanceado. Este último obtiene una sensibilidad de 0,741 y una especificidad de 0,781. La mejora frente al zero-shot aparece, por tanto, cuando el contexto contiene suficientes ejemplos locales, no por el mero hecho de incluir una demostración de cada clase.
+A partir de \(K=8\), el contexto balanceado supera al estándar en los tres valores evaluados. Ambas variantes alcanzan su máximo en \(K=32\): \(0,743 \pm 0,011\) para el ICL estándar y \(0,761 \pm 0,011\) para el balanceado. Este último obtiene una sensibilidad de 0,741 y una especificidad de 0,781. La mejora frente al zero-shot aparece, por tanto, cuando el contexto contiene suficientes ejemplos locales. Una demostración de cada clase resulta insuficiente.
 
 \begin{table}[H]
   \centering
@@ -105,7 +105,7 @@ A partir de \(K=8\), el contexto balanceado supera al estándar en los tres valo
     Gemma~4 ICL balanceado & 32 & \(0,761 \pm 0,011\) & 0,699 & 0,741 & 0,781 \\
     \bottomrule
   \end{tabularx}
-  \caption{Mejores resultados sobre los ECG del HUCA. Las demostraciones de Gemma~4 proceden de la propia cohorte.}
+  \caption{Mejores resultados sobre los ECG del HUCA. Las demostraciones de Gemma~4 proceden de la propia muestra.}
   \label{tab:comparacion_real}
 \end{table}
 
@@ -145,12 +145,12 @@ La Figura~\ref{fig:comparacion_huca_curvas} muestra la evolución de la CNN y de
   \label{fig:huca_confusions}
 \end{figure}
 
-Las matrices de la Figura~\ref{fig:huca_confusions} muestran el cambio respecto al zero-shot. Con contexto clínico, Gemma~4 recupera más positivos sin clasificar como positivos a la mayoría de los controles. En su mejor punto supera numéricamente a la CNN transferida en BA, F1, sensibilidad y especificidad. El origen de las demostraciones resulta decisivo en este experimento: con ejemplos sintéticos, el mismo modelo permanece próximo a una decisión constante. El resultado muestra una adaptación local dentro de esta cohorte, pero no establece validez asistencial ni permite aislar qué propiedad concreta de las demostraciones causa la mejora. La Figura~\ref{fig:comparacion_huca_sens_spec} detalla la sensibilidad y la especificidad.
+Las matrices de la Figura~\ref{fig:huca_confusions} muestran el cambio respecto al zero-shot. Con contexto clínico, Gemma~4 recupera más positivos sin clasificar como positivos a la mayoría de los pacientes normales. En su mejor punto supera numéricamente a la CNN transferida en BA, F1, sensibilidad y especificidad. El origen de las demostraciones resulta decisivo en este experimento: con ejemplos sintéticos, el mismo modelo permanece próximo a una decisión constante. El resultado muestra una adaptación local dentro de este conjunto clínico. La validez asistencial y la propiedad concreta de las demostraciones que causa la mejora quedan por determinar. La Figura~\ref{fig:comparacion_huca_sens_spec} detalla la sensibilidad y la especificidad.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.60\textwidth]{results/comparison_huca_sens_spec_best.png}
-  \caption{Sensibilidad y especificidad de los mejores puntos sobre la cohorte del HUCA.}
+  \caption{Sensibilidad y especificidad de los mejores puntos sobre la muestra del HUCA.}
   \label{fig:comparacion_huca_sens_spec}
 \end{figure}
 
@@ -175,6 +175,6 @@ La brecha entre dominios aparece en los dos enfoques. La CNN alcanza una BA de 0
   \label{fig:domain_gap_summary}
 \end{figure}
 
-El simulador ofrece una tarea más separable para ambos enfoques, pero esa ventaja no se conserva al cambiar de imágenes y de referencia. La variabilidad de adquisición, las diferencias de escala, la heterogeneidad fenotípica y la información clínica ausente en una ventana V1 son explicaciones plausibles, no mecanismos demostrados por estos experimentos. Los resultados delimitan el simulador como banco de pruebas y señalan la necesidad de anotaciones morfológicas clínicas y evaluación multicéntrica.
+El simulador ofrece una tarea más separable para ambos enfoques, pero esa ventaja no se conserva al cambiar de imágenes y de referencia. Los experimentos permiten proponer como explicaciones plausibles la variabilidad de adquisición, las diferencias de escala, la heterogeneidad fenotípica y la información clínica ausente en una ventana V1. Los resultados delimitan el simulador como banco de pruebas y señalan la necesidad de anotaciones morfológicas clínicas y evaluación multicéntrica.
 
-La comparación permite localizar dónde se pierde rendimiento y cuánto se recupera con adaptación de dominio o con demostraciones locales. Con los datos disponibles, ambos modelos siguen siendo prototipos de investigación y no herramientas de diagnóstico o triaje autónomo.
+La comparación permite localizar dónde se pierde rendimiento y cuánto se recupera con adaptación de dominio o con demostraciones locales. Con los datos disponibles, ambos modelos mantienen su carácter de prototipos de investigación.

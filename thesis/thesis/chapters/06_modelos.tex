@@ -1,52 +1,13 @@
 \chapter{Dos enfoques de modelado}
 \label{chap:modelos}
 
-Este capítulo describe dos formas de utilizar un conjunto reducido de imágenes etiquetadas. La primera entrena un modelo visual y actualiza sus pesos con los pacientes disponibles. La segunda incorpora esos ejemplos al contexto de un modelo de visión y lenguaje, que realiza la predicción sin modificar sus parámetros.
-
-La comparación no se limita, por tanto, a dos arquitecturas. También enfrenta dos regímenes de uso de los datos. En la CNN, \(K\) es el número de pacientes de entrenamiento de cada pliegue; en el VLM, indica cuántas demostraciones preceden a la imagen de consulta. Se compara así el entrenamiento supervisado con la inferencia condicionada por contexto.
+Este capítulo especifica la arquitectura, el entrenamiento, la construcción del prompt y las condiciones de inferencia de los modelos evaluados. El protocolo común y la definición de \(K\) se establecieron en el capítulo~\ref{chap:diseno}.
 
 \section{Entrada y unidad de análisis}
 
 Todos los modelos reciben el ECG como imagen. La CNN redimensiona cada entrada a 224 por 224 píxeles y la procesa en formato RGB. En el VLM, la imagen forma parte de un mensaje multimodal que contiene instrucciones textuales y, cuando corresponde, demostraciones etiquetadas.
 
-La evaluación utiliza exclusivamente V1 y produce una decisión por paciente. Como cada persona aporta una sola imagen, no se promedian ni se someten a voto predicciones de varias derivaciones. La unidad de análisis coincide de este modo con la unidad empleada para separar los datos.
-
-\section{Enfoque supervisado con CNN}
-
-\subsection{Qué aprende}
-
-La CNN transforma la imagen en probabilidades asociadas a los hallazgos de interés. Durante el entrenamiento, las etiquetas permiten calcular una pérdida con la que se actualizan los pesos. Al terminar este proceso, los parámetros quedan fijados y cada nueva imagen se evalúa mediante una inferencia directa.
-
-Cuando los ejemplos son representativos, este enfoque puede adaptar sus rasgos visuales a la tarea y ofrece un coste reducido por predicción una vez entrenado. Estas propiedades lo convierten en una referencia útil para estudiar un posible despliegue local, aunque no bastan por sí solas para justificar su uso clínico.
-
-\subsection{Riesgos con pocos ejemplos}
-
-Con valores pequeños de \(K\), la red puede ajustarse en exceso a los pacientes seleccionados en cada pliegue. Sustituir unos pocos ejemplos puede entonces desplazar la frontera de decisión. También existe el riesgo de que aprenda atajos ajenos a la morfología, como diferencias en la escala, el grosor del trazo, el recorte o la cuadrícula.
-
-Por este motivo, la CNN se utiliza como referencia supervisada y no como solución clínica. Su función es medir el rendimiento de un entrenamiento visual convencional cuando la cantidad de datos es limitada.
-
-\section{VLM con ICL}
-
-\subsection{Qué cambia frente al entrenamiento}
-
-En el VLM, los ejemplos etiquetados se incluyen en el prompt como demostraciones y no modifican los pesos. El modelo recibe después la imagen objetivo y genera una respuesta en el formato especificado. Este aprendizaje en contexto ofrece una forma distinta de aprovechar pocos datos, pero no se asume que sustituya al entrenamiento supervisado.
-
-La posibilidad resulta de interés en una enfermedad rara, donde reunir casos positivos confirmados es costoso. El experimento estudia si un modelo generalista puede orientar su decisión con pocas demostraciones. Para ello se utiliza Gemma~4, servido mediante vLLM en infraestructura universitaria bajo control propio.
-
-\subsection{Tres condiciones de consulta}
-
-El enfoque multimodal se evalúa en tres condiciones. Zero-shot no incluye demostraciones locales. Para \(K\geq2\), el ICL estándar incorpora al menos un ejemplo de cada clase y completa el contexto de forma seudoaleatoria. El ICL balanceado intenta repartir las \(K\) demostraciones por igual entre positivos y negativos. La sección~\ref{sec:condiciones_vlm} detalla ambas estrategias.
-
-La CNN recibe \(K\) pacientes para entrenar, mientras que el VLM emplea \(K\) pacientes para construir el contexto. En ambos casos se respeta la separación por paciente y la muestra reservada queda fuera de la selección.
-
-\section{Comparación entre enfoques}
-\label{sec:dos_formas_K}
-
-En la CNN, las imágenes de los \(K\) pacientes intervienen en la pérdida y modifican los pesos. Cuando se evalúa la transferencia al HUCA, estos pacientes proceden del simulador, ya que la cohorte clínica no contiene las etiquetas morfológicas requeridas por la cabeza multietiqueta. En el VLM, los \(K\) pacientes se convierten en demostraciones dentro del prompt. Los parámetros permanecen fijos, aunque la salida puede depender de la selección y del orden de los ejemplos, así como de la capacidad de la ventana de contexto.
-
-La evaluación estudia cómo evoluciona cada régimen al aumentar el número de ejemplos. Primero se analiza el simulador, donde la etiqueta está definida por reglas, y después la cohorte del HUCA, cuya referencia clínica y variabilidad visual plantean una tarea diferente.
-
-La sección~\ref{chap:cnn_enfoque} describe la CNN y su protocolo de entrenamiento. A continuación, la sección~\ref{chap:vlm} presenta el VLM, las condiciones de consulta y las decisiones relacionadas con la privacidad. Los resultados cuantitativos se reservan para el capítulo~\ref{chap:resultados}.
+La evaluación utiliza exclusivamente V1 y produce una decisión por paciente. Cada persona aporta una sola imagen, por lo que no hay votación ni promedio entre derivaciones. La misma unidad sirve para separar los datos y calcular las métricas.
 
 \input{chapters/07_cnn_resultados}
 \input{chapters/08_icl_resultados}

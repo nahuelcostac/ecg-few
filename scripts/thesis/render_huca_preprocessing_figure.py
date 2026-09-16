@@ -44,7 +44,7 @@ def main() -> None:
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    ax.text(0.04, 0.91, "Preparación de la cohorte Brugada-HUCA", fontsize=14, weight="bold")
+    ax.text(0.04, 0.91, "Preparación de la muestra Brugada-HUCA", fontsize=14, weight="bold")
     ax.plot([0.04, 0.96], [0.875, 0.875], color="#C7D1DE", linewidth=1.2)
 
     boxes = (

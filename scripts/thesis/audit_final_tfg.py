@@ -129,6 +129,7 @@ def audit_thesis(thesis_root: Path) -> None:
 
     drawio_assets = (
         "fig_pipeline_experimental.drawio.png",
+        "fig_k_examples_split.drawio.png",
         "gaussian_generator.drawio.png",
         "cnn_convolutional_pipeline.drawio.png",
         "vlm_icl_context_window.drawio.png",

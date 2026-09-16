@@ -5,7 +5,7 @@
 
 Los datos sintéticos permiten estudiar la eficiencia con pocos ejemplos sin depender de una colección clínica extensa. En este trabajo, el simulador funciona como un entorno controlado. Cada latido se construye a partir de componentes interpretables, se somete a reglas explícitas y se renderiza como una imagen. Tanto la CNN como el modelo de visión y lenguaje reciben esa representación visual.
 
-El objetivo no consiste en reproducir la fisiología cardíaca completa. Para ello habría que modelar las doce derivaciones, los cambios de frecuencia y la interacción entre ciclos. También serían necesarias la conducción auricular y ventricular, el ruido de adquisición, la variación anatómica y el efecto del dispositivo. El sistema implementado se limita a un latido aislado con apariencia de derivación precordial derecha. Esta simplificación hace posible parametrizar los tres hallazgos visuales de interés para el experimento.
+El objetivo es generar un latido aislado con apariencia de derivación precordial derecha y parametrizar los tres hallazgos visuales de interés para el experimento. Una reproducción completa de la fisiología cardíaca exigiría modelar las doce derivaciones, los cambios de frecuencia, la interacción entre ciclos, la conducción auricular y ventricular, el ruido de adquisición, la variación anatómica y el efecto del dispositivo.
 
 El uso de datos sintéticos cumple cuatro funciones:
 
@@ -16,7 +16,7 @@ El uso de datos sintéticos cumple cuatro funciones:
 \item Reservar una familia generadora compuesta para estudiar transferencia.
 \end{enumerate}
 
-Esta capacidad de control tiene como contrapartida una brecha entre los dominios sintético y real. El simulador permite comprobar si los modelos aprenden una tarea definida mediante reglas, pero no anticipa el rendimiento en ECG clínicos. Los resultados se interpretan teniendo presente esta diferencia.
+Esta capacidad de control tiene como contrapartida una brecha entre los dominios sintético y real. El simulador permite comprobar si los modelos aprenden una tarea definida mediante reglas. El rendimiento en ECG clínicos se determina mediante una evaluación independiente. Los resultados se interpretan teniendo presente esta diferencia.
 
 \section{Representación matemática}
 
@@ -121,7 +121,7 @@ Los rangos favorecen una morfología, mientras que los validadores deciden si la
 
 \section{Familias generadoras}
 
-El simulador parte de cinco familias. Cada una selecciona rangos de muestreo y reglas de coherencia, pero no asigna directamente el vector objetivo.
+El simulador parte de cinco familias. Cada una selecciona rangos de muestreo y reglas de coherencia. Los validadores asignan después el vector objetivo a partir de la señal resultante.
 
 \subsection{Familia normal}
 
@@ -141,11 +141,11 @@ La familia \texttt{ST\_ELEVATION} asigna amplitudes positivas al punto J y a los
 
 La familia \texttt{T\_WAVE\_INVERSION} hace negativos los dos componentes de T y los separa de la región ST. Puede generar, además, una R prima moderada y una pequeña elevación de J, lo que permite coocurrencias con RBBB y elevación del ST. Para aceptar la señal, la deflexión negativa debe aparecer tarde, alcanzar una profundidad mínima y mantenerse durante un intervalo suficiente.
 
-\subsection{Familia Brugada}
+\subsection{Familia asociada al síndrome de Brugada}
 
 La familia \texttt{BRUGADA} representa de forma esquemática una morfología coved o de tipo 1. Combina elevación de J, un ST inicial positivo, un descenso posterior y la inversión de T. La amplitud de R prima es menor que en la familia RBBB, aunque puede conservar una alteración terminal del QRS.
 
-El nombre de la familia no forma parte del vector objetivo. Una señal aceptada por el validador interno de Brugada se evalúa después con los validadores independientes de RBBB, elevación del ST e inversión de T. Puede recibir, por tanto, una combinación parcial de hallazgos. La familia se utiliza así como prueba de composición, sin introducir una etiqueta clínica que el simulador no permite justificar.
+El nombre de la familia no forma parte del vector objetivo. Una señal aceptada por el validador interno asociado al síndrome de Brugada se evalúa después con los validadores independientes de RBBB, elevación del ST e inversión de T. Puede recibir, por tanto, una combinación parcial de hallazgos. La familia se utiliza así como prueba de composición, sin introducir una etiqueta clínica que el simulador no permite justificar.
 
 \begin{table}[H]
 \centering
@@ -167,7 +167,7 @@ Inversión de T & Repolarización tardía negativa & Componente de inversión de
 
 \section{Reglas de coherencia morfológica}
 
-El muestreo independiente de los átomos puede alterar el orden temporal de las ondas. Para evitarlo, antes de sumar las gaussianas se imponen varias relaciones. Q precede a R; S aparece después de R y tiene mayor anchura; J se sitúa después de S. Los dos componentes del ST se ordenan tras J, y T1 y T2 ocupan la región final.
+El muestreo independiente de los átomos puede alterar el orden temporal de las ondas. Para evitarlo, antes de sumar las gaussianas se imponen varias relaciones. Q precede a R. S aparece después de R y tiene mayor anchura. J se sitúa después de S. Los dos componentes del ST se ordenan tras J, y T1 y T2 ocupan la región final.
 
 Estas relaciones no convierten la señal en una representación fisiológica. Su función es mantener una geometría mínima que preserve la interpretación de los parámetros. Las reglas propias de cada familia añaden restricciones como la posición tardía de R prima o el signo negativo de T.
 
@@ -217,7 +217,7 @@ Inversión de T &
 Máximo del QRS superior a 0,22 mV, máximo de R prima superior a 0,08 mV, media del ST superior a \(-0,03\) mV, mínimo de T inferior a \(-0,12\) mV, mínimo posterior al umbral temporal equivalente a 640 ms y más de 45 ms por debajo de \(-0,05\) mV \\
 Normal &
 Máximo del QRS superior a 0,22 mV, mínimo inferior a \(-0,10\) mV, media de ST entre \(-0,04\) y 0,05 mV, máximo de T superior a 0,12 mV, R prima inferior a 0,10 mV y rechazo de los tres hallazgos \\
-Brugada &
+Síndrome de Brugada &
 Máximo del QRS superior a 0,18 mV, mínimo inferior a \(-0,16\) mV, media de J superior a 0,09 mV, media de ST superior a 0,08 mV, ST temprano al menos 0,03 mV por encima del ST tardío y mínimo de T inferior a \(-0,08\) mV \\
 \bottomrule
 \end{tabularx}
@@ -235,7 +235,7 @@ Cada latido se representa en un lienzo cuadrado de 896 por 896 píxeles y 130 pu
 
 El renderizado conserva los títulos de los ejes y los valores numéricos. Aunque aportan información de escala, podrían actuar como atajos si los límites variasen entre muestras. Para evitarlo, todas las imágenes del experimento final comparten los mismos límites horizontales y verticales. También se revisó que ninguna familia presentase un encuadre, un margen o un patrón de marcas propio.
 
-No se aplican reflejos horizontales, pues invertir el eje temporal alteraría el orden de las ondas, ni verticales, porque intercambiarían elevación y depresión. Las transformaciones admisibles deben conservar la semántica de la señal; entre ellas se encuentran pequeñas variaciones de grosor, contraste, desplazamiento y escala dentro de límites conocidos. La Figura~\ref{fig:synthetic_examples} muestra una señal de cada familia.
+No se aplican reflejos horizontales, pues invertir el eje temporal alteraría el orden de las ondas, ni verticales, porque intercambiarían elevación y depresión. Las transformaciones admisibles deben conservar la semántica de la señal. Entre ellas se encuentran pequeñas variaciones de grosor, contraste, desplazamiento y escala dentro de límites conocidos. La Figura~\ref{fig:synthetic_examples} muestra una señal de cada familia.
 
 \begin{figure}[H]
   \centering
@@ -252,11 +252,11 @@ El manifiesto relaciona cada muestra con su imagen, partición, familia generado
 
 \section{Comprobación de integración}
 
-La configuración final consta de 100 pacientes sintéticos, cada uno con una imagen V1, sus pliegues LOOCV y los resúmenes de etiquetas. Veinte pacientes presentan los tres hallazgos; los 80 restantes son normales o contienen combinaciones parciales. Como cada configuración se repite con tres semillas, las matrices de confusión agregadas reúnen 300 predicciones.
+La configuración final consta de 100 pacientes sintéticos, cada uno con una imagen V1, sus pliegues LOOCV y los resúmenes de etiquetas. Veinte pacientes presentan los tres hallazgos. Los 80 restantes son normales o contienen combinaciones parciales. Como cada configuración se repite con tres semillas, las matrices de confusión agregadas reúnen 300 predicciones.
 
 Este conjunto constituye la base de la evaluación sintética. La prueba de integración abarca la generación de las señales, su aceptación mediante validadores, la partición por paciente y la escritura de los manifiestos. La coexistencia de varias combinaciones permite estudiar la evolución del rendimiento con \(K\) sin limitar la tarea a distinguir entre normalidad y un único patrón patológico.
 
-La familia de origen y las etiquetas finales desempeñan funciones diferentes. La primera modifica los rangos de muestreo para favorecer una morfología, pero los validadores actúan después sobre la señal resultante. Así, una muestra generada desde la familia con elevación del ST puede activar también RBBB, y otra orientada a la inversión de T puede conservar una deflexión terminal asociada a otros hallazgos. La tarea queda definida por los rasgos detectados en la señal, no por el nombre de la familia inicial. La Figura~\ref{fig:label_distribution} muestra las combinaciones obtenidas.
+La familia de origen y las etiquetas finales desempeñan funciones diferentes. La primera modifica los rangos de muestreo para favorecer una morfología, pero los validadores actúan después sobre la señal resultante. Así, una muestra generada desde la familia con elevación del ST puede activar también RBBB, y otra orientada a la inversión de T puede conservar una deflexión terminal asociada a otros hallazgos. Los rasgos detectados en la señal definen la tarea. La Figura~\ref{fig:label_distribution} muestra las combinaciones obtenidas.
 
 \begin{figure}[H]
   \centering
@@ -271,7 +271,7 @@ Un resultado alto no implica necesariamente que el modelo haya aprendido la morf
 
 Para reducir estos riesgos, las imágenes se leen desde el manifiesto sin proporcionar al modelo la familia de origen. Los límites visuales son constantes y los nombres de fichero solo contienen un contador. Como controles de sensibilidad se contemplan recortes de la zona del trazado y versiones sin el texto de los ejes. Una caída marcada al retirar elementos ajenos a la señal indicaría la necesidad de investigar posibles atajos antes de interpretar el rendimiento.
 
-La atención espacial de la CNN se examina además mediante Grad-CAM \cite{selvaraju2017}. Este análisis no permite establecer relaciones causales; sirve para observar si las activaciones se concentran en QRS, ST y T o en elementos periféricos de la imagen.
+La atención espacial de la CNN se examina además mediante Grad-CAM \cite{selvaraju2017}. Este análisis no permite establecer relaciones causales. Sirve para observar si las activaciones se concentran en QRS, ST y T o en elementos periféricos de la imagen.
 
 \section{Limitaciones del simulador}
 
@@ -279,6 +279,6 @@ El simulador representa un latido aislado con una geometría semejante a la de u
 
 La construcción mediante gaussianas produce curvas suaves y simplifica bordes que pueden ser más irregulares en un ECG real. A su vez, los validadores utilizan ventanas y umbrales diseñados exclusivamente para este dominio. Aplicarlos a una señal clínica como si fueran reglas diagnósticas carecería de justificación.
 
-La familia Brugada simplifica una elevación del ST de morfología convexa asociada al patrón tipo 1. No representa la heterogeneidad del síndrome, la variación entre derivaciones ni su posible carácter intermitente. Se utiliza únicamente para estudiar la composición visual de los tres hallazgos.
+Esta familia sintética simplifica una elevación del ST de morfología convexa asociada al patrón tipo 1 del síndrome de Brugada. No representa la heterogeneidad del síndrome, la variación entre derivaciones ni su posible carácter intermitente. Se utiliza únicamente para estudiar la composición visual de los tres hallazgos.
 
-Estas limitaciones delimitan el alcance del experimento. El dominio sintético permite comparar la eficiencia en el uso de ejemplos bajo condiciones controladas, pero no establece validez clínica. Esta última debe juzgarse a partir de la evaluación con la cohorte del HUCA y de una validación externa posterior.
+Estas limitaciones delimitan el alcance del experimento. El dominio sintético permite comparar la eficiencia en el uso de ejemplos bajo condiciones controladas. La validez clínica debe juzgarse a partir de la evaluación con la muestra del HUCA y de una validación externa posterior.

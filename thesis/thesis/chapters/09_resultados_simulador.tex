@@ -4,7 +4,7 @@
 \section{Dominio sintético}
 \label{chap:comparacion_simulador}
 
-El dominio sintético permite evaluar una regla morfológica conocida antes de analizar los ECG reales. Un caso se considera positivo solo cuando reúne los tres hallazgos: morfología compatible con RBBB, elevación del segmento ST e inversión de la onda T. Si falta cualquiera de ellos, la referencia es negativa. Esta tarea no mide utilidad clínica; comprueba si la CNN y el VLM identifican una combinación visual definida en una imagen de ECG.
+El dominio sintético permite evaluar una regla morfológica conocida antes de analizar los ECG reales. Un caso se considera positivo solo cuando reúne los tres hallazgos: morfología compatible con RBBB, elevación del segmento ST e inversión de la onda T. Si falta cualquiera de ellos, la referencia es negativa. Esta tarea comprueba si la CNN y el VLM identifican una combinación visual definida en una imagen de ECG. Su alcance se limita a ese entorno controlado.
 
 Cada uno de los 100 pacientes aporta una imagen V1. La evaluación LOOCV se repite con las semillas 42, 123 y 2026, de modo que las matrices agregadas contienen 300 predicciones sobre las mismas 100 imágenes.
 
@@ -67,6 +67,6 @@ En zero-shot, Gemma~4 asigna todos los casos a la clase negativa y obtiene una B
   \label{fig:simulator_confusions}
 \end{figure}
 
-Los dos enfoques aprovechan el aumento de ejemplos en este dominio. La CNN ajusta un clasificador específico y el VLM pasa de una predicción monoclase en zero-shot al mayor valor observado, sin actualizar sus pesos. Esta diferencia numérica no implica superioridad general del ICL. Las imágenes sintéticas son homogéneas, las etiquetas proceden de reglas y no recogen la variabilidad de adquisición o de fenotipo de un ECG clínico. El resultado sirve como referencia controlada para interpretar la evaluación real.
+El aumento de ejemplos mejora ambos enfoques en este dominio. En Gemma~4, las demostraciones cambian además la predicción monoclase observada en zero-shot. El mayor valor numérico del ICL se restringe a un escenario con imágenes homogéneas y etiquetas derivadas de reglas, sin la variabilidad de adquisición o de fenotipo de un ECG clínico. El resultado sirve como referencia controlada para interpretar la evaluación real.
 
 \input{chapters/10_resultados_reales}

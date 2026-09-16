@@ -18,9 +18,11 @@ Los dos enfoques se evalúan por paciente con `K = 2, 4, 8, 16, 32` y las semill
 
 Las matrices agregadas contienen 300 y 951 predicciones, respectivamente, porque suman tres semillas sobre los mismos pacientes. Esos valores no son tamaños de muestra ni números de imágenes únicas.
 
-La CNN aprende RBBB, elevación ST e inversión de T en el simulador. La cohorte real no contiene esas tres anotaciones por imagen, por lo que la evaluación real de la CNN mide transferencia hacia una referencia clínica. Gemma 4 se evalúa con contexto estándar, contexto balanceado y sin demostraciones.
+La CNN aprende RBBB, elevación ST e inversión de T en el simulador. La muestra clínica no contiene esas tres anotaciones por imagen, por lo que la evaluación real de la CNN mide transferencia hacia una referencia clínica. Gemma 4 se evalúa con contexto estándar, contexto balanceado y sin demostraciones.
 
 ## Resultados finales
+
+La única fuente canónica es [`outputs/final_results_tfg/`](outputs/final_results_tfg/README.md), importada del paquete `Final Results TFG` el 30 de agosto de 2026. No deben mezclarse estos resultados con campañas anteriores. `reports/loocv/` es su espejo agregado y versionado; las tablas y figuras de esta página son derivados.
 
 ### Dominio sintético
 
@@ -48,9 +50,9 @@ Gemma 4 con demostraciones sintéticas permanece cerca del azar. El mejor punto 
 | Gemma 4 ICL estándar | 32 | 0.743 ± 0.011 | 0.675 | 0.690 | 0.796 |
 | Gemma 4 ICL balanceado | 32 | 0.761 ± 0.011 | 0.699 | 0.741 | 0.781 |
 
-![Comparación en la cohorte real](thesis/thesis/assets/results/comparison_huca_ba_by_k.png)
+![Comparación en la muestra clínica](thesis/thesis/assets/results/comparison_huca_ba_by_k.png)
 
-El contexto clínico mejora el VLM en esta cohorte, pero el resultado no incluye validación externa ni pruebas inferenciales planificadas. No justifica un uso asistencial.
+El contexto clínico mejora el VLM en esta muestra, pero el resultado no incluye validación externa ni pruebas inferenciales planificadas. No justifica un uso asistencial.
 
 ## Organización
 
@@ -61,13 +63,14 @@ scripts/run/                    Entradas reproducibles
 scripts/thesis/                 Figuras y auditoría de la memoria
 prompts/                        Prompts VLM
 reports/loocv/                  Resultados agregados para regenerar las gráficas
+outputs/final_results_tfg/      Paquete final canónico (completo y local)
 thesis/thesis/                  Fuente LaTeX
 thesis/thesis/assets/results/   Figuras versionadas
 ```
 
-Se versionan los resúmenes agregados por valor de `K`, condición y método que consumen los renderizadores del TFG. No se incluyen predicciones por paciente, pliegues LOOCV, imágenes, manifiestos clínicos ni rutas a datos en crudo. El contenido y los criterios de inclusión se documentan en `reports/loocv/README.md`.
+El ZIP original y las salidas completas se conservan bajo `outputs/final_results_tfg/`, fuera de Git por tamaño y granularidad. `reports/loocv/` contiene el espejo versionado de sus informes agregados y es la ubicación que consumen los renderizadores del TFG. La relación entre ambas carpetas se documenta en `outputs/final_results_tfg/README.md` y `reports/loocv/README.md`.
 
-La fuente LaTeX, los logos y todas las figuras utilizadas por la memoria también se versionan. Los datos clínicos del HUCA y los resultados LOOCV a nivel de paciente no son necesarios para compilar el PDF ni para regenerar sus gráficas, y se excluyen por privacidad y tamaño.
+La fuente LaTeX, los logos y todas las figuras utilizadas por la memoria también se versionan. Los datos clínicos del HUCA y las salidas LOOCV a nivel de paciente no son necesarios para compilar el PDF ni para regenerar sus gráficas; no deben exponerse ni utilizarse como fuente documental cuando existen agregados.
 
 ## Reproducción
 
@@ -128,4 +131,4 @@ uv run --no-sync python -m compileall -q src scripts
 
 ## Limitaciones
 
-La cohorte real procede de un único origen y su referencia no equivale a las etiquetas morfológicas sintéticas. La distribución 116/201 guardada en la campaña final tampoco coincide con la composición 76/287 documentada para la versión pública de Brugada-HUCA. El paquete de resultados no contiene el manifiesto intermedio que explica esa transformación, por lo que debe conservarse antes de intentar reproducir la campaña. Las tres semillas repiten la evaluación sobre los mismos pacientes y su desviación estándar no representa incertidumbre poblacional.
+La muestra clínica procede de un único origen y su referencia no equivale a las etiquetas morfológicas sintéticas. La distribución 116/201 guardada en la campaña final tampoco coincide con la composición 76/287 documentada para la versión pública de Brugada-HUCA. El paquete de resultados no contiene el manifiesto intermedio que explica esa transformación, por lo que debe conservarse antes de intentar reproducir la campaña. Las tres semillas repiten la evaluación sobre los mismos pacientes y su desviación estándar no representa incertidumbre poblacional.

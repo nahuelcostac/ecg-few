@@ -1,13 +1,7 @@
 \section{VLM con ICL}
 \label{chap:vlm}
 
-El segundo enfoque utiliza un modelo de visión y lenguaje con aprendizaje en contexto. El VLM no se entrena con los ejemplos seleccionados en cada pliegue: los recibe como demostraciones antes de la imagen objetivo cuando \(K>0\). El experimento estudia si ese contexto permite concretar la tarea sin actualizar los pesos.
-
-\subsection{Motivación}
-
-El ajuste supervisado puede ser inestable cuando solo se dispone de unos pocos pacientes. El aprendizaje en contexto ofrece otra forma de utilizar sus etiquetas: no las convierte en gradientes, sino que las presenta como una guía explícita durante la inferencia.
-
-No se presupone que esta estrategia supere a la CNN. Se compara el VLM tanto con la referencia supervisada como con su propia condición sin demostraciones para medir el efecto del contexto.
+Esta sección describe el modelo evaluado, la construcción del prompt y las condiciones utilizadas para aislar el efecto de las demostraciones.
 
 \subsection{Modelos médicos, modelos cerrados y privacidad}
 
@@ -19,7 +13,7 @@ Aunque las imágenes clínicas están seudonimizadas, siguen siendo datos sanita
 
 El modelo evaluado es \texttt{google/gemma-4-E4B-it} \cite{gemma4card}. Admite entradas de texto e imagen y permite configurar el presupuesto visual. La disponibilidad de sus pesos hace posible desplegar una versión fija en la infraestructura utilizada.
 
-Gemma~4 no se selecciona por una superioridad demostrada en ECG, sino para caracterizar el comportamiento de un modelo generalista con pocos ejemplos. Los resultados no constituyen una validación del modelo para esta modalidad clínica.
+Gemma~4 se selecciona para caracterizar el comportamiento de un modelo generalista con pocos ejemplos. Los resultados no constituyen una validación del modelo para esta modalidad clínica.
 
 \subsection{Construcción del prompt}
 
@@ -32,9 +26,9 @@ La inferencia sigue el mismo orden en todos los pliegues. Primero se seleccionan
   \label{fig:icl_context_window}
 \end{figure}
 
-Cada demostración contiene una imagen de ECG y la respuesta correcta en formato JSON. La consulta se coloca después de todos los ejemplos. La salida del modelo debe ajustarse al esquema definido; si el formato no es válido, se registra como tal y no se reconstruye mediante una interpretación manual.
+Cada demostración contiene una imagen de ECG y la respuesta correcta en formato JSON. La consulta se coloca después de todos los ejemplos. La salida del modelo debe ajustarse al esquema definido. Si el formato no es válido, se registra como tal y no se reconstruye mediante una interpretación manual.
 
-No se exige una explicación libre, porque la evaluación compara decisiones binarias y no informes clínicos. El formato cerrado reduce la ambigüedad y evita convertir una respuesta plausible en una etiqueta mediante un juicio subjetivo.
+La evaluación utiliza un formato cerrado porque compara decisiones binarias. Este formato reduce la ambigüedad y evita convertir una respuesta plausible en una etiqueta mediante un juicio subjetivo.
 
 \subsection{Condiciones de consulta}
 \label{sec:condiciones_vlm}
@@ -48,8 +42,6 @@ En ICL balanceado se intenta seleccionar \(K/2\) demostraciones positivas y \(K/
 \subsection{Origen del contexto}
 \label{sec:origen_contexto_vlm}
 
-En el simulador, las demostraciones y la consulta pertenecen al mismo dominio morfológico. Para la cohorte del HUCA se analizan dos orígenes del contexto. La comparación principal utiliza pacientes de la propia cohorte como demostraciones y una imagen V1 clínica como consulta; ambos elementos comparten así dominio visual y referencia.
+En el simulador, las demostraciones y la consulta pertenecen al mismo dominio morfológico. Para la muestra del HUCA se analizan dos orígenes del contexto. La comparación principal utiliza pacientes de la propia muestra como demostraciones y una imagen V1 clínica como consulta. Ambos elementos comparten así dominio visual y referencia.
 
-El análisis complementario utiliza demostraciones del simulador para consultar imágenes del HUCA. El modelo recibe entonces etiquetas morfológicas sintéticas y la evaluación se realiza contra la referencia clínica de la cohorte. Esta rama mide la transferencia sintético-real del contexto; no se interpreta como una solución clínica.
-
-La CNN y el VLM se comparan a nivel de paciente y con las mismas métricas. La diferencia reside en el uso de \(K\): la primera actualiza sus pesos, mientras que el segundo incorpora las imágenes al contexto de inferencia.
+El análisis complementario utiliza demostraciones del simulador para consultar imágenes del HUCA. El modelo recibe entonces etiquetas morfológicas sintéticas y la evaluación se realiza contra la referencia clínica del conjunto clínico. Esta rama mide exclusivamente la transferencia sintético-real del contexto.

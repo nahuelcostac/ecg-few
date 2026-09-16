@@ -138,14 +138,14 @@ def main() -> None:
         huca_sim_context_vlm,
         metric="balanced_accuracy",
         ylabel="Balanced Accuracy (BA)",
-        title="Contexto sintético en la cohorte del HUCA",
+        title="Contexto sintético en la muestra del HUCA",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_huca_synthetic_context_f1_by_k.png",
         huca_sim_context_vlm,
         metric="f1",
         ylabel="F1",
-        title="Contexto sintético en la cohorte del HUCA",
+        title="Contexto sintético en la muestra del HUCA",
     )
 
     plot_comparison_metric(
@@ -170,7 +170,7 @@ def main() -> None:
         real_vlm,
         metric="balanced_accuracy",
         ylabel="Balanced Accuracy (BA)",
-        title="Comparación en la cohorte del HUCA",
+        title="Comparación en la muestra del HUCA",
     )
     plot_comparison_metric(
         args.output_dir / "comparison_huca_f1_by_k.png",
@@ -178,7 +178,7 @@ def main() -> None:
         real_vlm,
         metric="f1",
         ylabel="F1",
-        title="Comparación en la cohorte del HUCA",
+        title="Comparación en la muestra del HUCA",
     )
     plot_huca_sens_spec_best(
         args.output_dir / "comparison_huca_sens_spec_best.png", cnn_real, real_vlm
@@ -853,7 +853,7 @@ def plot_domain_pair(
 ) -> None:
     for rows, domain_label, linestyle, domain_color, alpha in (
         (sim_rows, "simulador", "-", color, 1.0),
-        (real_rows, "cohorte del HUCA", "--", DOMAIN_GAP_HUCA_COLORS[color], 1.0),
+        (real_rows, "muestra del HUCA", "--", DOMAIN_GAP_HUCA_COLORS[color], 1.0),
     ):
         ordered = sorted(rows, key=lambda row: int(row["k"]))
         ax.errorbar(

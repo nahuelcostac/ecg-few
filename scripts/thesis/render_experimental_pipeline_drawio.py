@@ -49,10 +49,10 @@ def main() -> None:
         "synthetic": make_synthetic_thumb(),
         "clinical": make_clinical_thumb(),
         "cnn_pipeline": make_fitted_asset(
-            CNN_PIPELINE, EMBED_DIR / "pipeline_cnn_drawio_panel.png", (390, 135)
+            CNN_PIPELINE, EMBED_DIR / "pipeline_cnn_drawio_panel.png", (1170, 405)
         ),
         "vlm_pipeline": make_fitted_asset(
-            VLM_PIPELINE, EMBED_DIR / "pipeline_vlm_drawio_panel.png", (390, 135)
+            VLM_PIPELINE, EMBED_DIR / "pipeline_vlm_drawio_panel.png", (1170, 405)
         ),
         "curve": make_cnn_curve(),
         "confusion": make_confusion_matrix(),
@@ -337,7 +337,7 @@ def draw_preview(assets: dict[str, tuple[str, np.ndarray]]) -> None:
 
     fig.savefig(
         OUT_DIR / "fig_pipeline_experimental.drawio.png",
-        dpi=180,
+        dpi=300,
         bbox_inches="tight",
         pad_inches=0.04,
     )

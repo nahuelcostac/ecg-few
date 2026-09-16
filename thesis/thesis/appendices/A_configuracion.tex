@@ -34,7 +34,7 @@ Este apéndice recoge los parámetros principales de la configuración experimen
 
 La etiqueta positiva se obtiene cuando RBBB, elevación del ST e inversión de T están presentes de forma simultánea. La decisión por paciente utiliza únicamente la imagen V1 y aplica después el umbral seleccionado.
 
-\section{Cohorte del HUCA}
+\section{Muestra del HUCA}
 
 \begin{table}[H]
   \centering
@@ -43,7 +43,7 @@ La etiqueta positiva se obtiene cuando RBBB, elevación del ST e inversión de T
     \toprule
     Propiedad & Valor \\
     \midrule
-    Fuente & Hospital Universitario Central de Asturias (HUCA), recurso Brugada HUCA 1.0.0 \\
+    Fuente & Hospital Universitario Central de Asturias (HUCA), recurso Brugada-HUCA 1.0.0 \\
     Pacientes brutos & 363 \\
     Pacientes excluidos & 46 por patrón basal limítrofe \\
     Pacientes incluidos & 317 \\
@@ -58,11 +58,11 @@ Referencias negativas & 201 \\
     Separación & Leave-one-out por paciente \\
     \bottomrule
   \end{tabularx}
-  \caption{Configuración de la cohorte procesada del HUCA.}
+  \caption{Configuración de la muestra procesada del HUCA.}
   \label{tab:config_huca_final}
 \end{table}
 
-La cohorte procesada del HUCA no incluye anotaciones independientes de los tres hallazgos morfológicos simulados. La evaluación emplea una referencia clínica por paciente. Esta variable, almacenada en \texttt{clinical\_brugada}, procede de una revisión especializada.
+La muestra procesada del HUCA no incluye anotaciones independientes de los tres hallazgos morfológicos simulados. La evaluación emplea una referencia clínica por paciente. Esta variable, almacenada en \texttt{clinical\_brugada}, procede de una revisión especializada.
 
 \section{Configuración CNN}
 
@@ -101,7 +101,7 @@ La cohorte procesada del HUCA no incluye anotaciones independientes de los tres 
     Propiedad & Valor \\
     \midrule
     Origen etiquetado & Conjunto sintético QRS/ST \\
-    Destino no etiquetado & Cohorte del HUCA \\
+    Destino no etiquetado & Conjunto del HUCA \\
     Métodos & SSL, CORAL, MMD y DANN \cite{chen2020simclr,sun2016deepcoral,long2015dan,ganin2016} \\
     Valores de \(K\) & \(K=16\) y \(K=32\) \\
     Semillas & 42, 123 y 2026 \\
@@ -132,9 +132,9 @@ El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métr
     Entrada & Imagen ECG y demostraciones imagen-etiqueta \\
     Valores de \(K\) & \(K=\{0,2,4,8,16,32\}\) \\
     Condiciones informadas & Zero-shot, ICL estándar e ICL balanceado \\
-    Contextos sobre la cohorte del HUCA & Demostraciones de la propia cohorte o del simulador \\
+    Contextos sobre el conjunto del HUCA & Demostraciones de la propia muestra o del simulador \\
     Salida morfológica & RBBB, elevación del ST e inversión de T \\
-    Salida clínica & Caso Brugada confirmado frente a normal \\
+    Salida clínica & Caso confirmado de síndrome de Brugada frente a normal \\
     Métrica principal & Balanced Accuracy por paciente \\
     \bottomrule
   \end{tabularx}
