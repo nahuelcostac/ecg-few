@@ -5,6 +5,7 @@
 .cache/
 __pycache__/
 *.py[cod]
+*.bkp
 .pytest_cache/
 .ruff_cache/
 tests/*
@@ -26,7 +27,13 @@ outputs/**
 !outputs/final_results_tfg/
 !outputs/final_results_tfg/README.md
 !outputs/final_results_tfg/SOURCE.sha256
+!outputs/final_results_tfg/SOURCE_CNN_CLINICAL.sha256
+!outputs/final_results_tfg/CNN_CLINICAL_PROMOTION.json
 tmp/
+old/
+
+# Local LaTeX build output; the delivery PDF lives under output/pdf/.
+thesis/thesis/main.pdf
 
 # Generated review renders; keep only the final deliverable.
 output/**

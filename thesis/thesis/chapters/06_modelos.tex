@@ -1,13 +1,7 @@
 \chapter{Dos enfoques de modelado}
 \label{chap:modelos}
 
-Este capítulo especifica la arquitectura, el entrenamiento, la construcción del prompt y las condiciones de inferencia de los modelos evaluados. El protocolo común y la definición de \(K\) se establecieron en el capítulo~\ref{chap:diseno}.
-
-\section{Entrada y unidad de análisis}
-
-Todos los modelos reciben el ECG como imagen. La CNN redimensiona cada entrada a 224 por 224 píxeles y la procesa en formato RGB. En el VLM, la imagen forma parte de un mensaje multimodal que contiene instrucciones textuales y, cuando corresponde, demostraciones etiquetadas.
-
-La evaluación utiliza exclusivamente V1 y produce una decisión por paciente. Cada persona aporta una sola imagen, por lo que no hay votación ni promedio entre derivaciones. La misma unidad sirve para separar los datos y calcular las métricas.
+La ejecución de cada modelo sigue los escenarios y las particiones del capítulo~\ref{chap:diseno}. La configuración completa se recoge en el apéndice~\ref{app:configuracion}.
 
 \input{chapters/07_cnn_resultados}
 \input{chapters/08_icl_resultados}

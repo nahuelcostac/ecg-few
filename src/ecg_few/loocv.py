@@ -355,9 +355,7 @@ def write_jsonl(path: Path, records: Iterable[dict[str, Any]]) -> int:
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -386,9 +384,7 @@ def validate_fold_plan(
                 if not isinstance(selection, dict):
                     raise ValueError(f"Fold {fold['fold_id']} is missing k={k}, seed={seed}.")
                 context_ids = [str(item) for item in selection.get("context_patient_ids", [])]
-                validation_ids = [
-                    str(item) for item in selection.get("validation_patient_ids", [])
-                ]
+                validation_ids = [str(item) for item in selection.get("validation_patient_ids", [])]
                 if test_id in context_ids or test_id in validation_ids:
                     raise ValueError(f"Fold {fold['fold_id']} leaks the test patient.")
                 if set(context_ids).intersection(validation_ids):
@@ -455,6 +451,5 @@ def finding_dict_from_arrays(values: Sequence[int | bool]) -> dict[str, int]:
     if len(values) != len(LABEL_NAMES):
         raise ValueError(f"Expected {len(LABEL_NAMES)} finding values, got {len(values)}.")
     return {
-        label_name: int(bool(value))
-        for label_name, value in zip(LABEL_NAMES, values, strict=True)
+        label_name: int(bool(value)) for label_name, value in zip(LABEL_NAMES, values, strict=True)
     }

@@ -1,0 +1,41 @@
+{
+  "artifacts": {
+    "balanced_accuracy_plot": "balanced_accuracy_by_k.png",
+    "confusion_matrices": "confusion_by_model_condition_k/",
+    "f1_plot": "f1_by_k.png",
+    "per_run_predictions": "outputs/vlm_loocv/<model>/<condition>/k<k>_seed<seed>/fold_predictions.csv",
+    "summary_by_model_condition_k": "vlm_summary_by_model_condition_k.csv",
+    "summary_by_seed": "vlm_summary_by_seed.csv"
+  },
+  "clinical_aggregations": [
+    "majority"
+  ],
+  "clinical_leads": [
+    "V1"
+  ],
+  "conditions": [
+    "balanced",
+    "estandar",
+    "zero_shot"
+  ],
+  "k_values": [
+    0,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "models": [
+    "google/gemma-4-E4B-it"
+  ],
+  "runs": 33,
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "tasks": [
+    "clinical"
+  ]
+}

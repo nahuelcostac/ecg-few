@@ -1,255 +1,167 @@
 \chapter{Fundamentos clínicos y técnicos}
 \label{chap:fundamentos}
 
-\section{Origen y representación del electrocardiograma}
+\section{El electrocardiograma y sus componentes}
+\label{sec:componentes_ecg}
 
-El electrocardiograma registra las diferencias de potencial producidas por la actividad eléctrica del corazón. La señal de cada derivación representa la proyección de un proceso eléctrico tridimensional sobre el eje definido por sus electrodos. Una misma activación puede generar, por tanto, deflexiones distintas según la derivación desde la que se observe.
+El electrocardiograma registra las diferencias de potencial producidas por la actividad eléctrica del corazón mediante derivaciones que observan distintas proyecciones de esa actividad tridimensional. En el ECG convencional, diez electrodos permiten obtener doce derivaciones, de las cuales I, II, III, aVR, aVL y aVF describen el plano frontal, mientras que V1 a V6 corresponden al horizontal.
 
-El ECG convencional obtiene doce derivaciones a partir de diez electrodos. I, II, III, aVR, aVL y aVF describen la actividad en el plano frontal, mientras que V1 a V6 ofrecen una perspectiva precordial en el plano horizontal. La apariencia final depende de la colocación de los electrodos, la ganancia, la velocidad de registro y el filtrado. Las recomendaciones de estandarización exigen conservar estos parámetros, ya que cualquier cambio puede alterar amplitudes, duraciones y relaciones espaciales utilizadas durante la interpretación \cite{kligfield2007}.
-
-La representación clínica habitual emplea una velocidad de 25 mm por segundo y una ganancia de 10 mm por mV. Con esta convención, un milímetro horizontal equivale a 40 ms y uno vertical, a 0,1 mV. Estas relaciones permiten estimar intervalos y amplitudes directamente sobre el trazado. Sin embargo, la escala física puede perderse al exportarlo como imagen digital si esta se redimensiona, se recorta o se guarda sin una referencia. La Figura~\ref{fig:signal_to_image} muestra un ejemplo del formato clínico original.
+Para interpretar sus amplitudes y duraciones es necesario conocer la colocación de los electrodos, la ganancia, la velocidad de registro y el filtrado \cite{kligfield2007}. La representación habitual utiliza 25 mm por segundo y 10 mm por mV, de modo que un milímetro equivale a 40 ms en horizontal y 0,1 mV en vertical. Esta escala, visible en el formato clínico de la Figura~\ref{fig:signal_to_image}, puede perderse al recortar o redimensionar la imagen.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.78\textwidth]{sources/ptbxl_real_12lead_ecg.png}
-  \caption{Representación clínica de un ECG real de doce derivaciones renderizado desde un registro de PTB-XL/PhysioNet \cite{wagner2020}.}
+  \safeincludegraphics[width=0.78\textwidth]{sources/ptbxl_real_12lead_ecg.pdf}
+  \caption{Representación clínica de un ECG real de doce derivaciones a partir del renderizado de un registro de PTB-XL/PhysioNet \cite{wagner2020}.}
   \label{fig:signal_to_image}
 \end{figure}
 
-\section{Morfología básica de un latido}
-
-Un latido normal se describe mediante una secuencia de ondas, intervalos y segmentos. La onda P refleja la despolarización auricular y el intervalo PR, la propagación desde las aurículas hasta el sistema de conducción ventricular. El complejo QRS representa la despolarización ventricular. A continuación, el punto J marca el final del QRS y el comienzo del segmento ST, y la onda T se relaciona con la repolarización ventricular. La Figura~\ref{fig:morfologia_ecg} sitúa estos componentes en un latido.
+La despolarización es la activación eléctrica de las células cardíacas y la repolarización, la recuperación de su estado eléctrico tras esa activación. La onda P representa la despolarización auricular y el intervalo PR, la propagación hacia los ventrículos. El complejo QRS corresponde a la despolarización ventricular. El punto J marca su final y el inicio del segmento ST. La onda T representa la repolarización ventricular. La Figura~\ref{fig:morfologia_ecg} sitúa estos componentes.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.86\textwidth]{sources/openstax_ecg_tracing.png}
-  \caption{Componentes morfológicos de un latido ECG: onda P, complejo QRS, onda T, segmentos PR y ST, e intervalos PR y QT. Fuente: OpenStax \cite{openstaxApecg}.}
+  \safeincludegraphics[width=0.86\textwidth]{results/fig_morfologia_ecg.pdf}
+  \caption{Componentes morfológicos de un latido ECG. La figura identifica las ondas P, Q, R, S y T, el punto J y el segmento ST.}
   \label{fig:morfologia_ecg}
 \end{figure}
 
-Las letras Q, R y S describen la sucesión de deflexiones del complejo ventricular. Q es la primera deflexión negativa anterior a una positiva. R es la primera deflexión positiva y S, la deflexión negativa posterior a R. Una segunda deflexión positiva se denomina R prima. Esta nomenclatura describe la geometría de la señal y no establece por sí sola un diagnóstico.
+Q es la primera deflexión negativa anterior a una positiva, R la primera positiva y S la negativa posterior a R. Una segunda deflexión positiva se denomina R prima. Estas letras describen la forma del trazado.
 
-El segmento ST se evalúa respecto de una referencia isoeléctrica, que en un registro real puede aproximarse mediante el segmento TP o el PR según el contexto. Su elevación o depresión no se interpreta de forma aislada: también importan la derivación, la magnitud, la morfología, la distribución espacial y el cuadro clínico. Por esta razón, las recomendaciones de la AHA, el ACCF y la HRS describen por separado el segmento ST, la onda T y el intervalo QT \cite{rautaharju2009st}.
+\section{Síndrome de Brugada y rasgos estudiados}
+\label{sec:brugada_clinica}
 
-La polaridad de la onda T también depende de la derivación. Una deflexión negativa puede ser fisiológica en algunas posiciones y patológica en otras. Su significado varía con la edad, el sexo, la secuencia de activación ventricular, los cambios del segmento ST y otras alteraciones. En este trabajo, la inversión de T se trata como un rasgo morfológico que debe interpretarse junto con el resto del ECG y el contexto clínico.
+El síndrome de Brugada es una canalopatía hereditaria, una alteración de los canales que regulan el paso de iones en las células cardíacas. Se relaciona con los canales de sodio y con variantes en el gen \emph{SCN5A}. Predispone a fibrilación ventricular y muerte súbita, especialmente durante el reposo o el sueño en varones jóvenes, aunque puede manifestarse a cualquier edad \cite{zeppenfeld2022,wilde2023scbt}. Las estimaciones citadas sitúan su prevalencia entre 1 y 5 casos por cada 10\,000 personas \cite{sieira2017}, con intervalos también descritos de una persona por cada 2\,000 a 5\,000. Puede estar infradiagnosticado porque muchos afectados permanecen asintomáticos.
 
-\section{Hallazgos morfológicos utilizados en el proyecto}
+El patrón tipo~1, o \emph{coved}, presenta elevación del ST de al menos 2 mm en V1 o V2, de forma convexa y descendente, seguida de T negativa. Los patrones tipo~2 y tipo~3 no bastan para establecer el diagnóstico \cite{zeppenfeld2022}. El patrón puede ser intermitente, por lo que un ECG basal normal no descarta el síndrome.
 
-\subsection{Síndrome de Brugada como caso motivador y circuito diagnóstico}
+\subsection{Evaluación clínica}
+\label{sec:evaluacion_clinica}
 
-El síndrome de Brugada es una canalopatía hereditaria del canal de sodio, asociada con frecuencia a mutaciones en el gen \emph{SCN5A}, que predispone a fibrilación ventricular y muerte súbita cardíaca. Su prevalencia se estima entre 1 y 5 casos por cada 10\,000 personas. Aunque predomina en varones adultos jóvenes, puede manifestarse a cualquier edad. Su relevancia clínica deriva de la asociación con arritmias malignas \cite{sieira2017}.
-
-El hallazgo electrocardiográfico central es el patrón tipo 1, también denominado \emph{coved}. Se caracteriza por una elevación descendente del segmento ST de al menos 2 mm en las derivaciones precordiales derechas V1 o V2, seguida de una onda T negativa. Es el único patrón considerado diagnóstico por las guías vigentes \cite{zeppenfeld2022}. Los patrones tipo 2 y tipo 3, descritos históricamente, no bastan por sí solos para establecer el diagnóstico.
-
-Los criterios diagnósticos han cambiado con el tiempo. En la actualidad, se acepta el patrón tipo 1, espontáneo o inducido, cuando se han descartado otras causas que puedan explicarlo \cite{zeppenfeld2022}. La interpretación incorpora además el contexto clínico. El síncope inexplicado, la respiración agónica nocturna, los antecedentes familiares de muerte súbita y las arritmias ventriculares documentadas refuerzan la sospecha y orientan la estratificación del riesgo.
-
-\subsubsection{Circuito diagnóstico clínico}
-
-El diagnóstico del síndrome de Brugada combina el ECG con la valoración clínica y no puede reducirse al reconocimiento automático de un patrón en una imagen:
+La interpretación combina el ECG con síntomas, antecedentes familiares y la exclusión de otras causas. El síncope inexplicado, la respiración agónica nocturna, la muerte súbita familiar y las arritmias ventriculares documentadas orientan la valoración del riesgo. El circuito comprende los siguientes pasos.
 
 \begin{enumerate}
-  \item \textbf{ECG basal de 12 derivaciones.} La evaluación comienza con un ECG estándar. Si aparece un patrón tipo 1 espontáneo en V1 o V2, el diagnóstico puede establecerse después de excluir fenocopias y otras causas de elevación del ST.
-  \item \textbf{Recolocación de derivaciones precordiales.} Cuando el ECG basal es sospechoso pero no concluyente, las guías recomiendan registrar V1 y V2 en espacios intercostales superiores (segundo o tercero en lugar del cuarto estándar). Esta posición acerca los electrodos al tracto de salida del ventrículo derecho y aumenta la sensibilidad para detectar el patrón tipo 1 \cite{brugadadrugsdiagnostic}.
-  \item \textbf{Valoración clínica integral.} Se revisan los síntomas actuales y pasados, la historia familiar de muerte súbita o síndrome de Brugada confirmado y las comorbilidades. También se comprueba la exposición a fármacos o situaciones que puedan provocar fenocopias (fiebre, trastornos electrolíticos o isquemia).
-  \item \textbf{Prueba farmacológica con bloqueantes del canal de sodio.} En pacientes seleccionados con sospecha persistente y un ECG basal no diagnóstico, se realiza una prueba de provocación farmacológica. Se emplean bloqueantes del canal de sodio de clase I, como ajmalina, flecainida, procainamida o pilsicainida, según la disponibilidad local \cite{wilde2023scbt}. La prueba requiere un entorno monitorizado, personal entrenado y equipo de desfibrilación. Se considera positiva si aparece un patrón tipo 1 durante o después de administrar el fármaco, y no está indicada cuando este patrón ya se presenta de forma espontánea.
-  \item \textbf{Estudio genético.} Se recomienda la evaluación del gen \emph{SCN5A} en pacientes índice para apoyar la caracterización molecular y facilitar el cribado familiar.
-  \item \textbf{Decisión clínica final.} La decisión sobre estratificación de riesgo y tratamiento es siempre clínica, multifactorial y realizada por especialistas.
+  \item \textbf{ECG basal de doce derivaciones.} Un patrón tipo~1 espontáneo permite establecer el diagnóstico tras descartar otras causas de elevación del ST.
+  \item \textbf{Registro precordial alto.} Si el ECG es sospechoso, se registran V1 y V2 en el segundo o tercer espacio intercostal, en lugar del cuarto. La proximidad al tracto de salida del ventrículo derecho aumenta la sensibilidad \cite{brugadadrugsdiagnostic}.
+  \item \textbf{Revisión clínica.} Se revisan síntomas, antecedentes, comorbilidades y fármacos, ya que los trastornos electrolíticos, la isquemia y algunos medicamentos pueden producir patrones similares. Durante un episodio de fiebre puede aparecer un patrón de Brugada que no se observa a temperatura normal \cite{zeppenfeld2022}.
+  \item \textbf{Prueba farmacológica.} En pacientes seleccionados con sospecha persistente y ECG no diagnóstico se utilizan bloqueantes del canal de sodio, como ajmalina, flecainida, procainamida o pilsicainida. Se realiza con monitorización, personal entrenado y desfibrilador, y se considera positiva si aparece un patrón tipo~1 durante o después de administrar el fármaco \cite{wilde2023scbt}.
+  \item \textbf{Estudio genético y decisión especializada.} En pacientes índice con patrón tipo~1 puede recomendarse estudiar \emph{SCN5A} para la caracterización molecular y el cribado familiar. La estratificación del riesgo y el tratamiento dependen de la valoración conjunta de especialistas.
 \end{enumerate}
 
-Este circuito delimita el alcance de cualquier resultado automático. En este trabajo, una predicción positiva se interpreta únicamente como una señal para priorizar la revisión del trazado. La indicación de una prueba farmacológica, su interpretación y las decisiones posteriores permanecen bajo responsabilidad médica \cite{wilde2023scbt}. La Figura~\ref{fig:brugada_clinical_examples} reúne ejemplos de la morfología considerada.
+La Figura~\ref{fig:brugada_clinical_examples} muestra ejemplos clínicos de estos patrones.
 
 \begin{figure}[H]
   \centering
   \begin{subfigure}[t]{0.58\textwidth}
     \centering
-    \safeincludegraphics[width=\linewidth]{sources/brugada_type1_ecgpedia.png}
+    \safeincludegraphics[width=\linewidth]{sources/brugada_type1_ecgpedia.pdf}
     \caption{ECG con morfología tipo 1 en V1 y V2.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{0.34\textwidth}
     \centering
-    \safeincludegraphics[width=\linewidth]{sources/brugada_patterns_orphanet.png}
+    \safeincludegraphics[width=\linewidth]{sources/brugada_patterns_orphanet.pdf}
     \caption{Patrones tipo 1--3.}
   \end{subfigure}
   \caption{Ejemplos clínicos de morfología asociada al síndrome de Brugada. La imagen izquierda procede de ECGpedia, CC BY-SA 3.0 \cite{ecgpediaType1Image}. La imagen derecha procede de Napolitano y Priori, CC BY 2.0 \cite{napolitano2006}.}
   \label{fig:brugada_clinical_examples}
 \end{figure}
 
-El patrón tipo 1 puede recordar a una alteración terminal del QRS. Su morfología difiere de la de un bloqueo de rama derecha. La onda J del patrón tipo 1 del síndrome de Brugada se concentra en las derivaciones precordiales derechas y no requiere la onda S lateral recíproca propia del bloqueo de rama derecha \cite{corrado2010}. En este trabajo, la semejanza con RBBB se utiliza únicamente como descripción morfológica. La Figura~\ref{fig:brugada_pattern} resume los rasgos considerados en el trabajo.
+\subsection{Morfología compatible con bloqueo de rama derecha}
+
+El bloqueo de rama derecha (RBBB, por sus siglas en inglés) es una alteración de la conducción eléctrica que retrasa la activación del ventrículo derecho. Como esa activación ocurre después que la del izquierdo, cambia la parte final del complejo QRS y puede aparecer una segunda deflexión positiva en las derivaciones que observan el lado derecho del corazón.
+
+En el bloqueo completo, el ECG presenta un QRS de al menos 120 ms, patrones como rsR prima o rSR prima en V1 o V2 y una onda S ensanchada en derivaciones laterales \cite{surawicz2009}. Estos criterios describen un problema de conducción eléctrica y algunos de sus rasgos visuales también aparecen en patrones asociados al síndrome de Brugada.
+
+Como una forma semejante en una sola derivación no basta para diagnosticar el bloqueo, también deben valorarse la duración global del QRS, las derivaciones I y V6, la posición de los electrodos y otras causas de retraso terminal. Por ello, en esta memoria RBBB identifica únicamente un rasgo visual compatible, que también puede recordar al patrón tipo~1 de Brugada. A diferencia del bloqueo, este patrón concentra su onda J en las precordiales derechas y no requiere una onda S lateral recíproca \cite{corrado2010}. La Figura~\ref{fig:brugada_pattern} resume los rasgos considerados.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.94\textwidth]{results/fig_brugada_pattern.png}
+  \safeincludegraphics[width=0.94\textwidth]{results/fig_brugada_pattern.pdf}
   \caption{Representación esquemática de rasgos morfológicos asociados al patrón tipo 1 del síndrome de Brugada.}
   \label{fig:brugada_pattern}
 \end{figure}
 
-\subsection{Morfología compatible con bloqueo de rama derecha}
+\subsection{Elevación del ST e inversión de T}
 
-El bloqueo de rama derecha es una alteración de la conducción intraventricular. En su forma completa se caracteriza por una duración del QRS igual o superior a 120 ms y por una morfología terminal compatible en las derivaciones apropiadas. Las recomendaciones de estandarización describen patrones como rsR prima o rSR prima en V1 o V2, junto con una onda S ensanchada en derivaciones laterales \cite{surawicz2009}.
+El ST se extiende desde J hasta el inicio de T. Su desplazamiento se mide respecto de la línea isoeléctrica, aproximada por TP o PR según el registro. La interpretación depende de la derivación, la magnitud y forma de la elevación, su distribución, la edad, el sexo y el cuadro clínico \cite{rautaharju2009st}. Puede aparecer en isquemia aguda, pericarditis, repolarización precoz, alteraciones de conducción y síndromes de onda J.
 
-La activación tardía del ventrículo derecho produce la segunda deflexión positiva en las derivaciones precordiales derechas. Sin embargo, una forma semejante a rsR prima en una sola derivación no basta para diagnosticar un bloqueo completo. También deben considerarse la duración global del QRS, la morfología en I y V6, la posición de los electrodos y otras causas de retraso terminal. En esta memoria, RBBB designa un rasgo visual compatible. El diagnóstico completo requiere los criterios anteriores.
+La polaridad de T varía entre derivaciones y con la edad y el sexo. También puede cambiar de forma secundaria a una despolarización anómala, con alteraciones discordantes del ST y de T. Una T negativa aislada no permite determinar si es primaria, secundaria, fisiológica o patológica.
 
-\subsection{Elevación del segmento ST}
+La elevación del ST o la inversión de T pueden deberse a distintas causas, por lo que distinguir Brugada de otras enfermedades exige valorar el ECG completo junto con la información clínica. Las etiquetas del simulador se limitan a describir esas formas visibles, sin asignarles por sí solas un diagnóstico.
 
-El segmento ST comienza en el punto J y termina con el inicio de la onda T. Su desplazamiento se mide con respecto a una referencia isoeléctrica. La magnitud clínicamente relevante depende de la derivación, del sexo, de la edad y de la situación diagnóstica. Además, una elevación puede aparecer en contextos diferentes, entre ellos isquemia aguda, pericarditis, repolarización precoz, alteraciones de conducción y síndromes de onda J.
+\section{Señal digital e imagen}
 
-Un modelo visual puede aprender a reconocer una región elevada después del QRS sin distinguir por ello un patrón del síndrome de Brugada, un infarto agudo u otra causa. Esta diferenciación requeriría varias derivaciones, contexto clínico y un conjunto de etiquetas mucho más amplio.
+La señal digital conserva las amplitudes ordenadas en el tiempo, de modo que pueden filtrarse, medirse intervalos y compararse derivaciones con una escala conocida. Al representarla como imagen se mantiene la forma del trazado, pero se incorporan también la cuadrícula, el grosor de la línea, los márgenes y la distribución sobre el documento. Estos elementos pueden influir en la clasificación si se repiten más en una clase que en otra, aunque no correspondan a una alteración cardíaca.
 
-\subsection{Inversión de la onda T}
+Por ello, cuando solo se dispone de un documento, hay que elegir entre analizar su imagen o reconstruir primero la señal mediante digitalización. La segunda opción permite reutilizar modelos temporales, aunque puede introducir errores si los trazos se solapan o la calidad es insuficiente, mientras que el análisis directo debe distinguir las ondas de los elementos del fondo. La sección~\ref{sec:antecedentes_imagen} recoge los estudios que comparan estas alternativas.
 
-La onda T refleja la repolarización ventricular y suele aparecer después del segmento ST. Su polaridad normal varía entre derivaciones. También puede modificarse como consecuencia secundaria de una secuencia anómala de despolarización. Por ejemplo, una alteración de conducción puede producir cambios discordantes del segmento ST y de la onda T.
+\section{Clasificación y salida de los modelos}
+\label{sec:clasificacion}
 
-La inversión de T es una propiedad visual localizada que debe interpretarse dentro del ECG completo. Por sí sola no permite determinar si es primaria, secundaria, fisiológica o patológica. En este trabajo se utiliza como rasgo morfológico.
-
-\section{La señal y la imagen como representaciones}
-
-Una señal digital conserva muestras de amplitud ordenadas en el tiempo, lo que permite medir intervalos, aplicar filtros y comparar derivaciones con una escala conocida. La imagen surge al renderizar esas muestras. Conserva la forma visible del trazado, pero incorpora también las decisiones adoptadas durante su presentación.
-
-El renderizado determina el tamaño del lienzo, la cuadrícula, el grosor de la línea, los márgenes y la disposición de las derivaciones. Si alguno de estos elementos se correlaciona con la etiqueta, una red puede utilizarlo como atajo. El conjunto de imágenes debe evitar, por tanto, que la clase pueda deducirse de una marca, un recorte o una diferencia de resolución.
-
-La imagen ofrece una alternativa práctica cuando la señal original no está disponible. Sangha y colaboradores evaluaron un modelo multietiqueta sobre ECG renderizados, registros externos y trazados impresos \cite{sangha2022}. Gliner y colaboradores estudiaron también el uso de una CNN con fotografías de ECG y aplicaron estrategias específicas para adaptar el formato de entrada \cite{gliner2023}.
-
-Otra posibilidad consiste en digitalizar primero la imagen. Wu y colaboradores desarrollaron una herramienta automática para segmentar trazados impresos y reconstruir las señales \cite{wu2022digitization}. Este proceso permite reutilizar modelos temporales, pero puede introducir errores cuando las derivaciones se solapan o la calidad del documento es baja. El análisis directo de la imagen y la digitalización responden, por tanto, a compromisos distintos y no son excluyentes.
-
-La doble representación del ECG como señal temporal e imagen motiva la comparación entre CNN y VLM. Una CNN entrenada con pocos ejemplos debe aprender la tarea a partir de los píxeles disponibles y de sus pesos iniciales. Un modelo de visión y lenguaje parte, además, de representaciones visuales y textuales adquiridas durante el preentrenamiento. El experimento evalúa si esta diferencia permite aprovechar mejor un conjunto etiquetado pequeño.
-
-\section{Datos sintéticos y modelos gaussianos}
-
-Los datos sintéticos permiten aislar factores difíciles de separar en una colección clínica. Con ellos se pueden generar clases equilibradas, registrar los parámetros que originan cada señal y repetir el proceso. También permiten desarrollar las primeras fases del método sin utilizar información de pacientes.
-
-La síntesis desplaza las limitaciones de los datos al proceso de generación. Su validez depende de que las reglas representen los rasgos estudiados sin introducir atajos visuales. Una morfología demasiado regular puede facilitar la clasificación y, al mismo tiempo, aportar poca información sobre el comportamiento en registros reales.
-
-Las ondas gaussianas se han utilizado anteriormente para representar ECG. Sayadi y colaboradores describieron un modelo dinámico basado en ellas para generar señales y realizar filtrado bayesiano \cite{sayadi2010}. Este proyecto utiliza una variante más sencilla y directamente parametrizable. Cada componente se define como
-
+En clasificación multiclase las categorías son exclusivas. En clasificación multietiqueta pueden coexistir, como ocurre con los rasgos del ECG \cite{tsoumakas2007}. Para una imagen \(x\) y \(L\) etiquetas se define
 \begin{equation}
-g_i(t) =
-a_i
-\exp\left(
-  -\frac{(t-\mu_i)^2}{2\sigma_i^2}
-\right),
-\label{eq:gaussian_atom}
+\mathbf{y}=(y_1,\ldots,y_L), \qquad y_j\in\{0,1\}.
 \end{equation}
 
-donde \(a_i\) define la amplitud, \(\mu_i\) determina la posición temporal y \(\sigma_i\) regula la anchura. El latido completo se obtiene mediante
-
+La red produce un logit \(z_j\) por etiqueta, una puntuación numérica que puede tomar cualquier valor real. La función sigmoide lo transforma en una probabilidad entre cero y uno mediante la expresión
 \begin{equation}
-x(t) = \sum_{i=1}^{M} g_i(t).
-\label{eq:gaussian_sum}
+\hat{p}_j=\frac{1}{1+\exp(-z_j)}.
 \end{equation}
 
-La suma incluye componentes para P, Q, R, S, R prima, punto J, segmento ST y onda T. Sus parámetros se muestrean en intervalos específicos de cada familia generadora y se someten después a relaciones temporales que preservan el orden del latido. Por último, un validador comprueba que la señal cumpla las condiciones mínimas de la familia solicitada.
-
-El procedimiento corresponde a un muestreo con rechazo: las señales que no superan el validador se descartan y se generan de nuevo. Esta estrategia mejora la consistencia interna, pero puede concentrar las muestras en las regiones aceptadas por las reglas. Por ello, la verificación de calidad debe incluir la tasa de aceptación y la distribución de los parámetros.
-
-Los simuladores de mayor fidelidad emplean modelos electrofisiológicos y geometrías cardíacas completas. MedalCare XL, por ejemplo, ofrece miles de ECG sintéticos de doce derivaciones obtenidos mediante simulaciones electrofisiológicas \cite{gillette2023}. Su objetivo es el realismo fisiológico y exige un coste computacional mayor. El simulador de este TFG prioriza, en cambio, la interpretación y el ajuste local de las reglas, por lo que ambos enfoques no son equivalentes.
-
-\section{Clasificación multietiqueta}
-
-En clasificación multiclase, cada ejemplo se asigna a una categoría exclusiva. En clasificación multietiqueta, una muestra puede asociarse con varias etiquetas. Esta formulación permite representar hallazgos que coexisten \cite{tsoumakas2007}.
-
-Sea \(L\) el número de etiquetas. Para una imagen \(x\), la referencia se representa mediante un vector
-
+La entropía cruzada binaria (BCE) es la función de pérdida que mide la discrepancia entre las probabilidades predichas y las etiquetas. Se utiliza para ajustar el modelo y se calcula como
 \begin{equation}
-\mathbf{y} = (y_1,\ldots,y_L), \qquad y_j \in \{0,1\}.
-\end{equation}
-
-Una red convolucional produce un logit \(z_j\) por etiqueta. La función sigmoide transforma cada logit en una probabilidad independiente
-
-\begin{equation}
-\hat{p}_j = \frac{1}{1+\exp(-z_j)}.
-\end{equation}
-
-La pérdida habitual es la entropía cruzada binaria
-
-\begin{equation}
-\mathcal{L}_{\mathrm{BCE}} =
--\frac{1}{L}
-\sum_{j=1}^{L}
-\left[
-y_j \log(\hat{p}_j)
-+
-(1-y_j)\log(1-\hat{p}_j)
-\right].
+\mathcal{L}_{\mathrm{BCE}}=
+-\frac{1}{L}\sum_{j=1}^{L}
+\left[y_j\log(\hat{p}_j)+(1-y_j)\log(1-\hat{p}_j)\right].
 \label{eq:bce}
 \end{equation}
 
-La independencia de las salidas no implica que las etiquetas sean estadísticamente independientes. La red puede aprender representaciones compartidas y aprovechar sus coocurrencias. Sin embargo, una asociación demasiado rígida puede crear atajos. Si todas las ondas T negativas aparecen junto con elevación del ST, el modelo puede predecir una etiqueta a partir de la otra sin observar la región correspondiente.
+Aunque la red produzca una salida por rasgo, todas se obtienen a partir de la misma imagen y pueden aprovechar asociaciones entre etiquetas. Si, por ejemplo, las T negativas apareciesen siempre junto con elevación del ST, el modelo podría predecir la primera a partir de la segunda sin examinar su región, por lo que acertar ambas etiquetas no demuestra que reconozca cada onda de forma independiente.
 
-La decisión binaria requiere un umbral. El valor 0,5 ofrece una referencia común. El umbral óptimo puede variar entre etiquetas. Los umbrales deben fijarse con el conjunto de validación y mantenerse durante el test. Ajustarlos con el conjunto de prueba produciría una estimación optimista.
-
-Los modelos de visión y lenguaje producen texto o un objeto estructurado. Para evaluarlos, la respuesta debe convertirse en un vector binario y las salidas que incumplan el esquema deben registrarse por separado. El protocolo incorpora esta diferencia al comparar ambos tipos de modelo.
+Para evaluar estas salidas, sus probabilidades se convierten en decisiones mediante un umbral elegido con los pacientes de validación y mantenido durante la prueba. Ajustarlo con los casos que se evalúan permitiría favorecer el resultado después de conocer sus respuestas, de ahí la separación descrita en la sección~\ref{sec:umbral_cnn}. En Gemma~4, la respuesta llega como texto estructurado y se transforma en las mismas etiquetas positivas o negativas para poder calcular las métricas de ambos métodos.
 
 \section{Redes neuronales convolucionales}
+\label{sec:fundamentos_cnn}
 
-Una convolución aplica filtros compartidos sobre regiones locales de una imagen. Las primeras capas responden a transiciones y contornos. Las posteriores combinan esas respuestas en patrones de mayor escala. En una imagen de ECG, la red puede aprender inclinaciones, picos, valles y relaciones entre regiones temporales.
+Una CNN combina capas convolucionales, que aprenden filtros para detectar formas, con funciones de activación, operaciones que reducen la resolución y una salida de clasificación. En este trabajo, esas capas procesan la imagen del ECG, donde las primeras pueden detectar bordes y cambios de dirección del trazo, mientras que las siguientes reúnen esa información para representar picos, valles y relaciones entre ondas. La convolución aplica un mismo filtro en distintas posiciones, por lo que no necesita aprender por separado una forma cada vez que aparece desplazada.
 
-Los pesos compartidos aportan cierta tolerancia a desplazamientos pequeños. No obstante, el ECG no es completamente invariante a la posición: una deflexión negativa tiene un significado distinto dentro del QRS y en la región de la onda T. La arquitectura debe conservar suficiente información espacial y el preprocesado, alinear los latidos.
+En una señal digital se utilizan filtros unidimensionales que, al apilarse las capas, abarcan intervalos temporales cada vez mayores. En la imagen, el recorrido es espacial, pero sigue siendo importante conservar la posición de las ondas, porque una deflexión negativa no significa lo mismo dentro del QRS que en T. Por ello, la tolerancia a pequeños desplazamientos debe combinarse con un preprocesamiento que alinee los latidos sin borrar sus relaciones temporales.
 
-La referencia convolucional de este trabajo es una ResNet18 preentrenada. Sus conexiones residuales facilitan la optimización de redes profundas al aprender transformaciones relativas a la entrada de cada bloque \cite{he2016}. Los pesos de ImageNet no garantizan una ventaja en ECG, pero proporcionan filtros iniciales para contornos, trazos y texturas cuando hay pocos ejemplos etiquetados.
+ResNet18 incorpora conexiones residuales que suman la entrada de un bloque a su transformación y permiten entrenar la red aprendiendo cambios sobre esa entrada \cite{he2016}. El modelo parte de pesos aprendidos con ImageNet y se comprueba experimentalmente si esos filtros resultan útiles para reconocer los trazos y texturas del ECG. La adaptación de la salida a las tareas del simulador y del HUCA se describe en la sección~\ref{sec:cnn_entrenamiento}.
 
-La evaluación debe comprobar si esta transferencia visual se mantiene fuera del simulador. Un resultado alto en imágenes sintéticas podría deberse, en parte, al aprendizaje de reglas de renderizado. Una reducción en el dominio clínico sería compatible con el efecto del ruido, la variabilidad clínica o las diferencias en la definición de las etiquetas. Esta limitación motiva el estudio de alternativas al entrenamiento supervisado con pocos ejemplos.
+\section{Explicabilidad y adaptación de dominio}
+\label{sec:explicabilidad}
 
-\section{Modelos de visión y lenguaje}
+La inteligencia artificial explicable, o \textit{explainable AI} (XAI), estudia cómo examinar las decisiones de un modelo para que una persona pueda valorar en qué información se apoyan. En el análisis de ECG interesa comprobar si la clasificación se relaciona con las ondas relevantes o con elementos del documento, como la cuadrícula y los márgenes, antes de atribuirle una interpretación clínica.
 
-Un modelo de visión y lenguaje (VLM) combina una representación visual con un modelo generativo de texto. La imagen se transforma en vectores a los que el componente lingüístico atiende durante la generación. La salida puede ser una respuesta libre, una explicación o una estructura con campos definidos. A diferencia de una CNN dedicada a la clasificación, el VLM relaciona la entrada visual con las representaciones textuales adquiridas durante el preentrenamiento.
+Para inspeccionar la CNN se utiliza Grad-CAM, que construye un mapa de regiones asociadas a una predicción ponderando las activaciones de una capa convolucional con los gradientes de la clase \cite{selvaraju2017}. Así puede observarse si la respuesta se concentra alrededor del QRS, del ST o de T, aunque la resolución del mapa depende de la capa elegida y puede abarcar una zona amplia alrededor de un artefacto. Esta inspección ayuda a detectar comportamientos sospechosos, pero no permite asegurar por sí sola qué rasgo clínico determinó el resultado.
 
-Flamingo mostró que un modelo multimodal entrenado con secuencias intercaladas de imagen y texto podía adaptarse a distintas tareas mediante ejemplos incluidos en el contexto \cite{alayrac2022}. Este procedimiento no actualiza los pesos del modelo. Las demostraciones indican durante la inferencia la relación esperada entre la entrada y la salida.
+En un modelo de visión y lenguaje también puede solicitarse una explicación escrita, pero que resulte comprensible no garantiza que describa el proceso que produjo la predicción. Por eso se distinguen las etiquetas estructuradas utilizadas para evaluar el rendimiento de las justificaciones examinadas de forma cualitativa.
 
-Esta propiedad resulta pertinente cuando solo se dispone de pocos ejemplos etiquetados de un fenómeno infrecuente como el síndrome de Brugada. El VLM parte de representaciones visuales y textuales previas. Su utilidad para el análisis de ECG constituye una cuestión empírica que debe evaluarse sobre los trazados.
+Esta precaución también importa al cambiar de conjunto de datos, porque la red puede aprender el estilo de representación en lugar de la forma de las ondas. La adaptación de dominio intenta reducir esa diferencia cuando se pasa de los latidos alineados y las cuadrículas uniformes del simulador a ECG con ruido, deriva de línea base, variación de frecuencia, anotaciones y trazos superpuestos. El capítulo~\ref{chap:simulador} describe los controles del generador y la sección~\ref{sec:adaptacion_cnn}, los métodos empleados para estudiar ese cambio.
 
-Los modelos multimodales médicos ocupan una posición intermedia entre los modelos generalistas y los sistemas entrenados para una sola tarea. MedGemma 1.5 es un modelo médico abierto de la familia Gemma, adaptado a modalidades como radiología, histopatología, dermatología, fondo de ojo, documentos y registros clínicos \cite{medgemma15}. Su documentación no incluye el ECG entre las modalidades principales y recomienda validar el modelo de forma específica antes de aplicarlo a una tarea concreta.
+\section{Modelos de visión y lenguaje y aprendizaje en contexto}
+\label{sec:fundamentos_icl}
 
-La evaluación cuantitativa utiliza Gemma 4 E4B, un VLM de pesos abiertos que admite texto e imagen y permite ajustar el presupuesto de tokens visuales \cite{gemma4card}. Un presupuesto mayor conserva más detalle, pero aumenta el coste computacional. El modelo se ejecuta mediante vLLM en infraestructura universitaria y se consulta a través de un endpoint compatible con la API de OpenAI.
+Un modelo de visión y lenguaje (VLM) combina un componente que procesa imágenes con un modelo generativo de texto. El componente visual transforma la imagen en vectores numéricos que representan su contenido y que el modelo relaciona con las instrucciones escritas. El entrenamiento multimodal permite aprender asociaciones entre imágenes y texto, de modo que una consulta puede pedir una descripción, una respuesta a una pregunta o una clasificación \cite{alayrac2022}.
 
-\section{Aprendizaje multimodal en contexto}
+Al analizar un ECG, la imagen aporta el trazado y las instrucciones indican qué debe examinarse y cómo expresar la respuesta. Así, el mismo modelo puede recibir preguntas sobre la forma de las ondas o responder con una etiqueta, según la tarea planteada.
 
-El aprendizaje en contexto (ICL) se estudia en este TFG como alternativa al entrenamiento supervisado. El modelo recibe una secuencia de demostraciones
-
+\begin{samepage}
+El aprendizaje en contexto (ICL) incorpora además ejemplos resueltos a la consulta. En su versión multimodal, cada demostración reúne una imagen y su etiqueta, con las que se muestra al modelo el criterio de clasificación y el formato esperado de la respuesta \cite{dong2024survey}. Las demostraciones, las instrucciones y la imagen que debe clasificarse forman el contexto disponible para generar esa respuesta. La Figura~\ref{fig:icl_context_related_work} ilustra el esquema general con una tarea de texto. Formalmente,
 \begin{equation}
-\mathcal{D}_K =
-\{(x_1,y_1),\ldots,(x_K,y_K)\}
+\mathcal{D}_K=\{(x_1,y_1),\ldots,(x_K,y_K)\},
+\end{equation}
+\end{samepage}
+y predice la salida de \(x^\ast\) condicionada por esos ejemplos y la instrucción mediante
+\begin{equation}
+\hat{y}^\ast=f_\theta\left(x^\ast,\mathcal{D}_K,\text{instrucción}\right).
 \end{equation}
 
-antes de la consulta objetivo \(x^\ast\). El modelo genera una estimación condicionada por la instrucción y por las demostraciones
+Durante la consulta, los parámetros \(\theta\) permanecen fijos y la respuesta se adapta a los ejemplos presentes en el contexto. En cambio, el entrenamiento supervisado de la CNN incorpora los ejemplos mediante la actualización de sus pesos. \(K\) indica cuántas demostraciones recibe el VLM, aunque su selección, diversidad, orden y correspondencia entre imagen y etiqueta también afectan a la consulta. Los estudios sobre estos factores se recogen en la sección~\ref{sec:antecedentes_icl}.
 
-\begin{equation}
-\hat{y}^{\ast}
-=
-f_{\theta}
-\left(
-x^\ast,
-\mathcal{D}_K,
-\text{instrucción}
-\right),
-\end{equation}
-
-sin modificar los parámetros \(\theta\). En esta formulación, \(K\) controla la cantidad de evidencia contextual disponible. La calidad de los ejemplos y su relación con la consulta requieren un análisis separado.
-
-El número de ejemplos no determina por sí solo la calidad del contexto. También influyen su selección, diversidad y orden, así como la coherencia entre cada imagen y su etiqueta. Qin y colaboradores identificaron la recuperación multimodal, el orden interno de las demostraciones y la posición de la instrucción como factores relevantes \cite{zhang2024mmicl}.
-
-Chen y colaboradores observaron que varios modelos podían depender más del texto que de la información visual de las demostraciones \cite{chen2024}. Este resultado aconseja interpretar el ICL con cautela: una mejora tras añadir ejemplos no demuestra por sí sola que el modelo haya utilizado correctamente la morfología de sus imágenes.
-
-\section{Explicabilidad y fidelidad}
-
-Los mapas de activación de clase permiten visualizar qué regiones de una imagen influyen en una salida. Grad-CAM utiliza los gradientes de una clase para ponderar los mapas de activación de una capa convolucional \cite{selvaraju2017}. En una tarea de ECG, se espera que las regiones resaltadas difieran entre el QRS, el segmento ST y la onda T.
-
-Un mapa visual no establece causalidad clínica. Su resolución suele ser inferior a la de la imagen de entrada y el resultado depende de la capa seleccionada. También puede señalar una región amplia aunque el modelo utilice un artefacto local. En este proyecto se emplea para detectar comportamientos incompatibles con la tarea.
-
-Las explicaciones generadas por un modelo de visión y lenguaje presentan otra limitación. El texto puede describir correctamente la morfología sin que esa descripción haya determinado la predicción. La plausibilidad lingüística y la fidelidad del razonamiento son propiedades distintas. Por ello, la evaluación principal utiliza respuestas estructuradas y analiza las justificaciones como un resultado cualitativo separado.
-
-\section{Adaptación de dominio}
-
-El dominio sintético y el dominio real difieren en fisiología, adquisición y presentación. El simulador genera un único latido alineado, con una cuadrícula uniforme y sin variabilidad entre pacientes. Un ECG real contiene ruido, deriva de línea base, diferencias de frecuencia cardíaca, trazos superpuestos, anotaciones y múltiples derivaciones.
-
-Una red puede obtener un rendimiento elevado en el dominio sintético y fallar en el clínico si aprende características exclusivas del renderizado. El análisis determina si la CNN aprende las reglas sintéticas y si la representación conserva utilidad ante ECG clínicos. Esta diferencia entre dominios se evalúa de forma específica sobre la muestra del HUCA.
-
-\section{Implicaciones para el diseño experimental}
-
-Estos fundamentos determinan las principales decisiones experimentales. Las etiquetas se definen como hallazgos morfológicos, la salida se interpreta como apoyo a la revisión y la comparación mantiene una entrada y una unidad de evaluación comunes. El capítulo~\ref{chap:diseno} concreta el tratamiento de los ejemplos en cada rama.
-
-En el conjunto sintético, cada imagen se genera de forma independiente y no existe una agrupación clínica por paciente. En una muestra clínica, la partición debe impedir que registros de una misma persona aparezcan en entrenamiento y test. También debe preservarse la escala o documentarse cualquier normalización.
-
-Cuando la tarea es morfológica, el rendimiento se analiza por etiqueta porque cada hallazgo ocupa una región distinta. La coincidencia exacta indica si se recupera el conjunto completo. La sensibilidad y la especificidad describen qué tipo de error domina, y F1 resume el equilibrio entre precisión y sensibilidad. Las mismas definiciones se aplican a CNN y VLM/ICL para mantener un criterio de evaluación común.
-
-Las conclusiones sobre utilidad clínica exigirían una evaluación específica con un conjunto clínico y dentro de un circuito asistencial definido. El dominio sintético permite estudiar la capacidad de aprendizaje, la sensibilidad al contexto y el comportamiento relativo de los modelos. La seguridad de un sistema médico requiere una evaluación clínica específica. Cualquier interpretación clínica debe limitarse a la priorización de la revisión y mantener el diagnóstico completo dentro del circuito asistencial.
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.88\textwidth]{sources/icl_general_dong2024.pdf}
+  \caption{Esquema de demostraciones y consulta en ICL, basado en Dong y colaboradores \cite{dong2024survey}.}
+  \label{fig:icl_context_related_work}
+\end{figure}

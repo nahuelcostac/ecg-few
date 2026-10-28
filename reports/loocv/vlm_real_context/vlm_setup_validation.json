@@ -28,8 +28,8 @@
     "estandar",
     "balanced"
   ],
-  "context_dataset_root": "data/brugada_huca (not versioned)",
-  "dataset_root": "data/brugada_huca (not versioned)",
+  "context_dataset_root": "/home/nahuel/ecg/ecg-few/data/brugada_huca",
+  "dataset_root": "/home/nahuel/ecg/ecg-few/data/brugada_huca",
   "errors": [],
   "folds": 317,
   "images": 317,

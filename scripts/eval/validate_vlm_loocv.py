@@ -220,9 +220,7 @@ def validate_setup(args: argparse.Namespace) -> dict[str, Any]:
                             seed=seed + int(fold["fold_id"]) * 100_003,
                         )
                     elif task == CLINICAL_TASK:
-                        context_ids = selection_for(fold, k=k, seed=seed)[
-                            "context_patient_ids"
-                        ]
+                        context_ids = selection_for(fold, k=k, seed=seed)["context_patient_ids"]
                     elif has_context_dataset:
                         context_ids = select_context_patient_ids(
                             qrs_patients,
@@ -231,9 +229,7 @@ def validate_setup(args: argparse.Namespace) -> dict[str, Any]:
                             seed=seed + int(fold["fold_id"]) * 100_003,
                         )
                     else:
-                        context_ids = selection_for(fold, k=k, seed=seed)[
-                            "context_patient_ids"
-                        ]
+                        context_ids = selection_for(fold, k=k, seed=seed)["context_patient_ids"]
                     if condition == NO_SUPPORT_IMAGES_CONDITION:
                         multiplier = 0
                     elif task == CLINICAL_TASK:
@@ -285,10 +281,7 @@ def parse_string_list(text: str) -> list[str]:
 
 
 def resolve_clinical_leads(args: argparse.Namespace) -> list[str]:
-    leads = [
-        lead.upper()
-        for lead in parse_string_list(str(getattr(args, "clinical_leads", "")))
-    ]
+    leads = [lead.upper() for lead in parse_string_list(str(getattr(args, "clinical_leads", "")))]
     if not leads:
         leads = [str(getattr(args, "clinical_lead", "V1")).upper()]
     seen: set[str] = set()

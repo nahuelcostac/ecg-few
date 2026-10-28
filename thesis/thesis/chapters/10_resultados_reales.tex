@@ -1,59 +1,11 @@
-\section{Muestra clínica del HUCA}
+\section{Resultados con los datos del HUCA}
 \label{chap:comparacion_real}
 
-La evaluación sobre la muestra clínica del HUCA introduce dos cambios respecto al simulador: las imágenes proceden de ECG clínicos y la referencia deja de ser una regla morfológica explícita. Para separar ambos efectos, el análisis distingue la transferencia desde el simulador del uso de demostraciones tomadas de la propia muestra.
-
-Primero se describe el conjunto del Hospital Universitario Central de Asturias (HUCA), incluido en el recurso Brugada-HUCA \cite{costacortez2026brugada}. Después se estudian la CNN con adaptación de dominio y Gemma~4 con contexto sintético. La comparación principal utiliza, por último, demostraciones de la propia muestra del HUCA.
-
-\subsection{Muestra y unidad experimental}
-
-La campaña final parte de 363 pacientes y excluye 46 registros cuyo patrón basal es distinto de cero. Quedan 317 pacientes: 116 con referencia positiva y 201 con referencia negativa. Se genera una única imagen V1 por paciente y cada uno actúa como muestra de prueba en uno de los 317 pliegues LOOCV.
-
-\begin{table}[H]
-  \centering
-  \begin{tabular}{lrr}
-    \toprule
-    Grupo & Pacientes & Imágenes únicas \\
-    \midrule
-    Referencia positiva & 116 & 116 \\
-    Referencia negativa & 201 & 201 \\
-    \midrule
-    Total evaluado & 317 & 317 \\
-    \bottomrule
-  \end{tabular}
-  \caption{Composición de la muestra del HUCA utilizada en la evaluación.}
-  \label{tab:huca_datos_finales}
-\end{table}
-
-El preprocesamiento selecciona V1, detecta un latido central y recorta una ventana que abarca 300 ms antes de R y 600 ms después. Cada imagen conserva la asociación con su paciente, su referencia clínica y el pliegue de evaluación. La Figura~\ref{fig:huca_preprocesado} distingue el número de pacientes, imágenes y predicciones agregadas.
-
-\begin{figure}[H]
-  \centering
-  \safeincludegraphics[width=0.96\textwidth]{results/fig_huca_preprocesado.pdf}
-  \caption{Preparación de la imagen V1 y de los pliegues por paciente. Otras derivaciones pueden ayudar a localizar R, pero solo V1 se renderiza como entrada. Las 951 entradas de una matriz agregada corresponden a 317 pacientes evaluados con tres semillas, no a imágenes distintas.}
-  \label{fig:huca_preprocesado}
-\end{figure}
-
-La variable disponible no equivale a las tres etiquetas morfológicas del simulador. La tarea real utiliza la referencia binaria por paciente almacenada en \texttt{clinical\_brugada}, por lo que las conclusiones se limitan a priorización para revisión especializada. Su distribución tampoco coincide con la documentación de Brugada-HUCA v1.0.0, que recoge 76 registros asociados al síndrome de Brugada y 287 registros normales antes del procesamiento \cite{costacortez2026brugada}. Como el paquete final no contiene el manifiesto intermedio que explica el cambio, las métricas se atribuyen al subconjunto procesado de la campaña. Esta carencia se mantiene como una limitación de reproducibilidad.
-
-La incompatibilidad entre las etiquetas impide una comparación real-real con la arquitectura CNN definida. En consecuencia, sus métricas sobre el HUCA describen transferencia desde el simulador, mientras que el análisis con demostraciones clínicas caracteriza una adaptación local de Gemma~4. La Figura~\ref{fig:synthetic_real_comparison} sitúa ambas evaluaciones entre los dos dominios.
-
-\begin{figure}[H]
-  \centering
-  \safeincludegraphics[width=0.94\textwidth]{results/fig_synthetic_real_comparison.drawio.png}
-  \caption{Relación entre el dominio sintético, el conjunto clínico del HUCA y las dos estrategias de adaptación evaluadas.}
-  \label{fig:synthetic_real_comparison}
-\end{figure}
+Todos los resultados de este apartado utilizan las etiquetas de los pacientes descritos en la sección~\ref{sec:procedencia_huca}.
 
 \subsection{Transferencia desde el simulador}
 
-Los dos análisis siguientes mantienen el simulador como única fuente de etiquetas morfológicas. En la CNN se añaden métodos de adaptación que utilizan imágenes del HUCA sin esas etiquetas. En Gemma~4 se conserva el modelo sin ajuste y se introducen demostraciones sintéticas antes de cada consulta del HUCA.
-
-\subsubsection{CNN y adaptación de dominio}
-
-La CNN base obtiene su mejor resultado real en \(K=4\), con una BA de \(0,551 \pm 0,034\). La curva difiere del crecimiento observado en el simulador: pasa de 0,531 en \(K=2\) a 0,551 en \(K=4\) y después desciende hasta 0,498 en \(K=32\). Aumentar los ejemplos sintéticos mejora el ajuste a la regla de origen. En estos datos, la concordancia con la referencia clínica no aumenta.
-
-La adaptación de dominio se evaluó en \(K=16\) y \(K=32\). MMD eleva la BA de 0,498 a 0,546 en \(K=32\), mientras que CORAL pasa de 0,520 a 0,545 en \(K=16\). Ninguno supera el 0,551 de la CNN base con \(K=4\), y las comparaciones carecen de contraste inferencial. Los métodos corrigen parte de la caída en configuraciones concretas. La discrepancia entre la regla sintética y la referencia clínica persiste.
+La CNN entrenada con el simulador alcanza su mejor BA sobre el HUCA con \(K=4\). Al aumentar los ejemplos mejora en los datos generados, pero cae hasta 0,498 sobre los ECG reales con \(K=32\). Aprender mejor las reglas del simulador no se traduce, por tanto, en reconocer mejor a los pacientes del HUCA. La Tabla~\ref{tab:domain_adaptation_summary} compara ese mejor punto con CORAL y MMD.
 
 \begin{table}[H]
   \centering
@@ -69,112 +21,65 @@ La adaptación de dominio se evaluó en \(K=16\) y \(K=32\). MMD eleva la BA de 
   \end{tabularx}
   \caption{Puntos principales de la CNN sobre los datos del HUCA. CORAL y MMD se comparan con sus bases del mismo valor de \(K\).}
   \label{tab:domain_adaptation_summary}
+  \resultstablenote
 \end{table}
 
-\subsubsection{VLM con contexto sintético}
+MMD eleva la BA de 0,498 a 0,546 con \(K=32\) y CORAL, de 0,520 a 0,545 con \(K=16\). La mejora es limitada y el rendimiento sigue cerca del azar.
 
-En el análisis complementario, las demostraciones proceden del simulador y las consultas, de la muestra clínica del HUCA. El mejor punto corresponde al ICL balanceado con \(K=16\): BA de \(0,514 \pm 0,008\), sensibilidad de 0,063 y especificidad de 0,965. El modelo predice casi siempre la clase negativa, por lo que el contexto sintético apenas modifica la decisión inicial. La Figura~\ref{fig:transfer_summary} reúne las dos pruebas de transferencia.
+Con demostraciones del simulador y selección balanceada, Gemma~4 obtiene su mejor BA, \(0,514 \pm 0,008\), en \(K=16\), con sensibilidad de 0,063 y especificidad de 0,965. La mayoría de los positivos no se detecta, lo que muestra que estos ejemplos tampoco permiten trasladar a los ECG del HUCA el reconocimiento conseguido en el simulador. En \(K=32\), la BA baja a 0,512, la sensibilidad sube a 0,072 y la especificidad baja a 0,952.
 
-Al aumentar el contexto balanceado de \(K=16\) a \(K=32\), la BA pasa de 0,514 a 0,512 y la \textit{Accuracy}, de 0,635 a 0,630. Al mismo tiempo, la sensibilidad sube de 0,063 a 0,072 y la especificidad baja de 0,965 a 0,952. La diferencia de BA es de solo 0,002 y queda por debajo de la desviación entre semillas de ambos puntos. Los valores describen una meseta con otro equilibrio de errores.
+En conjunto, ni la CNN ni Gemma~4 consiguen generalizar adecuadamente a los registros reales con los ejemplos del simulador. La Figura~\ref{fig:transfer_summary} resume las cuatro variantes de adaptación y Gemma~4 con demostraciones del simulador.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.95\textwidth]{results/transfer_controls_synthetic_to_real_summary.png}
-  \caption{Transferencia sintético-real. A la izquierda se comparan las variantes de adaptación de la CNN. A la derecha se muestra Gemma~4 con demostraciones sintéticas.}
+  \safeincludegraphics[width=0.95\textwidth]{results/transfer_controls_synthetic_to_real_summary.pdf}
+  \caption{Transferencia desde el simulador a los ECG clínicos. A la izquierda se comparan las variantes de adaptación de la CNN. A la derecha se muestra Gemma~4 con demostraciones del simulador.}
   \label{fig:transfer_summary}
 \end{figure}
 
-\subsection{Contexto clínico y comparación principal}
+\subsection{Aprendizaje con ejemplos clínicos}
+\label{sec:resultados_clinicos}
 
-La comparación principal toma las demostraciones de la propia muestra, siempre dentro de cada pliegue. En zero-shot, Gemma~4 no recupera ningún positivo y obtiene una BA de 0,499. Esta predicción prácticamente monoclase describe el comportamiento del modelo sin ejemplos locales. No permite concluir que el ECG carezca de información relevante.
+Conforme recibe más ejemplos del conjunto cedido por el HUCA, Gemma~4 mejora la clasificación de pacientes que no forman parte de las demostraciones de su consulta. Esta generalización contrasta con la CNN entrenada con esos datos, que permanece cerca del azar y no mejora de forma continua al aumentar los ejemplos. La Tabla~\ref{tab:comparacion_clinica_cnn} recoge las mejores configuraciones de ambos modelos.
 
-Las demostraciones reales cambian la distribución de las predicciones. Con \(K=2\) y \(K=4\), el ICL estándar obtiene una BA ligeramente mayor que el balanceado: 0,492 frente a 0,472 y 0,503 frente a 0,497, respectivamente. Este resultado no es contradictorio con el muestreo, porque la selección estándar ya contiene al menos un ejemplo de cada clase. El balance estricto controla la proporción. La representatividad de cada demostración permanece sujeta al muestreo. Además, las diferencias son pequeñas y no se sometieron a un contraste inferencial.
+\IfFileExists{generated/clinical_cnn_comparison_table.tex}{\input{generated/clinical_cnn_comparison_table.tex}}{}
 
-A partir de \(K=8\), el contexto balanceado supera al estándar en los tres valores evaluados. Ambas variantes alcanzan su máximo en \(K=32\): \(0,743 \pm 0,011\) para el ICL estándar y \(0,761 \pm 0,011\) para el balanceado. Este último obtiene una sensibilidad de 0,741 y una especificidad de 0,781. La mejora frente al zero-shot aparece, por tanto, cuando el contexto contiene suficientes ejemplos locales. Una demostración de cada clase resulta insuficiente.
-
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabularx}{0.96\textwidth}{Xrrrrr}
-    \toprule
-    Método & \(K\) & BA & F1 & Sens. & Esp. \\
-    \midrule
-    CNN ResNet18 base & 4 & \(0,551 \pm 0,034\) & 0,506 & 0,670 & 0,433 \\
-    Gemma~4 zero-shot & 0 & \(0,499 \pm 0,001\) & 0,000 & 0,000 & 0,998 \\
-    Gemma~4 ICL estándar & 32 & \(0,743 \pm 0,011\) & 0,675 & 0,690 & 0,796 \\
-    Gemma~4 ICL balanceado & 32 & \(0,761 \pm 0,011\) & 0,699 & 0,741 & 0,781 \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Mejores resultados sobre los ECG del HUCA. Las demostraciones de Gemma~4 proceden de la propia muestra.}
-  \label{tab:comparacion_real}
-\end{table}
-
-La Figura~\ref{fig:comparacion_huca_curvas} muestra la evolución de la CNN y del VLM con \(K\).
+Sin demostraciones, Gemma~4 obtiene una BA de 0,499 y no identifica ningún positivo del HUCA. Al igual que en el simulador, su configuración \textit{zero-shot} no consigue resolver la tarea con las instrucciones utilizadas. La mejor CNN supera ligeramente a Gemma~4 con \(K=2\), 0,519 frente a 0,492, y con \(K=4\), 0,520 frente a 0,503. Desde \(K=8\) cambia el orden y Gemma~4 con selección balanceada alcanza 0,661 frente a 0,507 de la mejor CNN. Con \(K=16\), las mejores BA son 0,710 y 0,546, y con \(K=32\), 0,761 y 0,535.
 
 \begin{figure}[H]
   \centering
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/comparison_huca_ba_by_k.png}
-    \caption{Balanced Accuracy (BA).}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.48\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/comparison_huca_f1_by_k.png}
-    \caption{F1.}
-  \end{subfigure}
-  \caption{Comparación entre la CNN transferida desde el simulador y Gemma~4 con contexto clínico.}
-  \label{fig:comparacion_huca_curvas}
+  \safeincludegraphics[width=0.98\textwidth]{results/clinical_cnn_vs_gemma_performance.pdf}
+  \caption{BA y F1 de la CNN y Gemma~4 al aprender con ejemplos del HUCA. Las barras representan la desviación estándar de tres semillas.}
+  \label{fig:clinical_cnn_gemma_performance}
+\end{figure}
+
+La Figura~\ref{fig:clinical_cnn_gemma_performance} muestra la separación en BA y F1. La diferencia entre los mejores puntos es 0,216 de BA, y con \(K=32\) fijo es 0,226.
+
+Las matrices de la Figura~\ref{fig:clinical_cnn_gemma_confusions} muestran que Gemma~4 mejora la clasificación de ambas clases. Con ejemplos del HUCA reconoce positivos y negativos de pacientes que no forman parte de las demostraciones de su consulta. Esta generalización dentro del conjunto contrasta con el resultado obtenido sin ejemplos o con ejemplos del simulador, pero no demuestra todavía el mismo rendimiento en otros centros. Cada matriz reúne tres evaluaciones de los mismos pacientes.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.90\textwidth]{results/clinical_cnn_vs_gemma_confusions.pdf}
+  \caption{Matrices de confusión normalizadas por clase real para la CNN entrenada con selección balanceada de pacientes del HUCA en \(K=16\) y Gemma~4 con demostraciones del HUCA balanceadas en \(K=32\).}
+  \label{fig:clinical_cnn_gemma_confusions}
+\end{figure}
+
+En esta comparación, Gemma~4 detecta más positivos y genera menos falsas alertas que la CNN, lo que apoya investigar su uso para priorizar revisiones en el triaje. Los positivos que omite impiden plantearlo como filtro de descarte y hacen necesario mantener la evaluación clínica completa.
+
+\subsection{Comparación entre el simulador y el HUCA}
+
+Las Figuras~\ref{fig:domain_gap_cnn} y~\ref{fig:domain_gap_icl} permiten comparar las curvas completas. La CNN pasa de un máximo de 0,885 en el simulador a 0,551 sobre el HUCA. Gemma~4 pasa de 0,904 en el simulador a 0,761 con consultas y ejemplos clínicos. Con ejemplos del simulador y consulta clínica, su máximo es 0,514.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.92\textwidth]{results/domain_gap_cnn_ba_by_k.pdf}
+  \caption{Exactitud balanceada de la CNN entrenada en el simulador y evaluada con imágenes del simulador o clínicas, según el número de ejemplos.}
+  \label{fig:domain_gap_cnn}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \begin{subfigure}{0.42\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/cnn_huca_k4_confusion_matrix.png}
-    \caption{CNN, \(K=4\).}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.42\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/vlm_huca_v1_balanced_k32_confusion_matrix.png}
-    \caption{ICL balanceado, \(K=32\).}
-  \end{subfigure}
-  \caption{Matrices agregadas de los mejores puntos de la CNN y del VLM. Cada matriz suma 951 predicciones sobre 317 pacientes.}
-  \label{fig:huca_confusions}
+  \safeincludegraphics[width=0.94\textwidth]{results/domain_gap_icl_context_ba_by_k.pdf}
+  \caption{Exactitud balanceada de Gemma~4 según el número de ejemplos y el origen de las demostraciones y de la consulta.}
+  \label{fig:domain_gap_icl}
 \end{figure}
-
-Las matrices de la Figura~\ref{fig:huca_confusions} muestran el cambio respecto al zero-shot. Con contexto clínico, Gemma~4 recupera más positivos sin clasificar como positivos a la mayoría de los pacientes normales. En su mejor punto supera numéricamente a la CNN transferida en BA, F1, sensibilidad y especificidad. El origen de las demostraciones resulta decisivo en este experimento: con ejemplos sintéticos, el mismo modelo permanece próximo a una decisión constante. El resultado muestra una adaptación local dentro de este conjunto clínico. La validez asistencial y la propiedad concreta de las demostraciones que causa la mejora quedan por determinar. La Figura~\ref{fig:comparacion_huca_sens_spec} detalla la sensibilidad y la especificidad.
-
-\begin{figure}[H]
-  \centering
-  \safeincludegraphics[width=0.60\textwidth]{results/comparison_huca_sens_spec_best.png}
-  \caption{Sensibilidad y especificidad de los mejores puntos sobre la muestra del HUCA.}
-  \label{fig:comparacion_huca_sens_spec}
-\end{figure}
-
-\subsection{Brecha sintético-real}
-
-La brecha entre dominios aparece en los dos enfoques. La CNN alcanza una BA de 0,885 en el simulador con \(K=32\), pero su mejor punto real es 0,551. En Gemma~4, el ICL balanceado llega a 0,904 en el simulador y a 0,761 cuando contexto y consulta son reales. Si las demostraciones son sintéticas y la consulta es real, el máximo se queda en 0,514. La Figura~\ref{fig:domain_gap_summary} resume estas diferencias.
-
-\begin{figure}[H]
-  \centering
-  \begin{subfigure}{0.36\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/domain_gap_cnn_ba_by_k.png}
-    \caption{CNN base.}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.46\textwidth}
-    \centering
-    \safeincludegraphics[width=\textwidth]{results/domain_gap_icl_context_ba_by_k.png}
-    \caption{Gemma~4 según el origen del contexto.}
-  \end{subfigure}
-  \caption{Brecha sintético-real medida mediante Balanced Accuracy (BA).}
-  \label{fig:domain_gap_summary}
-\end{figure}
-
-El simulador ofrece una tarea más separable para ambos enfoques, pero esa ventaja no se conserva al cambiar de imágenes y de referencia. Los experimentos permiten proponer como explicaciones plausibles la variabilidad de adquisición, las diferencias de escala, la heterogeneidad fenotípica y la información clínica ausente en una ventana V1. Los resultados delimitan el simulador como banco de pruebas y señalan la necesidad de anotaciones morfológicas clínicas y evaluación multicéntrica.
-
-La comparación permite localizar dónde se pierde rendimiento y cuánto se recupera con adaptación de dominio o con demostraciones locales. Con los datos disponibles, ambos modelos mantienen su carácter de prototipos de investigación.

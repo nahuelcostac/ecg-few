@@ -209,9 +209,7 @@ def run_with_args(args: argparse.Namespace) -> None:
         if has_train_dataset
         else None
     )
-    needs_target_domain = (
-        str(args.domain_adaptation) != "none" or int(args.ssl_pretrain_epochs) > 0
-    )
+    needs_target_domain = str(args.domain_adaptation) != "none" or int(args.ssl_pretrain_epochs) > 0
     target_dataset_root = resolve_target_dataset_root(
         args=args,
         dataset_root=dataset_root,
@@ -351,10 +349,7 @@ def run_k_seed(
             current_train_root = train_dataset_root
         val_rows = rows_for_patient_ids(rows, validation_ids)
         test_rows = rows_for_patient_ids(rows, [test_patient_id])
-        print(
-            f"[INFO] CNN k={k} seed={seed} fold={fold_id} "
-            f"test_patient={test_patient_id}"
-        )
+        print(f"[INFO] CNN k={k} seed={seed} fold={fold_id} test_patient={test_patient_id}")
         result = train_and_predict_fold(
             train_rows=train_rows,
             val_rows=val_rows,
@@ -685,9 +680,7 @@ def run_k_seed_shared_external_training(
             "target_dataset_root": ""
             if target_dataset_root is None
             else target_dataset_root.as_posix(),
-            "target_domain_policy": "shared_transductive"
-            if target_rows is not None
-            else "none",
+            "target_domain_policy": "shared_transductive" if target_rows is not None else "none",
         },
     )
 
@@ -1310,8 +1303,7 @@ def patient_probability_matrix(
     for row, probs in zip(rows, y_prob, strict=True):
         grouped.setdefault(row.patient_id, []).append(np.asarray(probs, dtype=np.float64))
     return {
-        patient_id: np.mean(np.vstack(values), axis=0)
-        for patient_id, values in grouped.items()
+        patient_id: np.mean(np.vstack(values), axis=0) for patient_id, values in grouped.items()
     }
 
 
@@ -1460,9 +1452,7 @@ def aggregate_by_k(rows: Sequence[dict[str, object]]) -> list[dict[str, object]]
             "average_precision",
         ):
             values = [
-                float(row[metric])
-                for row in group
-                if row.get(metric) not in {None, "", "None"}
+                float(row[metric]) for row in group if row.get(metric) not in {None, "", "None"}
             ]
             payload[f"{metric}_mean"] = float(np.mean(values)) if values else ""
             payload[f"{metric}_std"] = float(np.std(values, ddof=0)) if values else ""
@@ -1508,12 +1498,16 @@ def save_gradcam_panel(
             axes = np.expand_dims(axes, axis=0)
         for row_index, row in enumerate(rows):
             image_path = dataset_root / row.image_path
-            input_tensor = load_image_tensor(
-                image_path,
-                image_size=preprocess.image_size,
-                mean=preprocess.mean,
-                std=preprocess.std,
-            ).unsqueeze(0).to(device)
+            input_tensor = (
+                load_image_tensor(
+                    image_path,
+                    image_size=preprocess.image_size,
+                    mean=preprocess.mean,
+                    std=preprocess.std,
+                )
+                .unsqueeze(0)
+                .to(device)
+            )
             display = load_raw_image(image_path, preprocess.image_size)
             with torch.enable_grad():
                 heatmap = gradcam.compute(input_tensor)
@@ -1634,9 +1628,7 @@ def load_existing_predictions(path: Path) -> list[dict[str, object]]:
     if not path.exists():
         return []
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 

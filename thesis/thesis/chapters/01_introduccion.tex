@@ -1,50 +1,36 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-Este Trabajo de Fin de Grado aborda el análisis automático de electrocardiogramas representados como imágenes. La entrada corresponde al trazado ya renderizado. Por tanto, el análisis se concentra en la morfología que conserva esa representación.
+El electrocardiograma (ECG) registra la actividad eléctrica del corazón mediante electrodos colocados sobre el cuerpo. El trazado permite estudiar el ritmo cardíaco y cambios en la forma de sus ondas. Este Trabajo de Fin de Grado analiza imágenes de ECG con pocos ejemplos etiquetados y toma como caso de estudio la sospecha de síndrome de Brugada, una enfermedad poco frecuente asociada a arritmias ventriculares y muerte súbita \cite{zeppenfeld2022,wilde2023scbt}.
 
-El caso de estudio es la sospecha de síndrome de Brugada, una canalopatía hereditaria poco frecuente asociada al riesgo de arritmias ventriculares y muerte súbita. La escasez de pacientes confirmados dificulta el entrenamiento y la evaluación de modelos con los volúmenes de datos habituales en aprendizaje profundo.
+Se comparan dos formas de aprovechar esos ejemplos. En el aprendizaje supervisado, el modelo recibe imágenes junto con sus etiquetas, las respuestas asignadas a cada caso, y aprende ajustando sus parámetros internos o pesos. Se utiliza una red neuronal convolucional (CNN) con la arquitectura ResNet18.
 
-La pregunta metodológica es cómo analizar ECG como imágenes cuando solo se dispone de unos pocos pacientes etiquetados. La representación visual conserva información morfológica, pero prescinde de parte de la estructura de la señal original.
+La alternativa es Gemma~4, un modelo de visión y lenguaje (VLM) que procesa imágenes e instrucciones escritas. Mediante aprendizaje en contexto (ICL), recibe ejemplos resueltos junto con la imagen que debe clasificar. Esos ejemplos, llamados demostraciones, forman parte de la información de la consulta o contexto y orientan la respuesta sin cambiar los pesos del modelo. Los mecanismos de ambos métodos se desarrollan en las secciones~\ref{sec:fundamentos_cnn} y~\ref{sec:fundamentos_icl}.
 
-Para responder a esta pregunta se comparan dos formas de aprovechar el mismo conjunto reducido de pacientes etiquetados. En la primera, una red neuronal convolucional (CNN) actualiza sus pesos a partir de \(K\) pacientes de entrenamiento. En la segunda, un modelo de visión y lenguaje (VLM) mantiene sus pesos fijos y recibe \(K\) demostraciones dentro del contexto. Por tanto, \(K\) expresa el número de ejemplos disponibles para cada método, aunque su función sea distinta en el entrenamiento supervisado y en el aprendizaje en contexto.
+\section{Motivación y alcance}
 
-\section{Motivación clínica}
+La escasez de pacientes etiquetados dificulta aplicar los métodos de aprendizaje profundo, que aprenden mediante redes de varias capas y suelen entrenarse con grandes colecciones de ECG \cite{ribeiro2020,sangha2022}. Además, confirmar un caso de Brugada exige revisión especializada y, en ocasiones, pruebas complementarias. El patrón puede ser intermitente y no aparecer en un registro aislado, por lo que un ECG normal no descarta el síndrome. Sus criterios clínicos se describen en la sección~\ref{sec:brugada_clinica}.
 
-El síndrome de Brugada es un trastorno arrítmico hereditario relacionado con alteraciones de los canales de sodio cardíacos. Predispone a fibrilación ventricular y muerte súbita, especialmente en varones jóvenes durante el reposo o el sueño \cite{zeppenfeld2022,wilde2023scbt}. Su prevalencia estimada se sitúa entre una de cada 2\,000 y una de cada 5\,000 personas. Sin embargo, es probable que esté infradiagnosticado porque muchos portadores permanecen asintomáticos.
+El análisis de imágenes permite trabajar con trazados disponibles como documentos, sin exigir la señal digital original, es decir, la secuencia numérica de medidas del ECG. El recorte y el redimensionado de la imagen pueden, sin embargo, alterar su escala. En este estudio interesa comprobar a partir de cuántos ejemplos puede resultar más útil ajustar una CNN frente a proporcionar casos resueltos a Gemma~4.
 
-El patrón electrocardiográfico tipo~1 se caracteriza por una elevación del segmento ST de morfología convexa de al menos 2\,mm en una derivación precordial derecha, seguida de una onda T negativa \cite{wilde2023scbt}. Los patrones tipo~2 y tipo~3 no son diagnósticos por sí solos. También existen fenocopias producidas por fiebre, alteraciones electrolíticas, isquemia o fármacos. Estas pueden imitar el trazado y deben excluirse antes de confirmar la enfermedad \cite{sieira2017}.
+Para disponer de ejemplos de forma controlada, el estudio utiliza un simulador de latidos artificiales denominado QRS/ST por las regiones del trazado que modela, descritas en la sección~\ref{sec:componentes_ecg}. Se cuenta además con ECG de 317 pacientes del Hospital Universitario Central de Asturias (HUCA).
 
-La dificultad aumenta porque el patrón tipo~1 puede ser intermitente. Un ECG basal normal no descarta el síndrome y un trazado sospechoso debe interpretarse dentro del contexto clínico. Esa variabilidad convierte el síndrome de Brugada en un buen caso para estudiar métodos de apoyo a la revisión del ECG, ya que obliga a distinguir entre reconocer un patrón visual y establecer una conclusión clínica.
+Los ejemplos del simulador se utilizan primero para clasificar otros latidos generados y después para estudiar la transferencia a ECG del HUCA, es decir, cuánto de lo aprendido permite reconocer casos reales. También se entrena una segunda CNN con pacientes del HUCA y se compara con Gemma~4 cuando ambos aprenden de ejemplos clínicos.
 
-\subsection{Papel del sistema propuesto}
+La aplicación que motiva el trabajo es el apoyo al triaje mediante la identificación de ECG sospechosos para priorizar su revisión y facilitar la recogida de más casos etiquetados. Esta ayuda no sustituiría la evaluación clínica de la sección~\ref{sec:evaluacion_clinica}, ni la confirmación diagnóstica, las pruebas o el tratamiento, que corresponden al personal sanitario.
 
-El sistema se evalúa como posible apoyo previo a la confirmación diagnóstica, limitado a priorizar la revisión de trazados sospechosos. En este marco, una predicción positiva indica que el ECG debe revisarse con mayor atención dentro del circuito clínico habitual. La valoración especializada, la indicación de pruebas complementarias y las decisiones terapéuticas quedan fuera del alcance del modelo.
+\section{Objetivos}
 
-Este alcance condiciona la interpretación de las métricas. En una enfermedad de baja prevalencia, un clasificador con sensibilidad alta puede generar muchas alertas no confirmadas si su especificidad es insuficiente. Aumentar la sensibilidad reduce el riesgo de retrasar la revisión de un caso sospechoso, pero suele incrementar los falsos positivos y la carga sobre el circuito asistencial. La evaluación debe considerar, por tanto, tanto la capacidad de detectar positivos como la proporción de pacientes normales derivados de forma innecesaria.
-
-\section{Motivación metodológica}
-
-Los modelos profundos han alcanzado un buen rendimiento en el análisis de ECG cuando disponen de grandes colecciones de pacientes y etiquetas consistentes \cite{ribeiro2020,sangha2022}. Estas condiciones rara vez se cumplen en enfermedades de baja prevalencia. En el síndrome de Brugada, cada caso confirmado exige revisión especializada y, en muchos pacientes, información clínica adicional o una prueba farmacológica.
-
-La escasez de etiquetas coincide además con una diferencia de dominio. Las imágenes sintéticas permiten controlar la morfología. La heterogeneidad de los ECG clínicos y la equivalencia entre las referencias quedan fuera de ese control. El problema experimental consiste en determinar qué parte del aprendizaje con pocos casos se conserva al cambiar de dominio y de referencia.
-
-Sobre esta base, el trabajo aborda tres preguntas:
+El objetivo general es comparar ambos métodos cuando solo se dispone de unos pocos pacientes etiquetados. Se denomina \(K\) al número de ejemplos de entrenamiento de la CNN o de demostraciones incluidas en el contexto de Gemma~4. Se plantean las siguientes tres preguntas.
 
 \begin{enumerate}
-  \item ¿Cómo cambia el rendimiento al aumentar el número de pacientes etiquetados en un dominio sintético controlado?
-  \item ¿En qué medida se conserva ese rendimiento al evaluar ECG clínicos del HUCA?
-  \item ¿Cómo influye en el rendimiento del VLM que las demostraciones procedan del simulador o de la muestra clínica?
+  \item ¿Cómo cambia el rendimiento de ResNet18 y Gemma~4 al aumentar el número de ejemplos del simulador?
+  \item ¿Cómo se compara el ICL con una CNN entrenada directamente con ECG clínicos usando los mismos valores de \(K\)?
+  \item ¿Qué rendimiento se conserva al pasar del simulador al HUCA y cómo influye el origen de los datos de entrenamiento de la CNN y de las demostraciones de Gemma~4?
 \end{enumerate}
 
-\section{Alcance y contribuciones}
-
-El estudio se limita a un análisis experimental y retrospectivo de métodos de aprendizaje con pocos datos etiquetados. Sus resultados no validan un producto sanitario ni permiten estimar su utilidad clínica prospectiva. La comparación utiliza dos tipos de referencia. En el dominio sintético, las etiquetas se derivan de reglas aplicadas a tres hallazgos morfológicos del trazado. En la muestra del Hospital Universitario Central de Asturias (HUCA), la etiqueta se asigna por paciente y distingue entre casos confirmados de síndrome de Brugada y pacientes normales.
-
-El trabajo aporta un protocolo para estudiar ECG como imágenes, un simulador QRS/ST revisado y el procesamiento de 317 pacientes del HUCA. También establece una referencia basada en CNN para los dominios sintético y real y evalúa Gemma~4 en zero-shot, ICL estándar e ICL balanceado.
+El capítulo~\ref{chap:diseno} precisa la selección de esos ejemplos y las diferencias de validación entre ambos métodos.
 
 \section{Estructura de la memoria}
 
-La memoria se organiza desde el contexto del problema hasta la interpretación de los resultados. El capítulo~\ref{chap:relacionados} sitúa el trabajo frente al estado del arte. El capítulo~\ref{chap:fundamentos} introduce los fundamentos clínicos y técnicos. El capítulo~\ref{chap:diseno} formula el protocolo común. El capítulo~\ref{chap:simulador} describe el simulador. El capítulo~\ref{chap:modelos} detalla la configuración de los modelos.
-
-Dentro del capítulo de modelado, las secciones~\ref{chap:cnn_enfoque} y \ref{chap:vlm} presentan, respectivamente, la configuración de la CNN y la del enfoque VLM/ICL. El capítulo~\ref{chap:resultados} presenta los hallazgos en el simulador y en los ECG reales. El capítulo~\ref{chap:conclusiones} los discute frente a la literatura, delimita sus limitaciones y formula las conclusiones. El capítulo~\ref{chap:gestion_etica} recoge la gestión ética, regulatoria y de privacidad.
+Los capítulos~\ref{chap:relacionados} y~\ref{chap:fundamentos} presentan los antecedentes y los fundamentos clínicos y técnicos. Los capítulos~\ref{chap:diseno}, \ref{chap:simulador} y~\ref{chap:modelos} describen el diseño experimental, el generador y la ejecución de los modelos. Los resultados se presentan en el capítulo~\ref{chap:resultados}, su discusión y conclusiones en el capítulo~\ref{chap:conclusiones}, y los aspectos éticos y de privacidad en el capítulo~\ref{chap:gestion_etica}.

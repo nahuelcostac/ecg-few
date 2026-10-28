@@ -29,24 +29,19 @@ BASE_SCAFFOLD_RANGES: dict[str, dict[str, tuple[float, float]]] = {
 # Family-specific morphology overrides layered on top of the shared scaffold.
 CLASS_PARAM_RANGES: dict[str, dict[str, dict[str, tuple[float, float]]]] = {
     "NORMAL": {
-        #"R": {"a": (0.26, 0.62), "mu": (286, 326), "sigma": (8, 15)},
         "S": {"a": (-0.72, -0.24), "mu": (320, 356), "sigma": (13, 26)},
         "R_prime": {"a": (0.0, 0.01), "mu": (354, 414), "sigma": (10, 22)},
         "J_elev": {"a": (-0.02, 0.02), "mu": (388, 420), "sigma": (10, 22)},
         "ST1": {"a": (-0.02, 0.02), "mu": (455, 525), "sigma": (32, 72)},
         "ST2": {"a": (-0.02, 0.02), "mu": (540, 630), "sigma": (35, 86)},
-        #"T1": {"a": (0.16, 0.32), "mu": (635, 735), "sigma": (58, 110)},
-        #"T2": {"a": (0.04, 0.16), "mu": (710, 835), "sigma": (50, 118)},
     },
     "RBBB": {
-        #"R": {"a": (0.16, 0.48), "mu": (278, 314), "sigma": (7, 13)},
         "S": {"a": (-0.95, -0.38), "mu": (320, 355), "sigma": (14, 30)},
         "R_prime": {"a": (0.45, 1.00), "mu": (360, 430), "sigma": (16, 34)},
         "T1": {"a": (0.05, 0.22), "mu": (535, 650), "sigma": (60, 115)},
         "T2": {"a": (0.00, 0.12), "mu": (625, 740), "sigma": (50, 120)},
     },
     "ST_ELEVATION": {
-        #"R": {"a": (0.24, 0.66), "mu": (286, 328), "sigma": (8, 15)},
         "S": {"a": (-0.88, -0.28), "mu": (322, 360), "sigma": (13, 28)},
         "J_elev": {"a": (0.12, 0.35), "mu": (386, 420), "sigma": (10, 24)},
         "ST1": {"a": (0.12, 0.28), "mu": (450, 520), "sigma": (40, 85)},
@@ -55,7 +50,6 @@ CLASS_PARAM_RANGES: dict[str, dict[str, dict[str, tuple[float, float]]]] = {
         "T2": {"a": (0.00, 0.12), "mu": (600, 730), "sigma": (48, 120)},
     },
     "T_WAVE_INVERSION": {
-        #"R": {"a": (0.18, 0.42), "mu": (282, 322), "sigma": (7, 13)},
         "S": {"a": (-1.05, -0.48), "mu": (320, 360), "sigma": (15, 34)},
         "R_prime": {"a": (0.12, 0.55), "mu": (348, 430), "sigma": (12, 30)},
         "J_elev": {"a": (0.02, 0.16), "mu": (388, 425), "sigma": (10, 24)},
@@ -65,7 +59,6 @@ CLASS_PARAM_RANGES: dict[str, dict[str, dict[str, tuple[float, float]]]] = {
         "T2": {"a": (-0.05, 0), "mu": (635, 750), "sigma": (35, 88)},
     },
     "BRUGADA": {
-        #"R": {"a": (0.16, 0.52), "mu": (280, 320), "sigma": (7, 14)},
         "S": {"a": (-1.05, -0.38), "mu": (320, 360), "sigma": (13, 30)},
         "R_prime": {"a": (0.08, 0.36), "mu": (340, 392), "sigma": (10, 24)},
         "J_elev": {"a": (0.18, 0.46), "mu": (392, 430), "sigma": (10, 24)},
@@ -78,7 +71,7 @@ CLASS_PARAM_RANGES: dict[str, dict[str, dict[str, tuple[float, float]]]] = {
 
 
 def _deepcopy_ranges(
-    ranges: dict[str, dict[str, tuple[float, float]]]
+    ranges: dict[str, dict[str, tuple[float, float]]],
 ) -> dict[str, dict[str, tuple[float, float]]]:
     return {k: dict(v) for k, v in ranges.items()}
 

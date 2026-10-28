@@ -283,9 +283,7 @@ def audit_dataset(
         if labels - {0, 1}:
             errors.append(f"Unsupported labels in manifest: {sorted(labels)}")
         borderline = [
-            row.patient_id
-            for row in rows
-            if row.basal_pattern == 1 and row.clinical_brugada == 1
+            row.patient_id for row in rows if row.basal_pattern == 1 and row.clinical_brugada == 1
         ]
         if borderline:
             errors.append(f"Borderline positives still present: {sorted(set(borderline))[:10]}")
@@ -371,9 +369,7 @@ def audit_cnn_sim_real_comparison(
         rows = read_csv(table_path)
         observed = {int(row["k"]) for row in rows if row.get("k")}
         if observed != set(k_values):
-            errors.append(
-                f"CNN sim-vs-real table has k={sorted(observed)}; expected {k_values}."
-            )
+            errors.append(f"CNN sim-vs-real table has k={sorted(observed)}; expected {k_values}.")
     for plot_name in (
         "balanced_accuracy_simulated_vs_real_by_k.png",
         "f1_simulated_vs_real_by_k.png",
@@ -449,14 +445,11 @@ def audit_domain_adaptation_comparison(
         expected_methods = {"baseline", *methods}
         missing_methods = expected_methods - observed_methods
         if missing_methods:
-            errors.append(
-                f"Domain-adaptation comparison misses methods: {sorted(missing_methods)}"
-            )
+            errors.append(f"Domain-adaptation comparison misses methods: {sorted(missing_methods)}")
         observed_k = {int(row["k"]) for row in rows if row.get("k")}
         if observed_k != set(k_values):
             errors.append(
-                f"Domain-adaptation comparison has k={sorted(observed_k)}; "
-                f"expected {k_values}."
+                f"Domain-adaptation comparison has k={sorted(observed_k)}; expected {k_values}."
             )
     for plot_name in (
         "balanced_accuracy_domain_adaptation_by_k.png",
@@ -626,10 +619,7 @@ def compare_fold_alignment(
 
 
 def fold_keys(rows: list[dict[str, str]]) -> set[tuple[str, str, str]]:
-    return {
-        (row["fold_id"], row["test_patient_id"], row["context_patient_ids"])
-        for row in rows
-    }
+    return {(row["fold_id"], row["test_patient_id"], row["context_patient_ids"]) for row in rows}
 
 
 def required_prediction_columns_missing(rows: list[dict[str, str]]) -> bool:

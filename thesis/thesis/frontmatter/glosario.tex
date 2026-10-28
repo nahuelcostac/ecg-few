@@ -2,7 +2,7 @@
 \addcontentsline{toc}{chapter}{Glosario de siglas}
 \markboth{Glosario de siglas}{Glosario de siglas}
 
-Este glosario reúne las siglas y abreviaturas que aparecen en la memoria. Se incluye el significado con el que se utilizan dentro del trabajo para mantener una lectura consistente entre capítulos, tablas y apéndices.
+
 
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.20cm}>{\raggedright\arraybackslash}p{4.10cm}>{\raggedright\arraybackslash}p{7.95cm}@{}}
@@ -25,22 +25,25 @@ AP & Precisión media & Área bajo la curva precisión-recall. Se usa como métr
 API & Interfaz de programación de aplicaciones & Se menciona al discutir modelos servidos por proveedores externos. \\
 AUC & Área bajo la curva & Resumen escalar de una curva de rendimiento, usado junto a ROC. \\
 aVR, aVL, aVF & Derivaciones aumentadas de miembros & Derivaciones del electrocardiograma convencional citadas al describir el registro de doce derivaciones. \\
-BA & Balanced Accuracy & Métrica principal. Promedia sensibilidad y especificidad para no favorecer a la clase mayoritaria. \\
+BA & Exactitud balanceada & Métrica principal. Promedia sensibilidad y especificidad para no favorecer a la clase mayoritaria. \\
 BCE & Entropía cruzada binaria & Función de pérdida para clasificación binaria o multietiqueta. \\
 CAM & Mapa de activación de clase & En Grad-CAM relaciona regiones de la imagen con una predicción. \\
 CC BY & Creative Commons Attribution & Licencia de reutilización asociada a una de las imágenes clínicas citadas. \\
 CC BY-SA & Creative Commons Attribution ShareAlike & Licencia de reutilización con atribución y obligación de compartir bajo condiciones equivalentes. \\
+CLIP & Contrastive Language-Image Pre-training & Modelo que relaciona imágenes y textos mediante preentrenamiento contrastivo, revisado en antecedentes. \\
 CNN & Red neuronal convolucional & Modelo supervisado que ajusta pesos a partir de ejemplos etiquetados. En la memoria se concreta en ResNet18. \\
+CoCoOp & Conditional Context Optimization & Ajuste de prompts condicionados por la imagen, revisado en antecedentes. \\
+CoOp & Context Optimization & Ajuste de vectores de contexto para adaptar modelos de visión y lenguaje, revisado en antecedentes. \\
 CORAL & Correlation Alignment & Método de adaptación de dominio incluido como resultado complementario. \\
-CSV & Comma-separated values & Formato tabular utilizado en manifiestos y resultados. \\
 DANN & Domain-Adversarial Neural Network & Método de adaptación de dominio incluido como resultado complementario. \\
+DAPL & Domain Adaptation via Prompt Learning & Adaptación de dominio mediante prompts aprendidos, revisada en antecedentes. \\
 ECG & Electrocardiograma & Trazado cardíaco utilizado en forma de imagen. \\
 ECGBench & ECG Benchmark & Banco de evaluación multimodal citado en trabajos relacionados. \\
 ECGInstruct & ECG Instruction Dataset & Conjunto de instrucciones con imagen y texto citado en trabajos relacionados. \\
-Esp. & Especificidad & Proporción de pacientes normales identificados correctamente. \\
+Esp. & Especificidad & Proporción de casos negativos identificados correctamente. \\
 F1 & Medida F1 & Media armónica entre precisión y sensibilidad. \\
 FN & Falso negativo & Caso positivo clasificado como negativo. \\
-FP & Falso positivo & Paciente normal clasificado como positivo. \\
+FP & Falso positivo & Caso negativo clasificado como positivo. \\
 HRS & Heart Rhythm Society & Sociedad científica citada en recomendaciones clínicas. \\
 HUCA & Hospital Universitario Central de Asturias & Origen de la muestra de ECG clínicos utilizada en la evaluación. \\
 ICL & Aprendizaje en contexto & Uso de ejemplos etiquetados dentro del prompt sin modificar los pesos del modelo. \\
@@ -48,6 +51,7 @@ ImageNet & ImageNet & Colección de imágenes usada como origen habitual de peso
 JSON & JavaScript Object Notation & Formato estructurado exigido en las respuestas del modelo multimodal. \\
 \(K\) & Número de ejemplos & Tamaño del conjunto usado en cada pliegue. En la CNN indica pacientes de entrenamiento y en el VLM indica demostraciones de contexto. \\
 LOOCV & Validación leave-one-out & Evaluación por paciente reservado. En cada pliegue se deja un paciente fuera. \\
+MaPLe & Multi-modal Prompt Learning & Ajuste conjunto de prompts visuales y textuales, revisado en antecedentes. \\
 MEETI & MIMIC ECG Event-based Text-image & Recurso multimodal de electrocardiografía revisado en el estado del arte. \\
 MIMIC & Medical Information Mart for Intensive Care & Familia de recursos clínicos abiertos citada en trabajos relacionados. \\
 MMD & Maximum Mean Discrepancy & Medida usada como método complementario de adaptación de dominio. \\
@@ -57,11 +61,12 @@ Prec. & Precisión & Proporción de predicciones positivas que corresponden a po
 PTB XL & Physikalisch-Technische Bundesanstalt XL & Conjunto abierto de electrocardiogramas de doce derivaciones citado en trabajos relacionados. \\
 PULSE & PULSE & Modelo multimodal especializado en ECG citado en el estado del arte. \\
 QRS & Complejo QRS & Región asociada a la despolarización ventricular. \\
-QRS/ST & Complejo QRS y segmento ST & Nombre abreviado del dominio sintético utilizado en la memoria. \\
+QRS/ST & Complejo QRS y segmento ST & Nombre abreviado del simulador utilizado en la memoria. \\
 QT & Intervalo QT & Intervalo electrocardiográfico relacionado con despolarización y repolarización ventricular. \\
 QTc & Intervalo QT corregido & Intervalo QT ajustado por frecuencia cardíaca, mencionado en el contexto clínico. \\
 RBBB & Bloqueo de rama derecha & Etiqueta morfológica compatible empleada en el simulador. \\
-ResNet18 & Residual Network 18 & Arquitectura convolucional utilizada como referencia supervisada. \\
+RBF & Radial Basis Function & Tipo de kernel utilizado para comparar características con MMD. \\
+ResNet18 & Residual Network 18 & Arquitectura de la CNN evaluada. \\
 RGB & Red, green, blue & Representación de imagen con tres canales de color. \\
 ROC & Receiver Operating Characteristic & Curva que relaciona sensibilidad y tasa de falsos positivos. \\
 RSR & Morfología RSR prima & Patrón visual con segunda deflexión positiva terminal en el complejo QRS. \\
@@ -70,10 +75,12 @@ SimCLR & Simple Framework for Contrastive Learning of Visual Representations & M
 SSL & Aprendizaje autosupervisado & Estrategia complementaria de adaptación de dominio incluida en resultados completos. \\
 ST & Segmento ST & Región posterior al QRS cuya elevación participa en la formulación morfológica del estudio. \\
 TFG & Trabajo de Fin de Grado & Documento académico en el que se enmarca el proyecto. \\
-TN & Verdadero negativo & Paciente normal clasificado correctamente como negativo. \\
+TN & Verdadero negativo & Caso negativo clasificado correctamente como negativo. \\
 TP & Verdadero positivo & Caso positivo clasificado correctamente como positivo. \\
+TPT & Test-Time Prompt Tuning & Ajuste del prompt al evaluar cada imagen, revisado en antecedentes. \\
 TWI & Inversión de onda T & Deflexión tardía negativa utilizada como rasgo visible en el simulador. \\
 V1--V6 & Derivaciones precordiales & Derivaciones torácicas del electrocardiograma. En los experimentos se usa exclusivamente V1. \\
 VLM & Modelo de visión y lenguaje & Modelo multimodal que recibe imágenes y texto en un mismo prompt. \\
+XAI & Inteligencia artificial explicable & Métodos para examinar qué información se relaciona con las decisiones de un modelo. \\
 \end{longtable}
 }

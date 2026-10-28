@@ -341,6 +341,11 @@ def draw_preview(assets: dict[str, tuple[str, np.ndarray]]) -> None:
         bbox_inches="tight",
         pad_inches=0.04,
     )
+    fig.savefig(
+        OUT_DIR / "fig_pipeline_experimental.pdf",
+        bbox_inches="tight",
+        pad_inches=0.04,
+    )
     plt.close(fig)
 
 

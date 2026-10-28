@@ -26,8 +26,8 @@
     "estandar",
     "balanced"
   ],
-  "context_dataset_root": "data/simulator_qrs (not versioned)",
-  "dataset_root": "data/simulator_qrs (not versioned)",
+  "context_dataset_root": "/home/nahuel/ecg/ecg-few/data/simulator_qrs",
+  "dataset_root": "/home/nahuel/ecg/ecg-few/data/simulator_qrs",
   "errors": [],
   "folds": 100,
   "images": 100,

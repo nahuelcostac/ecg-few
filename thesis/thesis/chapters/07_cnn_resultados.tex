@@ -1,103 +1,79 @@
-\section{Enfoque supervisado con CNN ResNet18}
+\section{CNN ResNet18}
 \label{chap:cnn_enfoque}
 
-La CNN sirve como referencia supervisada. El objetivo es fijar un procedimiento convencional y reproducible para aprender a partir de imágenes etiquetadas.
+\subsection{Arquitectura y entrenamiento}
+\label{sec:cnn_entrenamiento}
 
-\subsection{Arquitectura y entrada}
-
-El modelo es una ResNet18 preentrenada \cite{he2016}. Su cabeza final se sustituye por tres salidas, correspondientes a RBBB, elevación del ST e inversión de T. Las imágenes se procesan en RGB con un tamaño de 224 por 224 píxeles. En el simulador, un paciente se considera positivo cuando concurren los tres hallazgos.
-
-Esta formulación determina cómo se interpreta la evaluación real. La CNN no se ajusta directamente a la etiqueta \texttt{clinical\_brugada}. Estima los tres rasgos morfológicos y deriva una decisión positiva cuando aparecen de forma simultánea. La muestra del HUCA actúa, por tanto, como conjunto de prueba clínica. La Figura~\ref{fig:cnn_convolutional_pipeline} resume el procedimiento.
+Las dos variantes utilizan ResNet18 preentrenada con ImageNet, una colección de imágenes de uso general \cite{he2016}. Sus capas convolucionales extraen las características visuales y la última capa las transforma en las salidas de la tarea. En el simulador, esa capa se sustituye por tres salidas, correspondientes a RBBB, elevación del ST e inversión de T. Con los datos cedidos por el HUCA se utiliza una única salida, asociada a la etiqueta de Brugada. En ambos casos se ajustan todos los pesos, tanto del extractor como de la nueva capa de clasificación. La Figura~\ref{fig:cnn_convolutional_pipeline} representa el entrenamiento y la predicción para el caso del simulador.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.96\textwidth]{results/cnn_convolutional_pipeline.drawio.png}
-  \caption{Uso supervisado de los ejemplos etiquetados. Las muestras de entrenamiento actualizan ResNet18 y la muestra reservada produce una predicción binaria y su mapa Grad-CAM.}
+  % Fuente editable: assets/results/cnn_convolutional_pipeline.svg.
+  \safeincludegraphics[width=0.96\textwidth]{results/cnn_convolutional_pipeline.pdf}
+  \caption{Entrenamiento supervisado y evaluación de la CNN entrenada con el simulador.}
   \label{fig:cnn_convolutional_pipeline}
 \end{figure}
-\subsection{Entrenamiento}
 
-El entrenamiento utiliza entropía cruzada binaria multietiqueta. La ponderación de la clase positiva se calcula automáticamente a partir de los ejemplos de cada pliegue. Se emplea AdamW \cite{loshchilov2019}, con una tasa de aprendizaje de \(3\times10^{-4}\), lotes de 32 imágenes y un máximo de 20 épocas.
+Para presentar las imágenes a la red, se convierten a RGB, con tres canales de color, y se redimensionan a 224 por 224 píxeles. Esta conversión adapta el formato a la entrada de ResNet18 y mantiene el mismo trazado en los tres canales. A continuación se normalizan los píxeles con la media y la desviación calculadas únicamente sobre las imágenes de entrenamiento. Esos mismos valores se aplican a validación y prueba, por lo que los pacientes reservados no intervienen en la preparación de la entrada.
 
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabularx}{0.92\textwidth}{p{4cm}X}
-    \toprule
-    Propiedad & Valor \\
-    \midrule
-    Arquitectura & ResNet18 con cabeza multietiqueta de tres salidas \\
-    Inicialización & Pesos preentrenados de ResNet18 \\
-    Entrada & RGB, 224 por 224 píxeles \\
-    Pérdida & Entropía cruzada binaria multietiqueta con ponderación automática \\
-    Optimizador & AdamW \\
-    Tasa de aprendizaje & \(3\times10^{-4}\) \\
-    Épocas máximas & 20 \\
-    Tamaño de lote & 32 \\
-    Valores de \(K\) & \(K=\{2,4,8,16,32\}\) \\
-    Semillas & 42, 123 y 2026 \\
-    Umbral & Seleccionado por validación con \textit{Balanced Accuracy} por paciente \\
-    Agregación & Sin agregación multiderivación. Se usa únicamente V1 antes del umbral \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Configuración CNN utilizada en los experimentos finales.}
-  \label{tab:modelo_cnn_final}
-\end{table}
+\begin{samepage}
+El entrenamiento busca que las salidas se aproximen a las etiquetas disponibles mediante la entropía cruzada binaria. En el simulador se calcula por separado para los tres rasgos, que pueden coexistir en una imagen, mientras que en los registros clínicos se aplica a su única etiqueta. Para compensar diferencias en su frecuencia, cada salida incorpora un peso positivo igual al número de negativos dividido entre el de positivos del entrenamiento utilizado. Así se aumenta la penalización de los errores en positivos cuando estos son menos frecuentes. Con la selección balanceada de los datos cedidos por el HUCA ese peso vale uno, porque ya se utiliza el mismo número de pacientes de cada clase.
+\par
+\end{samepage}
 
-\subsection{Evaluación con la muestra del HUCA}
+Para reducir esta pérdida se emplea AdamW \cite{loshchilov2019}, que actualiza los pesos después de procesar cada lote de imágenes con una magnitud de ajuste regulada por la tasa de aprendizaje. Al recorrer todos los lotes se completa una época, tras la cual comienza un nuevo recorrido del conjunto de entrenamiento. La tasa de aprendizaje, el tamaño del lote y los demás parámetros utilizados se recogen en la Tabla~\ref{tab:config_cnn_appendix}.
 
-La muestra del HUCA no contiene anotaciones independientes de RBBB, elevación del ST e inversión de T para cada imagen. Solo dispone de la referencia clínica binaria empleada en la campaña final. Con la arquitectura definida, no es posible entrenar la cabeza morfológica sobre esos datos sin inventar etiquetas que no están disponibles.
+\subsection{Predicción y selección del umbral}
+\label{sec:umbral_cnn}
 
-La evaluación real se plantea, en consecuencia, como una transferencia desde el simulador. Los \(K\) pacientes que actualizan los pesos proceden del conjunto sintético QRS/ST. La muestra de prueba pertenece al HUCA y se compara con la referencia clínica disponible. El protocolo mide una transferencia sintético-real a partir de anotaciones exclusivamente sintéticas.
+Cada salida de la red es una puntuación, o \textit{logit}, que la sigmoide transforma en una probabilidad entre cero y uno. En la CNN entrenada con el simulador se aplica por separado a las tres salidas, correspondientes a RBBB, elevación del ST e inversión de T, mientras que en la entrenada con los datos clínicos se aplica a la única puntuación asociada a Brugada, indicada con el subíndice \(B\). Ambas operaciones se expresan como
+\begin{equation}
+  \begin{gathered}
+    p_j = \frac{1}{1+\exp(-z_j)},\quad j=1,2,3\\
+    \text{Simulador}
+  \end{gathered}
+  \qquad
+  \begin{gathered}
+    p_B = \frac{1}{1+\exp(-z_B)}\\
+    \text{Datos clínicos}
+  \end{gathered}
+  \label{eq:probabilidades_cnn}
+\end{equation}
+Los tres rasgos del simulador pueden coexistir, por lo que sus probabilidades no tienen que sumar uno. La clasificación positiva derivada se obtiene cuando las tres alcanzan el umbral, mientras que en los registros cedidos por el HUCA se compara con él la probabilidad \(p_B\).
 
-Un entrenamiento supervisado directo con el HUCA exigiría anotaciones morfológicas por imagen o un rediseño como clasificador binario de \texttt{clinical\_brugada}. Esta segunda opción abordaría una tarea diferente, más próxima a la predicción de la referencia clínica que a la detección explícita de los tres rasgos visuales.
+El umbral determina a partir de qué probabilidad se asigna una etiqueta positiva y se elige buscando la mayor BA en los pacientes de validación. En la CNN entrenada con el simulador, la regla conjunta se evalúa a partir de la menor de sus tres probabilidades, pues las tres deben alcanzar el mismo umbral.
 
-\subsection{Validación por paciente}
+\begingroup
+\widowpenalty=10000
+En la CNN entrenada con los datos clínicos, la elección del umbral se integra en el seguimiento del entrenamiento. Al terminar cada época se predicen los ocho pacientes de validación definidos en la sección~\ref{sec:validacion_comun} y se obtiene la mejor BA con ese conjunto. Este resultado permite conservar los pesos que mejor clasifican a pacientes distintos de los utilizados para actualizarlos. El \textit{early stopping} interrumpe el ajuste cuando transcurren cinco épocas sin mejora, con un máximo de veinte, y se recuperan los pesos seleccionados para efectuar la predicción final.
+\par
+\endgroup
 
-La evaluación se organiza mediante validación leave-one-out por paciente. En el dominio sintético, cada pliegue reserva un paciente y selecciona los \(K\) casos de entrenamiento entre los restantes. En la transferencia al HUCA, la unidad reservada sigue siendo un paciente real, pero los \(K\) ejemplos de entrenamiento proceden del simulador. Ninguna imagen del paciente de prueba interviene en el ajuste.
-
-Para cada pliegue se registran las probabilidades de V1, la predicción del paciente, el umbral seleccionado y los datos necesarios para calcular las matrices de confusión y las métricas. También se conservan paneles Grad-CAM para la inspección cualitativa.
-
-\subsection{Selección de umbral}
-
-Cada una de las tres salidas produce un logit, que una función sigmoide transforma en probabilidad. El umbral se aplica por separado a RBBB, elevación del ST e inversión de T, no a una clase clínica directa de síndrome de Brugada. Como el experimento utiliza únicamente V1, tampoco existe una agregación previa entre derivaciones.
-
-Un hallazgo se considera presente cuando su probabilidad alcanza el umbral seleccionado. La decisión positiva se deriva después mediante la regla del experimento: RBBB, elevación del ST e inversión de T deben estar presentes de forma simultánea.
-
-El umbral se selecciona dentro de cada pliegue utilizando solo los pacientes de validación. Entre los valores candidatos se conserva el que maximiza la \textit{Balanced Accuracy} de la etiqueta derivada a nivel de paciente. Si la validación no contiene ambas clases, se mantiene el valor 0,5. La etiqueta del paciente de prueba no interviene en esta elección.
+Con esos pesos se fija el umbral a partir de los mismos pacientes de validación y se clasifica al paciente reservado para prueba. De este modo, los resultados agregados se construyen con las predicciones de prueba de cada pliegue.
 
 \subsection{Adaptación de dominio}
+\label{sec:adaptacion_cnn}
 
-Además de la transferencia directa, se evaluaron cuatro variantes de adaptación de dominio no supervisada. El simulador QRS/ST se mantiene como fuente etiquetada, mientras que el HUCA actúa como dominio objetivo sin anotaciones morfológicas. Estos métodos intentan reducir la discrepancia entre las representaciones de las imágenes sintéticas y reales, sin convertir la muestra clínica en un conjunto supervisado.
+Se estudian cuatro variantes para aprovechar las imágenes cedidas por el HUCA al trasladar lo aprendido con el simulador, manteniendo la predicción de los tres rasgos. La primera utiliza \textbf{SimCLR} para preparar el extractor antes del ajuste supervisado. A partir de dos versiones aumentadas de cada imagen clínica, aprende representaciones que toleren cambios de brillo, pequeños desplazamientos, ruido y desenfoque. Los pesos obtenidos inicializan después la CNN que se entrena con las etiquetas del simulador.
 
-El preentrenamiento autosupervisado aplica SimCLR a imágenes del HUCA sin utilizar sus etiquetas \cite{chen2020simclr}. El encoder recibe dos vistas aumentadas de una misma imagen, acerca entre sí sus representaciones y las separa de las correspondientes a otros elementos del lote. Los pesos obtenidos inicializan después la CNN entrenada con el simulador.
+\textbf{CORAL} y \textbf{MMD} incorporan la adaptación durante ese entrenamiento, combinando lotes etiquetados del simulador con imágenes clínicas sin etiquetas. Mientras la pérdida supervisada aprende a distinguir los rasgos, CORAL aproxima las covarianzas de las características de ambos conjuntos y MMD reduce su discrepancia mediante kernels de base radial a varias escalas. La contribución de estos objetivos aumenta progresivamente a lo largo del ajuste.
 
-CORAL añade una pérdida que aproxima las covarianzas de las características de origen y destino \cite{sun2016deepcoral}. MMD mide la discrepancia entre ambas distribuciones mediante kernels RBF y penaliza la separación entre sus medias embebidas \cite{long2015dan}. DANN incorpora un clasificador de dominio y una capa de inversión de gradiente \cite{ganin2016}. De este modo, el extractor busca rasgos útiles para la tarea pero menos informativos sobre el origen sintético o real de la imagen.
+\textbf{DANN} utiliza también ambos conjuntos, pero añade un clasificador que intenta reconocer el origen de cada imagen. La inversión de gradiente orienta al extractor a dificultar esa distinción a la vez que aprende los rasgos del simulador. Esta rama auxiliar interviene durante el entrenamiento y se retira para predecir, conservando las tres salidas de la tarea.
 
-\begin{table}[H]
-  \centering
-  \small
-  \begin{tabularx}{0.94\textwidth}{p{2.6cm}X}
-    \toprule
-    Método & Idea principal \\
-    \midrule
-    SSL & Preentrenar el encoder con imágenes del HUCA sin etiquetas mediante aprendizaje contrastivo. \\
-    CORAL & Alinear covarianzas de características entre simulador y HUCA. \\
-    MMD & Reducir una distancia de distribución con kernels RBF. \\
-    DANN & Aprender características invariantes al dominio con inversión de gradiente. \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Métodos de adaptación de dominio evaluados para la CNN.}
-  \label{tab:cnn_domain_methods}
-\end{table}
+En las cuatro variantes, las imágenes del conjunto clínico se comparten entre pliegues, incluidas las que después se evalúan, sin utilizar sus etiquetas para entrenar. Así se estudia el aprovechamiento de su apariencia, frente al ajuste supervisado con pacientes etiquetados descrito anteriormente. La Tabla~\ref{tab:config_domain_appendix} reúne los parámetros de cada método y las condiciones de uso de los datos.
 
-\subsection{Grad-CAM}
+\subsection{Inspección con Grad-CAM}
 
-Grad-CAM permite inspeccionar de forma cualitativa las activaciones \cite{selvaraju2017}. El mapa relaciona regiones de la imagen con el logit del modelo. Esta asociación resulta insuficiente para concluir que la red haya aprendido un criterio médico correcto. En este trabajo sirve para observar si las activaciones se concentran en zonas plausibles y para identificar decisiones erróneas pese a una localización visual razonable. La Figura~\ref{fig:gradcam_sintetico_modelos} presenta un ejemplo.
+La inspección con Grad-CAM complementa las métricas con una representación de las regiones relacionadas con una salida de la CNN. En este trabajo se aplica al último bloque convolucional de ResNet18, antes de reducir las características a un vector para clasificar. El mapa se calcula a partir de los gradientes de la primera puntuación de salida y se amplía al tamaño de la entrada. En la CNN entrenada con el simulador, esa salida corresponde a RBBB, por lo que el ejemplo mostrado examina ese rasgo.
+
+\begin{samepage}
+La Figura~\ref{fig:gradcam_sintetico_modelos} presenta juntos el trazado V1, el mapa normalizado y su superposición. Esta disposición permite localizar las zonas resaltadas sobre el ECG y observar si se sitúan en torno al QRS, relacionado con el rasgo representado, o en regiones periféricas como el fondo y los márgenes, indicando el color la contribución relativa dentro de esa imagen. La inspección se utiliza como apoyo cualitativo a la lectura del comportamiento del modelo y no interviene en la selección del umbral ni en el cálculo de las métricas. El fundamento del método y sus límites interpretativos se desarrollan en la sección~\ref{sec:explicabilidad}.
+\par
+\end{samepage}
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.92\textwidth]{results/cnn_simulator_qrs_gradcam_example.png}
-  \caption{Ejemplo Grad-CAM de la CNN para una única imagen V1 del conjunto sintético: entrada, mapa de activación y superposición.}
+  \safeincludegraphics[width=0.92\textwidth]{results/cnn_simulator_qrs_gradcam_example.pdf}
+  \caption{Inspección de la salida RBBB de la CNN entrenada con el simulador mediante Grad-CAM. Se muestran la imagen V1, el mapa normalizado y su superposición.}
   \label{fig:gradcam_sintetico_modelos}
 \end{figure}

@@ -1,0 +1,23 @@
+{
+  "campaign": "cnn_clinical_brugada_loocv",
+  "status": "final_additive",
+  "promoted_on": "2026-10-25",
+  "source_work_path": "outputs/work/cnn_clinical_brugada_loocv",
+  "source_archive": "source/cnn_clinical_brugada_loocv.zip",
+  "source_sha256": "73373A958C25A630425F5AE3B616CBC8D8AC1FE8829C9D44F3681C0CFF3B4561",
+  "aggregate_reports": "loocv/cnn_clinical",
+  "complete_runs": "runs/cnn_clinical_brugada_loocv",
+  "conditions": ["estandar", "balanced"],
+  "k_values": [2, 4, 8, 16, 32],
+  "seeds": [42, 123, 2026],
+  "folds_per_run": 317,
+  "run_count": 30,
+  "report_file_count": 78,
+  "run_file_count": 19350,
+  "verification": {
+    "clinical_loocv_audit": "passed: 30 runs x 317 folds, no detected patient leakage",
+    "canonical_mirror_audit": "passed: 78 aggregate files matched",
+    "test_suite": "passed: 24 tests"
+  },
+  "promotion_policy": "Additive promotion. The original final_results_tfg.zip and SOURCE.sha256 remain unchanged."
+}

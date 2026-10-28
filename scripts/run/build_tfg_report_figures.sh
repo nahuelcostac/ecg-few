@@ -113,14 +113,6 @@ if [ "$RUN_COMPARISONS" = "1" ]; then
 fi
 
 if [ "$RUN_RENDERERS" = "1" ]; then
-  run_step "Render HUCA preprocessing figure" run_python \
-    "$ROOT_DIR/scripts/thesis/render_huca_preprocessing_figure.py" \
-    --output-dir "$THESIS_FIGURES_DIR"
-
-  run_step "Render K-example split figure" run_python \
-    "$ROOT_DIR/scripts/thesis/render_k_examples_split_figure.py" \
-    --output-dir "$THESIS_FIGURES_DIR"
-
   run_step "Render synthetic label-distribution figure" run_python \
     "$ROOT_DIR/scripts/thesis/render_label_distribution_figure.py" \
     --output-dir "$THESIS_FIGURES_DIR"

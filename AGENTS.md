@@ -5,7 +5,8 @@ Estas instrucciones se aplican a todo el repositorio.
 ## Fuente única de resultados finales
 
 - La única fuente canónica de resultados experimentales es `outputs/final_results_tfg/`.
-- El paquete fue importado de `outputs/final_results_tfg/source/final_results_tfg.zip`. Su SHA-256 está registrado en `outputs/final_results_tfg/SOURCE.sha256`.
+- El paquete base fue importado de `outputs/final_results_tfg/source/final_results_tfg.zip`. Su SHA-256 está registrado en `outputs/final_results_tfg/SOURCE.sha256`.
+- La campaña binaria clínica se promovió de forma aditiva desde `outputs/work/cnn_clinical_brugada_loocv/`. Su archivo, hash y procedencia están en `source/cnn_clinical_brugada_loocv.zip`, `SOURCE_CNN_CLINICAL.sha256` y `CNN_CLINICAL_PROMOTION.json`.
 - `outputs/final_results_tfg/loocv/` contiene los informes agregados finales; `outputs/final_results_tfg/runs/` contiene las salidas completas por ejecución; y `outputs/final_results_tfg/tfg_figures/` contiene la selección final de figuras.
 - `reports/loocv/` es únicamente el espejo versionado de los informes agregados finales. Si alguna vez difiere de la carpeta canónica, prevalece `outputs/final_results_tfg/loocv/` y debe corregirse el espejo.
 - Las figuras de `thesis/thesis/assets/results/`, el texto de la memoria y las tablas del `README.md` son artefactos de presentación derivados. No deben utilizarse como fuente numérica primaria.
@@ -22,4 +23,4 @@ No se deben consultar, mezclar, restaurar ni citar resultados de ejecuciones ant
 
 ## Conservación
 
-No eliminar el ZIP fuente ni `SOURCE.sha256`. Si el usuario autoriza una campaña final nueva, registrar su procedencia y hash, sustituir de forma atómica la ubicación canónica, actualizar el espejo agregado y revisar esta guía y los README relacionados.
+No eliminar ninguno de los ZIP fuente ni sus archivos SHA-256. Si el usuario autoriza una campaña final nueva, registrar su procedencia y hash, actualizar de forma atómica la ubicación canónica, sincronizar el espejo agregado y revisar esta guía y los README relacionados.

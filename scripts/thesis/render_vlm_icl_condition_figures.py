@@ -188,9 +188,15 @@ def plot_icl_conditions(rows: dict[str, list[dict[str, str]]], output_dir: Path)
     fig, axes = plt.subplots(2, 2, figsize=(6.95, 4.35), sharex=True)
 
     panels = (
-        (axes[0, 0], rows["sim"], "balanced_accuracy", "Simulador: BA", "Balanced Accuracy (BA)"),
+        (
+            axes[0, 0],
+            rows["sim"],
+            "balanced_accuracy",
+            "Simulador: BA",
+            "Exactitud balanceada (BA)",
+        ),
         (axes[0, 1], rows["sim"], "f1", "Simulador: F1", "F1"),
-        (axes[1, 0], rows["real"], "balanced_accuracy", "HUCA V1: BA", "Balanced Accuracy (BA)"),
+        (axes[1, 0], rows["real"], "balanced_accuracy", "HUCA V1: BA", "Exactitud balanceada (BA)"),
         (axes[1, 1], rows["real"], "f1", "HUCA V1: F1", "F1"),
     )
     for ax, panel_rows, metric, title, ylabel in panels:
@@ -274,6 +280,7 @@ def save(fig: plt.Figure, path: Path) -> None:
     if not fig.legends:
         fig.tight_layout(pad=0.35)
     fig.savefig(path, bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(path.with_suffix(".pdf"), bbox_inches="tight", pad_inches=0.02)
     plt.close(fig)
 
 

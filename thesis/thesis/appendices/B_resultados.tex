@@ -1,22 +1,22 @@
 \chapter{Resultados completos}
 \label{app:resultados}
 
-Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:resultados}. Todas las cifras son medias de tres semillas. La incertidumbre indicada junto a la Balanced Accuracy (BA) corresponde a la desviación estándar entre ejecuciones. Las matrices acumulan predicciones sobre los mismos pacientes y no aumentan el tamaño de la muestra.
+Las tablas reúnen los resultados completos de la campaña final con las métricas de la sección~\ref{sec:metricas}.
 
-\section{CNN}
+\section{CNN entrenada con el simulador}
 
 \begin{table}[H]
   \centering
   \small
   \begin{tabular}{crrrrrrr}
     \toprule
-    Dominio & \(K\) & Acc. & BA & F1 & Prec. & Sens. & Esp. \\
+    Datos de prueba & \(K\) & Acc. & BA & F1 & Prec. & Sens. & Esp. \\
     \midrule
-    Sintético & 2  & 0,593 & \(0,608 \pm 0,021\) & 0,386 & 0,279 & 0,633 & 0,583 \\
-    Sintético & 4  & 0,627 & \(0,629 \pm 0,018\) & 0,404 & 0,297 & 0,633 & 0,625 \\
-    Sintético & 8  & 0,687 & \(0,685 \pm 0,013\) & 0,467 & 0,355 & 0,683 & 0,688 \\
-    Sintético & 16 & 0,853 & \(0,815 \pm 0,011\) & 0,673 & 0,611 & 0,750 & 0,879 \\
-    Sintético & 32 & 0,897 & \(0,885 \pm 0,013\) & 0,771 & 0,695 & 0,867 & 0,904 \\
+    Simulador & 2  & 0,593 & \(0,608 \pm 0,021\) & 0,386 & 0,279 & 0,633 & 0,583 \\
+    Simulador & 4  & 0,627 & \(0,629 \pm 0,018\) & 0,404 & 0,297 & 0,633 & 0,625 \\
+    Simulador & 8  & 0,687 & \(0,685 \pm 0,013\) & 0,467 & 0,355 & 0,683 & 0,688 \\
+    Simulador & 16 & 0,853 & \(0,815 \pm 0,011\) & 0,673 & 0,611 & 0,750 & 0,879 \\
+    Simulador & 32 & 0,897 & \(0,885 \pm 0,013\) & 0,771 & 0,695 & 0,867 & 0,904 \\
     \midrule
     HUCA & 2  & 0,492 & \(0,531 \pm 0,006\) & 0,493 & 0,389 & 0,675 & 0,386 \\
     HUCA & 4  & 0,519 & \(0,551 \pm 0,034\) & 0,506 & 0,407 & 0,670 & 0,433 \\
@@ -25,9 +25,14 @@ Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:
     HUCA & 32 & 0,462 & \(0,498 \pm 0,010\) & 0,462 & 0,364 & 0,632 & 0,363 \\
     \bottomrule
   \end{tabular}
-  \caption{Resultados completos de la CNN en los dominios sintético y real.}
+  \caption{Resultados completos de la CNN entrenada con el simulador y evaluada con datos generados o ECG del HUCA.}
   \label{tab:app_cnn_completo}
+  \resultstablenote
 \end{table}
+
+\section{CNN entrenada con el HUCA}
+
+\IfFileExists{generated/clinical_cnn_results_table.tex}{\input{generated/clinical_cnn_results_table.tex}}{}
 
 \section{Adaptación de dominio de la CNN}
 
@@ -53,11 +58,13 @@ Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:
   \end{tabular}
   \caption{Resultados completos de adaptación no supervisada sobre el conjunto del HUCA.}
   \label{tab:app_domain_completo}
+  \resultstablenote
 \end{table}
 
-\section{VLM con aprendizaje en contexto}
+\clearpage
+\section{Gemma~4 con aprendizaje en contexto}
 
-\subsection{Dominio sintético}
+\subsection{Resultados con datos del simulador}
 
 \begin{table}[H]
   \centering
@@ -81,9 +88,10 @@ Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:
   \end{tabular}
   \caption{Resultados de Gemma~4 en el simulador QRS/ST.}
   \label{tab:app_vlm_simulador}
+  \resultstablenote
 \end{table}
 
-\subsection{Muestra del HUCA con contexto clínico}
+\subsection{Pacientes del HUCA con demostraciones del mismo conjunto}
 
 \begin{table}[H]
   \centering
@@ -107,9 +115,10 @@ Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:
   \end{tabular}
   \caption{Resultados de Gemma~4 sobre la muestra del HUCA con demostraciones del propio conjunto.}
   \label{tab:app_vlm_real_context}
+  \resultstablenote
 \end{table}
 
-\subsection{Conjunto del HUCA con contexto sintético}
+\subsection{Pacientes del HUCA con demostraciones del simulador}
 
 \begin{table}[H]
   \centering
@@ -131,6 +140,7 @@ Este apéndice reúne las tablas agregadas utilizadas en el capítulo~\ref{chap:
     Balanceado & 32 & \(0,512 \pm 0,006\) & 0,124 & 0,072 & 0,952 \\
     \bottomrule
   \end{tabular}
-  \caption{Resultados de Gemma~4 sobre los datos del HUCA con demostraciones sintéticas.}
+  \caption{Resultados de Gemma~4 sobre los datos del HUCA con demostraciones del simulador.}
   \label{tab:app_vlm_synthetic_context}
+  \resultstablenote
 \end{table}

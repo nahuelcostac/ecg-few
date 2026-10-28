@@ -1,47 +1,26 @@
-\section{VLM con ICL}
+\section{Gemma con aprendizaje en contexto}
 \label{chap:vlm}
 
-Esta sección describe el modelo evaluado, la construcción del prompt y las condiciones utilizadas para aislar el efecto de las demostraciones.
+\subsection{Modelo y servicio}
 
-\subsection{Modelos médicos, modelos cerrados y privacidad}
+Se utiliza \texttt{google/gemma-4-E4B-it} \cite{gemma4card}, una variante preparada para seguir instrucciones que recibe conjuntamente las imágenes de ECG y el texto de la tarea. Sus pesos permanecen fijos durante los experimentos, de modo que cada predicción se obtiene a partir de las instrucciones y de los ejemplos incluidos en la consulta. El número y el origen de esas demostraciones permiten estudiar cómo cambia su respuesta al disponer de distintos contextos.
 
-Existen modelos multimodales generalistas y otros adaptados al ámbito clínico. Algunos trabajos han estudiado modelos propietarios servidos por API para detectar anomalías en ECG tratados como imagen mediante aprendizaje en contexto \cite{camba2026icl}. En esta memoria se adopta una configuración distinta para conservar el control sobre el modelo y el tratamiento de los datos.
+El modelo se ejecuta en un clúster mediante vLLM, que mantiene el servicio de inferencia encargado de generar las respuestas. Dentro de cada tarea se mantienen el mismo modelo y los parámetros de inferencia, incluida una temperatura configurada de cero para reducir la variación asociada a la generación de texto. La Tabla~\ref{tab:config_vlm_appendix} recoge la configuración completa y el capítulo~\ref{chap:gestion_etica} desarrolla las implicaciones de privacidad asociadas al uso de grandes modelos de lenguaje con datos clínicos.
 
-Aunque las imágenes clínicas están seudonimizadas, siguen siendo datos sanitarios. Por este motivo se utilizan pesos abiertos en infraestructura universitaria bajo control propio. vLLM expone el modelo mediante un endpoint compatible con la API de OpenAI, sin enviar los trazados a un proveedor comercial. La configuración permite fijar la versión y los parámetros de inferencia.
+\subsection{Prompt y respuesta}
 
-\subsection{Modelo evaluado}
+El prompt es el mensaje de entrada que recibe el modelo. Tras seleccionar las demostraciones según la sección~\ref{sec:condiciones_vlm}, se construye con la instrucción de sistema, los ejemplos y la imagen de consulta, en ese orden. Cada ejemplo incluye una imagen V1 y su respuesta en JSON, un formato que organiza la información en campos y valores. La consulta exige el mismo esquema. La Figura~\ref{fig:icl_context_window} representa la secuencia para el caso de clasificación de datos simulados.
 
-El modelo evaluado es \texttt{google/gemma-4-E4B-it} \cite{gemma4card}. Admite entradas de texto e imagen y permite configurar el presupuesto visual. La disponibilidad de sus pesos hace posible desplegar una versión fija en la infraestructura utilizada.
-
-Gemma~4 se selecciona para caracterizar el comportamiento de un modelo generalista con pocos ejemplos. Los resultados no constituyen una validación del modelo para esta modalidad clínica.
-
-\subsection{Construcción del prompt}
-
-La inferencia sigue el mismo orden en todos los pliegues. Primero se seleccionan los pacientes que actuarán como demostraciones, excluyendo al paciente de prueba. Después se construye un mensaje multimodal con la instrucción de sistema, las demostraciones y, al final, la imagen de consulta. La Figura~\ref{fig:icl_context_window} representa esta secuencia.
+Cada demostración se envía como una entrada de usuario con la imagen y una respuesta de asistente con la etiqueta conocida. En este estudio, no se han seleccionado demostraciones por similitud visual con la consulta ni se han estudiado permutaciones del orden, conteniendo así la última entrada la imagen que debe ser clasificada.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.96\textwidth]{results/vlm_icl_context_window.drawio.png}
-  \caption{Construcción del contexto VLM/ICL. Las demostraciones preceden a la imagen de consulta y la predicción se obtiene sin actualizar los pesos.}
+  % Fuente editable: assets/results/vlm_icl_context_window.svg.
+  \safeincludegraphics[width=\textwidth]{results/vlm_icl_context_window.pdf}
+  \caption{Consulta con demostraciones y predicción de los tres rasgos del ECG simulado mediante ICL.}
   \label{fig:icl_context_window}
 \end{figure}
 
-Cada demostración contiene una imagen de ECG y la respuesta correcta en formato JSON. La consulta se coloca después de todos los ejemplos. La salida del modelo debe ajustarse al esquema definido. Si el formato no es válido, se registra como tal y no se reconstruye mediante una interpretación manual.
+La tarea del simulador solicita los tres rasgos representados en la figura y la del conjunto cedido por el HUCA, una etiqueta positiva o negativa.
 
-La evaluación utiliza un formato cerrado porque compara decisiones binarias. Este formato reduce la ambigüedad y evita convertir una respuesta plausible en una etiqueta mediante un juicio subjetivo.
-
-\subsection{Condiciones de consulta}
-\label{sec:condiciones_vlm}
-
-Se evalúan tres condiciones. En \emph{zero-shot}, el modelo solo recibe las instrucciones y la imagen objetivo. La salida depende así de su conocimiento previo y de la descripción textual de la tarea, sin ejemplos locales.
-
-En ICL estándar, para \(K\geq2\) se selecciona primero una demostración positiva y otra negativa. Las \(K-2\) posiciones restantes se completan de forma seudoaleatoria entre los pacientes disponibles. La condición estándar tiene, por tanto, una cobertura mínima de ambas clases y no equivale a una recuperación completamente aleatoria.
-
-En ICL balanceado se intenta seleccionar \(K/2\) demostraciones positivas y \(K/2\) negativas. Si una clase no dispone de suficientes pacientes dentro del pliegue, las posiciones libres se completan con la otra. La comparación permite estudiar si una representación equitativa de las clases modifica la sensibilidad y la especificidad frente a la cobertura mínima del ICL estándar. Las semillas 42, 123 y 2026 fijan las selecciones de ambas condiciones.
-
-\subsection{Origen del contexto}
-\label{sec:origen_contexto_vlm}
-
-En el simulador, las demostraciones y la consulta pertenecen al mismo dominio morfológico. Para la muestra del HUCA se analizan dos orígenes del contexto. La comparación principal utiliza pacientes de la propia muestra como demostraciones y una imagen V1 clínica como consulta. Ambos elementos comparten así dominio visual y referencia.
-
-El análisis complementario utiliza demostraciones del simulador para consultar imágenes del HUCA. El modelo recibe entonces etiquetas morfológicas sintéticas y la evaluación se realiza contra la referencia clínica del conjunto clínico. Esta rama mide exclusivamente la transferencia sintético-real del contexto.
+El formato de salida vincula la respuesta del modelo con las etiquetas utilizadas en la evaluación. En el simulador se conserva la decisión sobre cada rasgo y se obtiene una clasificación positiva derivada cuando los tres están presentes. En los registros provenientes del HUCA, la respuesta expresa directamente la etiqueta de Brugada solicitada en la tarea. El apéndice~\ref{app:prompts} recoge las instrucciones y los formatos empleados en cada experimento.

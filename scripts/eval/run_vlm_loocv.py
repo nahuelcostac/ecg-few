@@ -249,12 +249,7 @@ def run_with_args(args: argparse.Namespace) -> None:
                     continue
                 for k in condition_k_values:
                     for seed in seeds:
-                        run_dir = (
-                            output_root
-                            / model_slug(model)
-                            / condition
-                            / f"k{k}_seed{seed}"
-                        )
+                        run_dir = output_root / model_slug(model) / condition / f"k{k}_seed{seed}"
                         predictions = run_k_seed(
                             rows=rows,
                             context_pool_rows=context_pool_rows,
@@ -321,10 +316,7 @@ def resolve_context_dataset(
 
 
 def resolve_clinical_leads(args: argparse.Namespace) -> list[str]:
-    leads = [
-        lead.upper()
-        for lead in parse_string_list(str(getattr(args, "clinical_leads", "")))
-    ]
+    leads = [lead.upper() for lead in parse_string_list(str(getattr(args, "clinical_leads", "")))]
     if not leads:
         leads = [str(getattr(args, "clinical_lead", "V1")).upper()]
     seen: set[str] = set()
@@ -350,12 +342,7 @@ def resolve_prompt_path(path: str, *, task: str, kind: str) -> str:
 
 
 def model_slug(model: str) -> str:
-    return (
-        model.replace("/", "_")
-        .replace("\\", "_")
-        .replace(":", "_")
-        .replace(" ", "_")
-    )
+    return model.replace("/", "_").replace("\\", "_").replace(":", "_").replace(" ", "_")
 
 
 def k_values_for_condition(
@@ -592,9 +579,7 @@ def selection_for_condition(
             }
         if context_pool_rows is rows:
             return {
-                "context_patient_ids": selection_for(fold, k=k, seed=seed)[
-                    "context_patient_ids"
-                ],
+                "context_patient_ids": selection_for(fold, k=k, seed=seed)["context_patient_ids"],
                 "validation_patient_ids": validation_ids,
             }
         patients = patients_from_rows(context_pool_rows)
@@ -615,9 +600,7 @@ def selection_for_condition(
                 k=k,
                 seed=seed + fold_id * 100_003,
             ),
-            "validation_patient_ids": selection_for(fold, k=k, seed=seed)[
-                "validation_patient_ids"
-            ],
+            "validation_patient_ids": selection_for(fold, k=k, seed=seed)["validation_patient_ids"],
         }
     return selection_for(fold, k=k, seed=seed)
 
@@ -862,9 +845,7 @@ def row_for_lead(rows: list[BrugadaImageRow], lead: str) -> BrugadaImageRow:
             return row
     available = ", ".join(row.lead for row in sorted_rows_by_lead(rows))
     patient_id = rows[0].patient_id if rows else "?"
-    raise ValueError(
-        f"Patient {patient_id} has no {requested}; available: {available}"
-    )
+    raise ValueError(f"Patient {patient_id} has no {requested}; available: {available}")
 
 
 def rows_for_leads(rows: list[BrugadaImageRow], leads: list[str]) -> list[BrugadaImageRow]:
@@ -902,8 +883,7 @@ def clinical_answer_labels_for_condition(
     rng = random.Random(seed)
     rng.shuffle(labels)
     unchanged = all(
-        answers[patient_id] == label
-        for patient_id, label in zip(patient_ids, labels, strict=True)
+        answers[patient_id] == label for patient_id, label in zip(patient_ids, labels, strict=True)
     )
     if unchanged:
         labels = labels[1:] + labels[:1]
@@ -1349,9 +1329,7 @@ def aggregate_by_group(
             "latency_seconds_mean",
         ):
             values = [
-                float(row[metric])
-                for row in group
-                if row.get(metric) not in {None, "", "None"}
+                float(row[metric]) for row in group if row.get(metric) not in {None, "", "None"}
             ]
             payload[f"{metric}_mean"] = float(np.mean(values)) if values else ""
             payload[f"{metric}_std"] = float(np.std(values, ddof=0)) if values else ""
@@ -1465,8 +1443,7 @@ def write_campaign_manifest(path: Path, rows: list[dict[str, object]]) -> None:
             "balanced_accuracy_plot": "balanced_accuracy_by_k.png",
             "f1_plot": "f1_by_k.png",
             "per_run_predictions": (
-                "outputs/vlm_loocv/<model>/<condition>/"
-                "k<k>_seed<seed>/fold_predictions.csv"
+                "outputs/vlm_loocv/<model>/<condition>/k<k>_seed<seed>/fold_predictions.csv"
             ),
         },
     }
@@ -1500,9 +1477,7 @@ def load_existing_predictions(path: Path) -> list[dict[str, object]]:
     if not path.exists():
         return []
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 

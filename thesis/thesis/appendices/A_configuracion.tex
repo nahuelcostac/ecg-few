@@ -1,9 +1,9 @@
 \chapter{Configuración experimental}
 \label{app:configuracion}
 
-Este apéndice recoge los parámetros principales de la configuración experimental. Se incluyen los valores necesarios para interpretar los resultados y comparar los enfoques CNN y VLM/ICL.
+Estas tablas reúnen la configuración completa utilizada en los experimentos del capítulo~\ref{chap:diseno}.
 
-\section{Conjunto sintético QRS/ST}
+\section{Conjunto generado por el simulador QRS/ST}
 
 \begin{table}[H]
   \centering
@@ -28,11 +28,11 @@ Este apéndice recoge los parámetros principales de la configuración experimen
     Semillas & 42, 123 y 2026 \\
     \bottomrule
   \end{tabularx}
-  \caption{Configuración del conjunto sintético final.}
+  \caption{Configuración del conjunto generado por el simulador.}
   \label{tab:config_sintetico_final}
 \end{table}
 
-La etiqueta positiva se obtiene cuando RBBB, elevación del ST e inversión de T están presentes de forma simultánea. La decisión por paciente utiliza únicamente la imagen V1 y aplica después el umbral seleccionado.
+La regla de etiqueta se define en la sección~\ref{sec:datos_tareas} y el umbral de la CNN, en la sección~\ref{sec:umbral_cnn}.
 
 \section{Muestra del HUCA}
 
@@ -45,12 +45,12 @@ La etiqueta positiva se obtiene cuando RBBB, elevación del ST e inversión de T
     \midrule
     Fuente & Hospital Universitario Central de Asturias (HUCA), recurso Brugada-HUCA 1.0.0 \\
     Pacientes brutos & 363 \\
-    Pacientes excluidos & 46 por patrón basal limítrofe \\
+    Pacientes excluidos & 46 casos de clasificación dudosa, por recomendación de los médicos colaboradores \\
     Pacientes incluidos & 317 \\
     Imágenes únicas incluidas & 317 \\
     Predicciones agregadas & 951, correspondientes a tres semillas \\
-Referencias positivas & 116 \\
-Referencias negativas & 201 \\
+    Etiqueta positiva & 116 \\
+    Etiqueta negativa & 201 \\
     Derivaciones & V1 \\
     Ventana & 300 ms antes de R y 600 ms después de R \\
     Frecuencia de origen & 100 Hz \\
@@ -62,33 +62,45 @@ Referencias negativas & 201 \\
   \label{tab:config_huca_final}
 \end{table}
 
-La muestra procesada del HUCA no incluye anotaciones independientes de los tres hallazgos morfológicos simulados. La evaluación emplea una referencia clínica por paciente. Esta variable, almacenada en \texttt{clinical\_brugada}, procede de una revisión especializada.
+La selección y la preparación de los pacientes se describen en la sección~\ref{sec:datos_tareas}.
 
-\section{Configuración CNN}
+\section{Configuración de las CNN}
 
 \begin{table}[H]
   \centering
   \small
-  \begin{tabularx}{0.94\textwidth}{p{4.4cm}X}
+  \begin{tabularx}{\textwidth}{p{3.5cm}XX}
     \toprule
-    Propiedad & Valor \\
+    Propiedad & CNN entrenada con el simulador & CNN entrenada con el HUCA \\
     \midrule
-    Arquitectura & ResNet18 \\
-    Pesos iniciales & Inicialización estándar de ResNet18 \\
-    Entrada & RGB, 224 por 224 \\
-    Salida & Tres hallazgos morfológicos \\
-    Pérdida & Entropía cruzada binaria multietiqueta \\
-    Optimizador & AdamW \\
-    Tasa de aprendizaje & \(3\times10^{-4}\) \\
-    Lote & 32 \\
-    Épocas máximas & 20 \\
-    Estrategia de umbral & Selección en validación mediante Balanced Accuracy \\
-    Métrica principal & Balanced Accuracy por paciente \\
-    Grad-CAM & Límite de 12 paneles por ejecución sintética y 6 por ejecución sobre el HUCA \\
+    Arquitectura & \multicolumn{2}{l}{ResNet18} \\
+    Pesos iniciales & \multicolumn{2}{l}{Preentrenados con ImageNet} \\
+    Entrada & \multicolumn{2}{l}{Una imagen V1, RGB, 224 por 224 píxeles} \\
+    Salida & RBBB, elevación ST e inversión T & Una salida logística para la etiqueta clínica \\
+    Etiquetas & Validadores del simulador & Presencia o ausencia de Brugada \\
+    Pérdida & BCE multietiqueta & BCE de una salida \\
+    Ponderación positiva & \multicolumn{2}{l}{Automática con el entrenamiento de cada pliegue} \\
+    Optimizador & \multicolumn{2}{l}{AdamW} \\
+    Tasa de aprendizaje & \multicolumn{2}{l}{\(3\times10^{-4}\)} \\
+    Lote & \multicolumn{2}{l}{32 imágenes} \\
+    Épocas máximas & 20 & 20, con \textit{early stopping} \\
+    Paciencia & No corresponde & 5 épocas sin mejora de BA \\
+    Decaimiento de pesos & No registrado & \(10^{-4}\) \\
+    Entrenamiento & \(K\) pacientes del simulador & \(K\) pacientes del HUCA \\
+    Valores de \(K\) & \multicolumn{2}{l}{\(2,4,8,16,32\)} \\
+    Selección clínica & No corresponde & Estándar y balanceada \\
+    Semillas & \multicolumn{2}{l}{42, 123 y 2026} \\
+    Validación & Por pliegue & 8 pacientes, 4 por clase \\
+    Umbral & \multicolumn{2}{l}{Máxima BA por paciente en validación} \\
+    Métrica principal & \multicolumn{2}{l}{Exactitud balanceada por paciente} \\
+    Paneles Grad-CAM & 12 por ejecución del simulador y 6 del HUCA & No se presentan paneles clínicos en la memoria \\
     \bottomrule
   \end{tabularx}
-  \caption{Hiperparámetros de la CNN final.}
+  \caption{Configuración completa de las dos CNN.}
   \label{tab:config_cnn_appendix}
+  \label{tab:config_cnn_clinical_appendix}
+  \label{tab:modelo_cnn_final}
+  \label{tab:modelo_cnn_clinica}
 \end{table}
 
 \section{Configuración de adaptación de dominio}
@@ -100,7 +112,7 @@ La muestra procesada del HUCA no incluye anotaciones independientes de los tres 
     \toprule
     Propiedad & Valor \\
     \midrule
-    Origen etiquetado & Conjunto sintético QRS/ST \\
+    Origen etiquetado & Conjunto del simulador QRS/ST \\
     Destino no etiquetado & Conjunto del HUCA \\
     Métodos & SSL, CORAL, MMD y DANN \cite{chen2020simclr,sun2016deepcoral,long2015dan,ganin2016} \\
     Valores de \(K\) & \(K=16\) y \(K=32\) \\
@@ -108,17 +120,15 @@ La muestra procesada del HUCA no incluye anotaciones independientes de los tres 
     Peso de adaptación & 0,1 \\
     Escalas MMD & 0,5, 1,0, 2,0 y 4,0 \\
     SSL & SimCLR durante 3 épocas \\
-    Política de destino & Transductiva compartida, sin etiquetas destino en la pérdida supervisada \\
+    Uso de imágenes del HUCA & Compartidas entre pliegues durante la adaptación, sin utilizar sus etiquetas para entrenar \\
     \bottomrule
   \end{tabularx}
   \caption{Configuración de los experimentos de adaptación de dominio.}
   \label{tab:config_domain_appendix}
+  \label{tab:cnn_domain_methods}
 \end{table}
 
-\clearpage
-\section{Configuración VLM/ICL}
-
-El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métricas por paciente que la CNN. La evaluación final corresponde a Gemma~4, servido mediante vLLM en infraestructura universitaria, con temperatura 0 y salida estructurada.
+\section{Configuración de Gemma~4}
 
 \begin{table}[H]
   \centering
@@ -128,18 +138,20 @@ El enfoque VLM/ICL usa los mismos pacientes reservados, valores de \(K\) y métr
     Elemento & Valor \\
     \midrule
     Modelo informado & \texttt{google/gemma-4-E4B-it} \\
-    Servicio & vLLM en infraestructura universitaria \\
+    Servicio & vLLM ejecutado en un clúster \\
+    Temperatura & 0 \\
+    Respuesta & JSON estructurado \\
     Entrada & Imagen ECG y demostraciones imagen-etiqueta \\
     Valores de \(K\) & \(K=\{0,2,4,8,16,32\}\) \\
-    Condiciones informadas & Zero-shot, ICL estándar e ICL balanceado \\
+    Selección de demostraciones & Sin ejemplos, estándar y balanceada \\
     Contextos sobre el conjunto del HUCA & Demostraciones de la propia muestra o del simulador \\
     Salida morfológica & RBBB, elevación del ST e inversión de T \\
-    Salida clínica & Caso confirmado de síndrome de Brugada frente a normal \\
-    Métrica principal & Balanced Accuracy por paciente \\
+    Salida clínica & Etiqueta positiva o negativa de Brugada \\
+    Métrica principal & Exactitud balanceada por paciente \\
     \bottomrule
   \end{tabularx}
-  \caption{Configuración resumida del enfoque VLM/ICL.}
+  \caption{Configuración de Gemma~4 con aprendizaje en contexto.}
   \label{tab:config_vlm_appendix}
 \end{table}
 
-La sección~\ref{chap:vlm} describe este enfoque y el capítulo de resultados desarrolla su comparación con la CNN.
+La construcción del mensaje se describe en la sección~\ref{chap:vlm} y los prompts se conservan en el apéndice~\ref{app:prompts}.

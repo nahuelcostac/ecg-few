@@ -5,21 +5,27 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 import re
-import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_FINAL_ROOT = ROOT / "outputs" / "final_results_tfg"
+DEFAULT_LOOCV_DIR = ROOT / "outputs" / "final_results_tfg" / "loocv"
+DEFAULT_MIRROR_DIR = ROOT / "reports" / "loocv"
 DEFAULT_THESIS_ROOT = ROOT / "thesis" / "thesis"
 MODEL = "google/gemma-4-E4B-it"
+ORIGINAL_SOURCE_SHA256 = "31F47D6BB91687F3B0F5B9B7532B6C58474CE34AB004485BB8BC05ABD9CF10DC"
+CLINICAL_SOURCE_SHA256 = "73373A958C25A630425F5AE3B616CBC8D8AC1FE8829C9D44F3681C0CFF3B4561"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Audit final TFG results and assets.")
+    parser.add_argument("--final-root", type=Path, default=DEFAULT_FINAL_ROOT)
     parser.add_argument("--loocv-dir", type=Path, default=DEFAULT_LOOCV_DIR)
+    parser.add_argument("--mirror-dir", type=Path, default=DEFAULT_MIRROR_DIR)
     parser.add_argument("--thesis-root", type=Path, default=DEFAULT_THESIS_ROOT)
     parser.add_argument(
         "--skip-results",
@@ -115,10 +121,135 @@ def audit_results(loocv_dir: Path) -> None:
         if payload["patients"] != patients or payload["images"] != images:
             raise AssertionError(f"Unexpected unit counts in {path}")
 
+    clinical_standard = read_csv(
+        loocv_dir / "cnn_clinical" / "estandar" / "cnn_clinical_summary_by_k.csv"
+    )
+    clinical_balanced = read_csv(
+        loocv_dir / "cnn_clinical" / "balanced" / "cnn_clinical_summary_by_k.csv"
+    )
+    expected_k_values = [2, 4, 8, 16, 32]
+    for condition, rows in (
+        ("estandar", clinical_standard),
+        ("balanced", clinical_balanced),
+    ):
+        if sorted(int(row["k"]) for row in rows) != expected_k_values:
+            raise AssertionError(f"Clinical CNN {condition}: unexpected K values")
+        if any(int(row["n_patients"]) != 317 or int(row["n_runs"]) != 3 for row in rows):
+            raise AssertionError(f"Clinical CNN {condition}: unexpected units")
+    check_best(
+        clinical_standard,
+        condition="estandar",
+        label="Clinical CNN standard",
+        expected_k=32,
+        expected_ba=0.5315234173957797,
+    )
+    check_best(
+        clinical_balanced,
+        condition="balanced",
+        label="Clinical CNN balanced",
+        expected_k=16,
+        expected_ba=0.5456196031337565,
+    )
+
+
+def audit_canonical_package(final_root: Path, mirror_dir: Path) -> None:
+    source_specs = (
+        (
+            final_root / "source" / "final_results_tfg.zip",
+            final_root / "SOURCE.sha256",
+            ORIGINAL_SOURCE_SHA256,
+        ),
+        (
+            final_root / "source" / "cnn_clinical_brugada_loocv.zip",
+            final_root / "SOURCE_CNN_CLINICAL.sha256",
+            CLINICAL_SOURCE_SHA256,
+        ),
+    )
+    for archive, checksum_file, expected in source_specs:
+        actual = sha256(archive)
+        recorded = checksum_file.read_text(encoding="utf-8").split()[0].upper()
+        if actual != expected or recorded != expected:
+            raise AssertionError(f"Unexpected source hash for {archive}")
+
+    canonical_reports = final_root / "loocv" / "cnn_clinical"
+    mirrored_reports = mirror_dir / "cnn_clinical"
+    canonical_files = sorted(
+        path.relative_to(canonical_reports)
+        for path in canonical_reports.rglob("*")
+        if path.is_file()
+    )
+    mirrored_files = sorted(
+        path.relative_to(mirrored_reports) for path in mirrored_reports.rglob("*") if path.is_file()
+    )
+    if canonical_files != mirrored_files:
+        raise AssertionError("Clinical CNN canonical reports and mirror contain different files")
+    for relative_path in canonical_files:
+        if sha256(canonical_reports / relative_path) != sha256(mirrored_reports / relative_path):
+            raise AssertionError(f"Clinical CNN mirror differs: {relative_path}")
+
+    prediction_files = sorted(
+        (final_root / "runs" / "cnn_clinical_brugada_loocv").glob(
+            "*/resnet18/k*_seed*/fold_predictions.jsonl"
+        )
+    )
+    if len(prediction_files) != 30:
+        raise AssertionError(f"Clinical CNN: expected 30 runs, found {len(prediction_files)}")
+    for path in prediction_files:
+        records = [
+            json.loads(line)
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if len(records) != 317:
+            raise AssertionError(f"Clinical CNN: expected 317 folds in {path}")
+        k = int(re.search(r"k(\d+)_seed", path.parent.name).group(1))
+        for record in records:
+            test_patient = str(record["patient_id"])
+            context_ids = split_ids(record.get("context_patient_ids", ""))
+            validation_ids = split_ids(record.get("validation_patient_ids", ""))
+            if len(context_ids) != k or len(validation_ids) != 8:
+                raise AssertionError(f"Clinical CNN: unexpected split size in {path}")
+            if test_patient in context_ids or test_patient in validation_ids:
+                raise AssertionError(f"Clinical CNN: test-patient leakage in {path}")
+            if set(context_ids).intersection(validation_ids):
+                raise AssertionError(f"Clinical CNN: train-validation overlap in {path}")
+
 
 def audit_thesis(thesis_root: Path) -> None:
     tex_files = sorted(thesis_root.rglob("*.tex"))
     joined = "\n".join(path.read_text(encoding="utf-8") for path in tex_files)
+    if re.search(r"\bhallazgos?\b", joined, flags=re.IGNORECASE):
+        raise AssertionError("The thesis still uses the prohibited word 'hallazgo'")
+    forbidden_phrases = (
+        r"\bcohort(?:e|es|s)?\b",
+        r"\breferencia(?:s)?\s+(?:clínica(?:s)?\s+)?binaria(?:s)?\b",
+        r"\bdominios?\s+sintéticos?\b",
+        r"\bcontexto\s+sintético\b",
+        r"\bCNN\s+(?:clínica|morfológica)\b",
+        r"\btransductiv[oa]s?\b",
+        r"\bparada\s+temprana\b",
+        r"\bICL\s+(?:clínic[oa]|morfológic[oa])\b",
+    )
+    for pattern in forbidden_phrases:
+        match = re.search(pattern, joined, flags=re.IGNORECASE)
+        if match:
+            raise AssertionError(f"Prohibited editorial phrase: {match.group()}")
+
+    publication_files = [
+        path
+        for directory in ("chapters", "frontmatter", "appendices", "generated")
+        for path in (thesis_root / directory).glob("*.tex")
+    ]
+    internal_report_terms = re.compile(
+        r"\b(?:auditor[ií]as?|SHA(?:[- ]?256)?|hash(?:es)?|CSV)\b",
+        flags=re.IGNORECASE,
+    )
+    for path in publication_files:
+        match = internal_report_terms.search(path.read_text(encoding="utf-8"))
+        if match:
+            raise AssertionError(
+                f"Internal reporting term in thesis prose: {path}: {match.group()}"
+            )
 
     forbidden_dashes = re.compile(r"[\u2010-\u2015]")
     for path in tex_files:
@@ -128,19 +259,41 @@ def audit_thesis(thesis_root: Path) -> None:
             raise AssertionError(f"Unicode dash in {path}: U+{ord(match.group()):04X}")
 
     drawio_assets = (
-        "fig_pipeline_experimental.drawio.png",
-        "fig_k_examples_split.drawio.png",
-        "gaussian_generator.drawio.png",
-        "cnn_convolutional_pipeline.drawio.png",
-        "vlm_icl_context_window.drawio.png",
-        "fig_synthetic_real_comparison.drawio.png",
+        "fig_pipeline_experimental.pdf",
+        "gaussian_generator.drawio.pdf",
+        "cnn_convolutional_pipeline.pdf",
+        "vlm_icl_context_window.pdf",
+        "fig_synthetic_real_comparison.pdf",
     )
     for asset in drawio_assets:
         count = joined.count(asset)
         if count != 1:
             raise AssertionError(f"{asset}: expected one TeX reference, found {count}")
+    if "fig_k_examples_split.pdf" in joined:
+        raise AssertionError("The removed example-selection diagram is still included")
+    for asset in (
+        "clinical_cnn_vs_gemma_performance.pdf",
+        "clinical_cnn_vs_gemma_confusions.pdf",
+    ):
+        count = joined.count(asset)
+        if count != 1:
+            raise AssertionError(f"{asset}: expected one TeX reference, found {count}")
 
     graphics = re.findall(r"\\safeincludegraphics(?:\[[^]]*\])?\{([^}]+)\}", joined)
+    non_pdf = [graphic for graphic in graphics if Path(graphic).suffix.lower() != ".pdf"]
+    if non_pdf:
+        raise AssertionError("Thesis figures must be referenced as PDF:\n" + "\n".join(non_pdf))
+    preamble = (thesis_root / "config" / "preamble.tex").read_text(encoding="utf-8")
+    direct_graphics = re.findall(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", preamble)
+    non_pdf_direct = [
+        graphic
+        for graphic in direct_graphics
+        if Path(graphic).suffix and Path(graphic).suffix.lower() != ".pdf"
+    ]
+    if non_pdf_direct:
+        raise AssertionError(
+            "Thesis logos must be referenced as PDF:\n" + "\n".join(non_pdf_direct)
+        )
     missing = []
     for graphic in graphics:
         path = thesis_root / "assets" / graphic
@@ -149,11 +302,18 @@ def audit_thesis(thesis_root: Path) -> None:
     if missing:
         raise AssertionError("Missing thesis figures:\n" + "\n".join(missing))
 
-    visual_sources = (
-        ROOT / "scripts" / "thesis" / "render_huca_preprocessing_figure.py",
-        ROOT / "scripts" / "thesis" / "render_k_examples_split_figure.py",
-        thesis_root / "assets" / "results" / "fig_synthetic_real_comparison.drawio",
-    )
+    prose_dirs = ("chapters", "frontmatter", "appendices")
+    semicolon_lines = [
+        f"{path}:{number}"
+        for directory in prose_dirs
+        for path in (thesis_root / directory).glob("*.tex")
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1)
+        if ";" in line and not line.lstrip().startswith("%")
+    ]
+    if semicolon_lines:
+        raise AssertionError("Semicolons in thesis prose:\n" + "\n".join(semicolon_lines))
+
+    visual_sources = (thesis_root / "assets" / "results" / "fig_synthetic_real_comparison.drawio",)
     forbidden_visual_markers = ("Ventanas\\nV1/V2/V3", "Dataset real HUCA")
     for path in visual_sources:
         text = path.read_text(encoding="utf-8")
@@ -161,8 +321,8 @@ def audit_thesis(thesis_root: Path) -> None:
             if marker in text:
                 raise AssertionError(f"Obsolete visual marker in {path}: {marker}")
 
-    gradcam_path = thesis_root / "assets" / "results" / "cnn_simulator_qrs_gradcam_example.png"
-    width, height = png_dimensions(gradcam_path)
+    gradcam_path = thesis_root / "assets" / "results" / "cnn_simulator_qrs_gradcam_example.pdf"
+    width, height = pdf_dimensions(gradcam_path)
     if width / height < 2.5:
         raise AssertionError(
             "The thesis Grad-CAM example must contain one V1 row with three panels"
@@ -187,34 +347,92 @@ def audit_thesis(thesis_root: Path) -> None:
     obsolete = (
         "0,848",
         "0,754",
-        "0,549",
         "0,522",
         "300 imágenes únicas",
         "951 imágenes únicas",
         "Exactitud equilibrada",
+        "La CNN no se reentrena con pacientes del HUCA",
+        "The CNN is not retrained on HUCA patients",
+        "outputs/work/cnn_clinical_brugada_loocv",
+        "cnn_clinical_ba_by_k.pdf",
+        "cnn_clinical_f1_by_k.pdf",
+        "cnn_clinical_sens_spec_by_k.pdf",
+        "comparison_huca_clinical_cnn_vs_gemma_ba_by_k.pdf",
+        "comparison_huca_clinical_cnn_vs_gemma_f1_by_k.pdf",
+        "cnn_clinical_sens_spec_best.pdf",
+        "cnn_clinical_vs_gemma_confusion_matrices.pdf",
     )
     for marker in obsolete:
         if marker in joined:
             raise AssertionError(f"Obsolete final-report marker remains: {marker}")
 
 
-def png_dimensions(path: Path) -> tuple[int, int]:
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
     with path.open("rb") as handle:
-        header = handle.read(24)
-    if header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
-        raise AssertionError(f"Invalid PNG header: {path}")
-    return struct.unpack(">II", header[16:24])
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().upper()
+
+
+def audit_huca_provenance_report() -> None:
+    report = json.loads((ROOT / "thesis/AUDITORIA_PROCEDENCIA_HUCA.json").read_text("utf-8"))
+    public = report["public_metadata"]
+    if public["label_counts"] != {"0": 287, "1": 69, "2": 7}:
+        raise AssertionError("The public HUCA label counts require a new editorial review")
+    if not public["publisher_checksum_verified"]:
+        raise AssertionError("The public HUCA metadata checksum was not verified")
+    if public["public_vs_local"]["different_labels"] != 93:
+        raise AssertionError("Unexpected public/local HUCA label discrepancy")
+    if public["public_vs_canonical"]["different_labels"] != 66:
+        raise AssertionError("Unexpected public/canonical HUCA label discrepancy")
+    if public["public_to_canonical_label_counts"] != {
+        "0_to_0": 201,
+        "0_to_1": 63,
+        "1_to_1": 50,
+        "2_to_1": 3,
+    }:
+        raise AssertionError("The HUCA provenance table does not match the audit report")
+    expected_match = {
+        "shared_patients": 317,
+        "different_labels": 0,
+        "only_left": 0,
+        "only_right": 0,
+    }
+    for key in ("builder_vs_canonical", "processed_vs_canonical"):
+        if report[key] != expected_match:
+            raise AssertionError(f"Local HUCA selection does not match canonical runs: {key}")
+    raw_metadata = ROOT / "data/raw/brugada-huca/1.0.0/metadata.csv"
+    if raw_metadata.exists() and sha256(raw_metadata) != report["local_metadata_sha256"].upper():
+        raise AssertionError("Local HUCA metadata changed after the provenance audit")
+
+
+def split_ids(value: object) -> list[str]:
+    return [item for item in str(value).split("|") if item]
+
+
+def pdf_dimensions(path: Path) -> tuple[float, float]:
+    match = re.search(
+        rb"/MediaBox\s*\[\s*0\s+0\s+([0-9.]+)\s+([0-9.]+)\s*\]",
+        path.read_bytes(),
+    )
+    if not match:
+        raise AssertionError(f"Missing PDF MediaBox: {path}")
+    return float(match.group(1)), float(match.group(2))
 
 
 def main() -> None:
     args = parse_args()
     if not args.skip_results:
         audit_results(args.loocv_dir)
+        audit_canonical_package(args.final_root, args.mirror_dir)
+        audit_huca_provenance_report()
     audit_thesis(args.thesis_root)
     if args.skip_results:
         print("[OK] Final TFG text, Draw.io usage and figure references are consistent.")
     else:
         print("[OK] Final TFG results, units, Draw.io usage and figure references are consistent.")
+        print("[WARNING] 66 HUCA labels differ from public CSV. Clinical provenance is unresolved.")
 
 
 if __name__ == "__main__":

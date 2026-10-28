@@ -1,73 +1,121 @@
 \chapter{Diseño experimental}
 \label{chap:diseno}
 
-El diseño experimental contrasta una ResNet18 supervisada y Gemma~4 mediante ICL bajo una entrada, una unidad de separación y unas métricas comunes. En ambas ramas, \(K\) representa el número de pacientes etiquetados disponibles. En la CNN son pacientes de entrenamiento. En el VLM son demostraciones incluidas en el contexto.
-
-El sistema se plantea como una herramienta experimental para priorizar la revisión de trazados. Una predicción positiva señala un ECG que convendría revisar. La confirmación o el descarte del síndrome de Brugada requieren valoración clínica, el ECG completo y, según el caso, otras pruebas como el reposicionamiento de V1/V2 o el test farmacológico. Desde esta perspectiva, la sensibilidad indica qué proporción de positivos genera una alerta, mientras que la especificidad refleja cuántos pacientes negativos no serían derivados innecesariamente.
-
-El protocolo distingue los datos, las particiones, las métricas, el papel previsto del sistema y los resultados. Además, incluye matrices \(2\times2\), sensibilidad y especificidad para facilitar la interpretación \cite{collins2024tripodai,bossuyt2015stard,sounderajah2025stardai}. Al trabajar con imágenes clínicas, también se especifican la entrada del modelo, la agregación de las predicciones y la información que queda fuera de la imagen. La Figura~\ref{fig:diseno_experimental_resumen} resume las ramas comparadas.
+El experimento compara una CNN entrenada de forma supervisada con Gemma~4 mediante aprendizaje en contexto con la misma entrada, una imagen V1 por paciente, y las mismas métricas. La Figura~\ref{fig:diseno_experimental_resumen} muestra el proceso.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.96\textwidth]{results/fig_pipeline_experimental.drawio.png}
-  \caption{Resumen del diseño experimental común: entrada de ECG como imagen, uso supervisado de ejemplos en la CNN, uso contextual de ejemplos en el VLM/ICL y evaluación con métricas compartidas.}
+  % Fuente editable: assets/results/fig_pipeline_experimental.svg.
+  \safeincludegraphics[width=0.96\textwidth]{results/fig_pipeline_experimental.pdf}
+  \caption{Diseño experimental con preparación de imágenes, entrenamiento de la CNN o consulta de Gemma~4 y evaluación por paciente.}
   \label{fig:diseno_experimental_resumen}
 \end{figure}
 
-\section{Planteamiento común}
+\section{Datos y tareas}
+\label{sec:datos_tareas}
 
-La rama VLM/ICL contempla tres condiciones: zero-shot, ICL estándar e ICL balanceado. Las dos ramas comparten los valores positivos de \(K\), las semillas, la separación por paciente y el procedimiento de agregación. Esta simetría permite comparar el rendimiento sin confundir el método con cambios en la unidad experimental.
-
-La comparación abarca dos dominios. El simulador QRS/ST permite estudiar si las imágenes contienen información morfológica discriminativa en un entorno controlado. La muestra del HUCA introduce ECG clínicos reales, con ruido de adquisición, variabilidad entre pacientes y una etiqueta cuyo significado no coincide exactamente con las reglas empleadas en la simulación.
-
-\section{Datos evaluados}
-
-El paciente constituye siempre la unidad de separación. En el conjunto sintético, cada paciente simulado aporta una imagen de V1. En la muestra del HUCA se utiliza, de forma análoga, una única ventana renderizada de V1 por paciente. Cada imagen genera una predicción, que se interpreta directamente a nivel de paciente.
+La Tabla~\ref{tab:datasets_finales} recoge los dos conjuntos. En el simulador, un caso es positivo si presenta simultáneamente RBBB, elevación del ST e inversión de T. En el HUCA se utiliza una etiqueta binaria que indica la presencia o ausencia de Brugada según los datos facilitados para el estudio, sin identificar por separado los tres rasgos del trazado.
 
 \begin{table}[H]
   \centering
   \small
   \begin{tabularx}{\textwidth}{p{3cm}rrrr>{\raggedright\arraybackslash}X}
     \toprule
-    Conjunto & Pacientes & Imágenes & Positivos & Negativos & Tarea \\
+    Conjunto & Pacientes & Imágenes & Positivos & Negativos & Etiqueta \\
     \midrule
-    Sintético QRS/ST & 100 & 100 & 20 & 80 & Patrón sintético asociado al síndrome de Brugada con RBBB, elevación ST e inversión T presentes \\
-    Datos HUCA & 317 & 317 & 116 & 201 & Referencia binaria de la campaña final tras el filtrado local \\
+    Simulador QRS/ST & 100 & 100 & 20 & 80 & Presencia de los tres rasgos \\
+    Datos HUCA & 317 & 317 & 116 & 201 & Etiqueta clínica \\
     \bottomrule
   \end{tabularx}
-  \caption{Conjuntos utilizados en los experimentos finales. Cada paciente aporta una imagen. Las matrices de confusión acumulan las predicciones obtenidas con las tres semillas.}
+  \caption{Conjuntos finales. Cada paciente aporta una imagen V1.}
   \label{tab:datasets_finales}
+  \label{tab:huca_datos_finales}
 \end{table}
 
-Las etiquetas no representan exactamente el mismo fenómeno en ambos dominios. En el simulador, la clase positiva responde a una regla morfológica definida mediante criterios explícitos. En el conjunto clínico del HUCA, procede de una variable clínica incluida en los metadatos. Por tanto, el paso del entorno sintético al clínico introduce tanto un cambio visual como un cambio semántico.
+El capítulo~\ref{chap:simulador} describe el generador. Las señales clínicas proceden de Brugada-HUCA \cite{costacortez2026brugada}. Por recomendación de los médicos colaboradores, se excluyeron 46 de los 363 pacientes iniciales cuya clasificación todavía no estaba clara al preparar el estudio, para evitar que esos casos dudosos condicionaran la comparación. En los 317 restantes se selecciona V1, se detecta un latido central y se recorta desde 300 ms antes de R hasta 600 ms después. El apéndice~\ref{app:configuracion} recoge los parámetros completos.
 
-\section{Valores de K y validación}
-
-Los experimentos con pocos ejemplos emplean \(K=\{2,4,8,16,32\}\). En el VLM se añade \(K=0\), correspondiente a la condición zero-shot. Cada valor positivo se evalúa con las semillas 42, 123 y 2026. Los ejemplos se seleccionan de nuevo en cada pliegue, sin incluir nunca al paciente reservado para prueba.
-
-Las variantes de ICL se diferencian únicamente en esa selección. Para \(K\geq2\), el ICL estándar incorpora al menos una demostración positiva y otra negativa. Las posiciones restantes se completan de forma seudoaleatoria entre los pacientes disponibles. No se trata, por tanto, de una recuperación aleatoria pura. El ICL balanceado intenta asignar \(K/2\) demostraciones a cada clase y solo completa con la clase disponible si una de ellas no reúne suficientes casos. En ambos métodos, la semilla fija la selección y el paciente de prueba queda excluido.
-
-En la evaluación sobre la muestra del HUCA, el origen de los ejemplos varía entre las ramas. La CNN se ajusta con pacientes del simulador, ya que el conjunto clínico no contiene las etiquetas morfológicas requeridas por la cabeza multietiqueta. Para Gemma~4, la comparación clínica principal selecciona las demostraciones de la propia muestra y el análisis de transferencia las toma del simulador. La Figura~\ref{fig:k_examples_split} muestra la separación por paciente.
+La Figura~\ref{fig:synthetic_real_comparison} ilustra las diferencias de forma entre un latido del simulador y un trazado clínico del HUCA.
 
 \begin{figure}[H]
   \centering
-  \safeincludegraphics[width=0.94\textwidth]{results/fig_k_examples_split.drawio.png}
-  \caption{Separación por paciente y selección de ejemplos para cada valor de \(K\). El paciente reservado no interviene en la selección.}
-  \label{fig:k_examples_split}
+  \safeincludegraphics[width=0.92\textwidth]{results/fig_synthetic_real_comparison.pdf}
+  \caption{Ejemplo del simulador y trazado clínico V1.}
+  \label{fig:synthetic_real_comparison}
 \end{figure}
 
-Esta separación evita que registros de una misma persona aparezcan a la vez en entrenamiento y prueba, una fuente habitual de sesgo en el análisis de ECG. Sin este control, el modelo podría reconocer rasgos del paciente, del dispositivo o del renderizado en vez de patrones relacionados con la tarea.
+\subsection{Características de la muestra del HUCA}
+\label{sec:procedencia_huca}
 
-\section{Métricas}
+La muestra utilizada contiene 116 pacientes etiquetados como positivos y 201 como negativos. Esta distribución desigual hace necesario valorar por separado los aciertos en cada clase, ya que predecir siempre la más frecuente produciría una proporción de aciertos elevada sin detectar ningún positivo.
 
-La métrica principal es la \textit{Balanced Accuracy} (BA), que asigna el mismo peso a la sensibilidad y a la especificidad aunque las clases estén desbalanceadas. Se calcula como
+Aunque la preparación de los registros permite obtener imágenes de V1, V2 y V3, todos los experimentos de la memoria utilizan únicamente V1 y, por tanto, una imagen por paciente. Su elección se apoya en la relevancia de las precordiales derechas para estudiar Brugada, ya que V1 y V2 recogen los cambios del ST y de T con los que la literatura caracteriza el patrón tipo~1 \cite{zeppenfeld2022}. Los ECG clínicos presentan más variación de forma, ruido y cuadrícula que los latidos generados, como ilustra la Figura~\ref{fig:synthetic_real_comparison}.
 
+\section{Escenarios de comparación}
+\label{sec:escenarios}
+
+Se evalúan los siguientes tres escenarios.
+
+\begin{enumerate}
+  \item \textbf{Aprendizaje con el simulador.} La CNN se entrena con las tres etiquetas morfológicas y se prueba con otros casos generados. Gemma~4 recibe ejemplos del mismo origen.
+  \item \begin{samepage}
+  \textbf{Transferencia del simulador al HUCA.} La CNN entrenada con el simulador se prueba con ECG clínicos. Gemma~4 recibe ejemplos del simulador y clasifica consultas clínicas.
+  \par
+  \end{samepage}
+  \item \textbf{Aprendizaje con pacientes del HUCA.} Una segunda CNN se entrena directamente con la etiqueta clínica. Gemma~4 recibe demostraciones de la misma muestra.
+\end{enumerate}
+
+\section{Selección de ejemplos y validación}
+\label{sec:validacion_comun}
+
+Se utiliza validación \textit{leave-one-out} por paciente (LOOCV), de modo que en cada repetición o pliegue se reserva un paciente para la prueba y se seleccionan los ejemplos entre los restantes, sin incluirlo en el entrenamiento, la validación ni las demostraciones de Gemma~4.
+
+Se prueban \(K=\{2,4,8,16,32\}\) pacientes de entrenamiento para la CNN y el mismo número de demostraciones para Gemma~4. Cada configuración se repite con las semillas 42, 123 y 2026, que fijan la selección aleatoria de pacientes y, en la CNN, la aleatoriedad del entrenamiento. Ambos métodos se evalúan sobre los mismos pacientes y seleccionan sus ejemplos del mismo conjunto disponible.
+
+En las variantes de adaptación de dominio desde el simulador al HUCA, el modelo también puede utilizar imágenes del HUCA sin sus etiquetas, incluidas imágenes que después se evalúan. Este uso se detalla en la sección~\ref{sec:adaptacion_cnn} y en la Tabla~\ref{tab:config_domain_appendix}.
+
+La CNN entrenada con el HUCA reserva además ocho pacientes etiquetados, cuatro por clase y distintos de los de entrenamiento y prueba, para elegir el umbral y detener el ajuste cuando deja de mejorar, mediante \textit{early stopping}. Gemma~4 no utiliza este grupo adicional.
+
+\subsection{Secuencia de un pliegue clínico}
+
+La Figura~\ref{fig:clinical_fold_protocol} resume el pliegue clínico. En cada pliegue se crea una CNN nueva a partir de los pesos iniciales, sin continuar el entrenamiento del pliegue anterior. Después de ajustar y seleccionar el modelo, se predice al paciente reservado y se registra el resultado antes de pasar al siguiente.
+
+\begin{samepage}
+Gemma~4 prepara una consulta nueva para ese mismo paciente. Las demostraciones llevan sus respuestas, pero la imagen final no incluye su etiqueta. La respuesta generada se compara con ella al calcular las métricas.
+\par
+\end{samepage}
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=\textwidth]{results/clinical_fold_protocol.pdf}
+  \caption{Operaciones de un pliegue de la comparación con los datos clínicos del HUCA.}
+  \label{fig:clinical_fold_protocol}
+\end{figure}
+
+La CNN utiliza \(K+8\) pacientes etiquetados por pliegue, diez cuando \(K=2\) y cuarenta cuando \(K=32\), frente a los dos y treinta y dos que recibe Gemma~4, respectivamente. Esta diferencia procede de los ocho pacientes de validación, que intervienen en la selección de época y umbral y quedan fuera de la actualización de pesos. Al combinar las condiciones estándar y balanceada descritas a continuación con cinco valores de \(K\) y tres semillas, la evaluación de la CNN con el HUCA comprende 30 ejecuciones de 317 pliegues.
+
+\subsection{Distribución de los ejemplos por clase}
+\label{sec:condiciones_vlm}
+\label{sec:origen_contexto_vlm}
+
+En ambos conjuntos predominan los casos negativos, por lo que el reparto de clases entre los pocos ejemplos disponibles puede influir en el aprendizaje. Para estudiar este efecto se comparan dos formas de selección. La estándar asegura, para \(K\geq2\), un positivo y un negativo y completa el grupo de forma seudoaleatoria entre los pacientes restantes. La balanceada busca que la mitad de los ejemplos sean positivos y la otra mitad negativos y, si faltan casos de una clase, completa el grupo con la otra.
+
+\begin{samepage}
+Estas condiciones se estudian en las demostraciones de Gemma~4 y en el entrenamiento de la CNN con el HUCA. Para esta CNN, la selección estándar conserva los pacientes del plan de pliegues, mientras que la balanceada mantiene sus ocho pacientes de validación y vuelve a elegir el entrenamiento entre los restantes. Gemma~4 selecciona sus demostraciones directamente entre los pacientes disponibles para el contexto, de modo que cada método aplica el reparto por clase a su propio grupo de candidatos.
+\par
+\end{samepage}
+
+Además, se estudia el caso \emph{zero-shot} de Gemma~4, con \(K=0\), en el que se mantienen las instrucciones y la imagen que debe clasificarse y se retiran las demostraciones. Esta condición permite comparar el comportamiento del modelo sin ejemplos con el obtenido al incorporar las selecciones estándar y balanceada. Cuando \(K>0\), el origen de los ejemplos depende del escenario de la sección~\ref{sec:escenarios}.
+
+\section{Métricas y agregación}
+\label{sec:metricas}
+
+La exactitud balanceada (BA) promedia sensibilidad y especificidad y da igual peso a las clases mediante la expresión
 \[
   \mathrm{BA}=\frac{1}{2}\left(\frac{TP}{TP+FN}+\frac{TN}{TN+FP}\right).
 \]
 
-También se informan F1, sensibilidad, especificidad, área bajo la curva ROC y precisión media. Las tablas principales presentan la media de las tres semillas y, cuando procede, su desviación estándar. Las matrices de confusión acumulan las predicciones de las tres ejecuciones.
+La sensibilidad y la especificidad son las proporciones de positivos y negativos bien clasificados, respectivamente. TP y TN cuentan esos aciertos. Los falsos negativos (FN) son positivos clasificados como negativos y los falsos positivos (FP), negativos clasificados como positivos.
 
-Una sensibilidad alta acompañada de una especificidad baja puede resultar útil en un análisis exploratorio, porque permite recuperar más positivos. Sin embargo, no sería suficiente para un circuito asistencial si generase demasiadas alertas. Esta tensión orienta la lectura de las comparaciones posteriores.
+F1 es la media armónica de precisión y sensibilidad. La precisión indica la proporción de predicciones positivas correctas. El área bajo la curva ROC (ROC-AUC) resume la separación entre clases al variar el umbral. La precisión media resume la precisión obtenida a distintos niveles de sensibilidad. Las matrices de confusión cruzan etiquetas y predicciones para separar aciertos y errores \cite{collins2024tripodai,bossuyt2015stard,sounderajah2025stardai}.
 
-El capítulo~\ref{chap:modelos} desarrolla la CNN y el enfoque VLM/ICL dentro de este marco comparativo. Después, el capítulo~\ref{chap:resultados} presenta los resultados cuantitativos obtenidos en el dominio sintético y en la muestra del HUCA.
+Para el triaje se interpretan juntas sensibilidad y especificidad, porque detectar más positivos puede aumentar falsas alertas y carga de revisión, especialmente con baja prevalencia.

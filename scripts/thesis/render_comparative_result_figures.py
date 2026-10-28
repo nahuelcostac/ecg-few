@@ -16,7 +16,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_LOOCV_DIR = ROOT / "outputs" / "final_results_tfg" / "loocv"
 DEFAULT_OUTPUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
 MODEL = "google/gemma-4-E4B-it"
@@ -30,7 +30,7 @@ BLACK = "#111111"
 GRAY = "#666666"
 GRID = "#B8B8B8"
 DOMAIN_GAP_YLIMS = {
-    "balanced_accuracy": (0.42, 0.93),
+    "balanced_accuracy": (0.42, 0.96),
     "f1": (0.00, 0.75),
 }
 DOMAIN_GAP_HUCA_COLORS = {
@@ -54,9 +54,9 @@ CONDITION_STYLE = {
         "linestyle": "None",
         "marker": "s",
     },
-    "estandar": {"label": "ICL estándar", "color": GREEN, "linestyle": "--", "marker": "o"},
+    "estandar": {"label": "Gemma 4 estándar", "color": GREEN, "linestyle": "--", "marker": "o"},
     "balanced": {
-        "label": "ICL balanceado",
+        "label": "Gemma 4 balanceado",
         "color": ORANGE,
         "linestyle": "-",
         "marker": "^",
@@ -109,43 +109,43 @@ def main() -> None:
         args.output_dir / "vlm_simulator_qrs_ba_by_k.png",
         sim_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
-        title="VLM/ICL en simulador QRS/ST",
+        ylabel="Exactitud balanceada (BA)",
+        title="Gemma 4 en el simulador QRS/ST",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_simulator_qrs_f1_by_k.png",
         sim_vlm,
         metric="f1",
         ylabel="F1",
-        title="VLM/ICL en simulador QRS/ST",
+        title="Gemma 4 en el simulador QRS/ST",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_huca_v1_ba_by_k.png",
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
-        title="VLM/ICL en V1 real",
+        ylabel="Exactitud balanceada (BA)",
+        title="Gemma 4 con ECG del HUCA",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_huca_v1_f1_by_k.png",
         real_vlm,
         metric="f1",
         ylabel="F1",
-        title="VLM/ICL en V1 real",
+        title="Gemma 4 con ECG del HUCA",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_huca_synthetic_context_ba_by_k.png",
         huca_sim_context_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
-        title="Contexto sintético en la muestra del HUCA",
+        ylabel="Exactitud balanceada (BA)",
+        title="Contexto del simulador en la muestra del HUCA",
     )
     plot_vlm_metric(
         args.output_dir / "vlm_huca_synthetic_context_f1_by_k.png",
         huca_sim_context_vlm,
         metric="f1",
         ylabel="F1",
-        title="Contexto sintético en la muestra del HUCA",
+        title="Contexto del simulador en la muestra del HUCA",
     )
 
     plot_comparison_metric(
@@ -153,7 +153,7 @@ def main() -> None:
         cnn_sim,
         sim_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
         title="Comparación en simulador QRS/ST",
     )
     plot_comparison_metric(
@@ -169,7 +169,7 @@ def main() -> None:
         cnn_real,
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
         title="Comparación en la muestra del HUCA",
     )
     plot_comparison_metric(
@@ -188,7 +188,7 @@ def main() -> None:
         cnn_sim,
         cnn_real,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_cnn_domain_gap_metric(
         args.output_dir / "domain_gap_cnn_f1_by_k.png",
@@ -202,7 +202,7 @@ def main() -> None:
         sim_vlm,
         real_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_icl_domain_gap_metric(
         args.output_dir / "domain_gap_icl_f1_by_k.png",
@@ -217,7 +217,7 @@ def main() -> None:
         real_vlm,
         huca_sim_context_vlm,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_icl_context_transfer_metric(
         args.output_dir / "domain_gap_icl_context_f1_by_k.png",
@@ -236,7 +236,7 @@ def main() -> None:
         args.output_dir / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
         cnn_domain_adaptation,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_domain_adaptation_metric(
         args.output_dir / "cnn_domain_adaptation_f1_by_k.png",
@@ -253,17 +253,17 @@ def main() -> None:
     plot_confusion(
         args.output_dir / "vlm_simulator_qrs_balanced_k32_confusion_matrix.png",
         row_for(sim_vlm, "balanced", 32),
-        title="ICL balanceado, K=32",
+        title="Gemma 4 balanceado, K=32",
     )
     plot_confusion(
         args.output_dir / "vlm_huca_v1_balanced_k32_confusion_matrix.png",
         row_for(real_vlm, "balanced", 32),
-        title="ICL balanceado, K=32",
+        title="Gemma 4 balanceado, K=32",
     )
     plot_confusion(
         args.output_dir / "vlm_huca_synthetic_context_balanced_k16_confusion_matrix.png",
         row_for(huca_sim_context_vlm, "balanced", 16),
-        title="Contexto sintético, K=16",
+        title="Contexto del simulador, K=16",
     )
 
 
@@ -459,12 +459,12 @@ def plot_huca_sens_spec_best(
         ),
         ("Zero-shot", f(zero_shot, "sensitivity_mean"), f(zero_shot, "specificity_mean")),
         (
-            f"ICL estándar\nK={estandar['k']}",
+            f"Gemma 4 estándar\nK={estandar['k']}",
             f(estandar, "sensitivity_mean"),
             f(estandar, "specificity_mean"),
         ),
         (
-            f"ICL balanceado\nK={balanced['k']}",
+            f"Gemma 4 balanceado\nK={balanced['k']}",
             f(balanced, "sensitivity_mean"),
             f(balanced, "specificity_mean"),
         ),
@@ -553,10 +553,10 @@ def plot_icl_context_transfer_metric(
     metric: str,
     ylabel: str,
 ) -> None:
-    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.65), sharey=True)
+    fig, axes = plt.subplots(2, 1, figsize=(5.8, 5.15), sharex=True, sharey=True)
     for ax, condition, color, title in (
-        (axes[0], "estandar", GREEN, "ICL estándar"),
-        (axes[1], "balanced", ORANGE, "ICL balanceado"),
+        (axes[0], "estandar", GREEN, "Gemma 4 estándar"),
+        (axes[1], "balanced", ORANGE, "Gemma 4 balanceado"),
     ):
         condition_rows = (
             (rows_for_condition(sim_vlm, condition), "Simulador", "-", color, 1.0),
@@ -569,7 +569,7 @@ def plot_icl_context_transfer_metric(
             ),
             (
                 rows_for_condition(huca_sim_context_vlm, condition),
-                "HUCA, contexto sintético",
+                "HUCA, contexto del simulador",
                 ":",
                 GRAY,
                 1.0,
@@ -584,8 +584,8 @@ def plot_icl_context_transfer_metric(
                 color=line_color,
                 linestyle=linestyle,
                 marker="o",
-                markersize=3.0,
-                linewidth=1.05,
+                markersize=3.8,
+                linewidth=1.2,
                 capsize=2.1,
                 elinewidth=0.65,
                 alpha=alpha,
@@ -595,13 +595,13 @@ def plot_icl_context_transfer_metric(
         prepare_domain_gap_axis(ax, metric=metric, ylabel=ylabel)
         ax.legend(
             loc="lower right",
-            fontsize=5.8,
+            fontsize=8,
             frameon=True,
             framealpha=1.0,
             borderpad=0.25,
             handlelength=1.35,
         )
-    axes[1].set_ylabel("")
+    axes[0].set_xlabel("")
     save(fig, path)
 
 
@@ -694,7 +694,7 @@ def plot_transfer_controls_summary(
         axes[0, 0],
         domain_rows,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
         title="CNN con adaptación de dominio",
     )
     plot_vlm_on_axis(
@@ -702,7 +702,7 @@ def plot_transfer_controls_summary(
         huca_sim_context_vlm,
         metric="balanced_accuracy",
         ylabel="",
-        title="ICL con contexto sintético",
+        title="Gemma 4: ejemplos del simulador",
     )
     plot_domain_adaptation_on_axis(
         axes[1, 0],
@@ -716,7 +716,7 @@ def plot_transfer_controls_summary(
         huca_sim_context_vlm,
         metric="f1",
         ylabel="",
-        title="ICL con contexto sintético",
+        title="Gemma 4: ejemplos del simulador",
     )
     for ax in axes[0]:
         ax.set_ylim(0.45, 0.58)
@@ -880,7 +880,18 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
         ]
     )
     fig, ax = plt.subplots(figsize=(2.55, 2.35))
-    ax.imshow(matrix, cmap="Blues", vmin=0)
+    ax.pcolormesh(
+        np.arange(3) - 0.5,
+        np.arange(3) - 0.5,
+        matrix,
+        cmap="Blues",
+        vmin=0,
+        shading="flat",
+        edgecolors="face",
+        linewidth=0.2,
+    )
+    ax.set_ylim(1.5, -0.5)
+    ax.set_aspect("equal")
     ax.set_title(title, pad=4)
     ax.set_xticks([0, 1], labels=["Pred.\nnegativa", "Pred.\npositiva"])
     ax.set_yticks([0, 1], labels=["Ref.\nnegativa", "Ref.\npositiva"])
@@ -899,6 +910,8 @@ def save(fig: plt.Figure, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout(pad=0.35)
     fig.savefig(path, bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(path.with_suffix(".pdf"), bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(path.with_suffix(".svg"), bbox_inches="tight", pad_inches=0.02)
     plt.close(fig)
 
 

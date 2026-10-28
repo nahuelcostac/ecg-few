@@ -283,6 +283,7 @@ def draw_preview(
     fig.savefig(
         OUT_DIR / "gaussian_generator.drawio.png", dpi=180, bbox_inches="tight", pad_inches=0.04
     )
+    fig.savefig(OUT_DIR / "gaussian_generator.drawio.pdf", bbox_inches="tight", pad_inches=0.04)
     plt.close(fig)
 
 

@@ -98,19 +98,12 @@ def test_clinical_fold_uses_v1_only() -> None:
 
 def test_clinical_estandar_uses_fold_selection_and_balanced_uses_stratified() -> None:
     runner = load_runner()
-    rows = [
-        row("1", lead, 1)
-        for lead in ("V1",)
-    ] + [
-        row("2", lead, 1)
-        for lead in ("V1",)
-    ] + [
-        row("3", lead, 0)
-        for lead in ("V1",)
-    ] + [
-        row("4", lead, 1)
-        for lead in ("V1",)
-    ]
+    rows = (
+        [row("1", lead, 1) for lead in ("V1",)]
+        + [row("2", lead, 1) for lead in ("V1",)]
+        + [row("3", lead, 0) for lead in ("V1",)]
+        + [row("4", lead, 1) for lead in ("V1",)]
+    )
     fold = {
         "fold_id": 0,
         "test_patient_id": "1",
@@ -170,8 +163,7 @@ def test_same_context_root_is_treated_as_internal(tmp_path: Path) -> None:
 def test_internal_morphology_context_never_uses_test_patient(tmp_path: Path) -> None:
     runner = load_runner()
     rows = [
-        morphology_row(str(patient_id), 1 if patient_id <= 3 else 0)
-        for patient_id in range(1, 9)
+        morphology_row(str(patient_id), 1 if patient_id <= 3 else 0) for patient_id in range(1, 9)
     ]
     folds = build_fold_plan(rows, k_values=[2, 4], seeds=[42], val_per_class=0)
     args = argparse.Namespace(resume=False, dry_run_predictions="expected")
@@ -201,9 +193,7 @@ def test_internal_morphology_context_never_uses_test_patient(tmp_path: Path) -> 
 
             for prediction in predictions:
                 context_ids = [
-                    item
-                    for item in str(prediction["context_patient_ids"]).split("|")
-                    if item
+                    item for item in str(prediction["context_patient_ids"]).split("|") if item
                 ]
                 assert str(prediction["test_patient_id"]) not in context_ids
 

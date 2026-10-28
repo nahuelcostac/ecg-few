@@ -37,9 +37,7 @@ RIGHT_PRECORDIAL_LEADS = ("V1",)
 R_DETECTION_LEADS = ("V1", "II")
 DEFAULT_PRE_R_MS = 300
 DEFAULT_POST_R_MS = 600
-LEAD_GRID = (
-    ("V1",),
-)
+LEAD_GRID = (("V1",),)
 
 
 @dataclass(frozen=True)
@@ -141,11 +139,7 @@ def read_metadata_with_exclusions(
             raise ValueError(
                 f"Unsupported brugada label {record.brugada!r} for {record.patient_id}"
             )
-        if (
-            not include_borderline_positive
-            and record.basal_pattern == 1
-            and record.brugada == 1
-        ):
+        if not include_borderline_positive and record.basal_pattern == 1 and record.brugada == 1:
             excluded.append(_excluded(record, "borderline_basal_pattern_1_brugada_1"))
             continue
         records.append(record)
@@ -189,8 +183,7 @@ def read_wfdb_record(raw_root: Path, patient_id: str) -> Any:
         import wfdb
     except ImportError as exc:
         raise RuntimeError(
-            "wfdb is required to build Brugada-HUCA. Install with "
-            "`uv sync --extra real-data`."
+            "wfdb is required to build Brugada-HUCA. Install with `uv sync --extra real-data`."
         ) from exc
     return wfdb.rdrecord(wfdb_record_path(raw_root, patient_id).as_posix())
 
@@ -235,8 +228,7 @@ def _detect_r_peaks(signal: np.ndarray, *, fs: float, detector: str) -> np.ndarr
         from wfdb import processing
     except ImportError as exc:
         raise RuntimeError(
-            "wfdb is required to build Brugada-HUCA. Install with "
-            "`uv sync --extra real-data`."
+            "wfdb is required to build Brugada-HUCA. Install with `uv sync --extra real-data`."
         ) from exc
     finite_signal = np.nan_to_num(np.asarray(signal, dtype=np.float64), copy=False)
     try:
@@ -270,10 +262,14 @@ def extract_beat_window(
         clipped = np.pad(clipped, (pad_left, pad_right), mode="edge")
     expected = pre_samples + post_samples
     if clipped.shape[0] != expected:
-        clipped = clipped[:expected] if clipped.shape[0] > expected else np.pad(
-            clipped,
-            (0, expected - clipped.shape[0]),
-            mode="edge",
+        clipped = (
+            clipped[:expected]
+            if clipped.shape[0] > expected
+            else np.pad(
+                clipped,
+                (0, expected - clipped.shape[0]),
+                mode="edge",
+            )
         )
     return clipped.astype(np.float32)
 

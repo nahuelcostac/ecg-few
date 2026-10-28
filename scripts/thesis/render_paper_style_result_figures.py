@@ -39,21 +39,21 @@ def main() -> None:
         args.output_dir / "cnn_simulator_qrs_balanced_accuracy_by_k.png",
         sim_rows,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
         label="CNN",
     )
     plot_single_metric(
         args.output_dir / "cnn_huca_balanced_accuracy_by_k.png",
         real_rows,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
         label="CNN",
     )
     plot_comparison(
         args.output_dir / "cnn_balanced_accuracy_sim_vs_real.png",
         comparison_rows,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_comparison(
         args.output_dir / "cnn_f1_sim_vs_real.png",
@@ -65,7 +65,7 @@ def main() -> None:
         args.output_dir / "cnn_domain_adaptation_balanced_accuracy_by_k.png",
         domain_rows,
         metric="balanced_accuracy",
-        ylabel="Balanced Accuracy (BA)",
+        ylabel="Exactitud balanceada (BA)",
     )
     plot_domain_adaptation(
         args.output_dir / "cnn_domain_adaptation_f1_by_k.png",
@@ -288,7 +288,18 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
         ]
     )
     fig, ax = plt.subplots(figsize=(2.55, 2.35))
-    ax.imshow(matrix, cmap="Blues", vmin=0)
+    ax.pcolormesh(
+        np.arange(3) - 0.5,
+        np.arange(3) - 0.5,
+        matrix,
+        cmap="Blues",
+        vmin=0,
+        shading="flat",
+        edgecolors="face",
+        linewidth=0.2,
+    )
+    ax.set_ylim(1.5, -0.5)
+    ax.set_aspect("equal")
     ax.set_title(title, pad=4)
     ax.set_xticks([0, 1], labels=["Pred.\nnegativa", "Pred.\npositiva"])
     ax.set_yticks([0, 1], labels=["Ref.\nnegativa", "Ref.\npositiva"])
@@ -307,6 +318,8 @@ def save(fig: plt.Figure, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout(pad=0.35)
     fig.savefig(path, bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(path.with_suffix(".pdf"), bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(path.with_suffix(".svg"), bbox_inches="tight", pad_inches=0.02)
     plt.close(fig)
 
 

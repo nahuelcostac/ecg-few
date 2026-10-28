@@ -1,50 +1,79 @@
 \chapter[Discusión y conclusiones]{Discusión y\\ conclusiones}
 \label{chap:conclusiones}
 
-\section{Hallazgos principales}
+\section{Interpretación de los resultados}
 
-El hallazgo principal es la brecha entre aprender una tarea visual controlada y trasladarla a una referencia clínica. En el simulador, ResNet18 y Gemma~4 alcanzan una BA de 0,885 y 0,904, respectivamente, con \(K=32\). En el HUCA, la CNN transferida obtiene un máximo de 0,551 y Gemma~4 permanece cerca de una predicción negativa constante cuando las demostraciones proceden del simulador. El buen rendimiento sintético no anticipa, por tanto, el comportamiento sobre ECG clínicos.
+\subsection{Qué demuestra el simulador}
 
-El origen de las demostraciones cambia esta conclusión para el VLM. Cuando los ejemplos se seleccionan dentro de la propia muestra del HUCA, con el paciente de prueba excluido en cada pliegue, Gemma~4 alcanza una BA de 0,761 con 32 demostraciones repartidas por igual entre las dos clases. La sensibilidad es 0,741 y la especificidad, 0,781. La mejora frente a zero-shot y frente al contexto sintético indica una adaptación a la tarea local. La propiedad concreta de las imágenes que produce el efecto y su generalización a otras poblaciones quedan por determinar.
+En el simulador, las etiquetas proceden de reglas conocidas y las imágenes tienen un formato homogéneo. La mejora de ambos métodos al aumentar el número de ejemplos indica que pueden captar con rapidez la morfología sintética definida por la combinación de los tres rasgos del trazado.
 
-En conjunto, los resultados responden de forma distinta a las tres preguntas planteadas. La combinación morfológica puede aprenderse con pocos ejemplos en el dominio controlado. Esa capacidad se transfiere mal cuando cambian las imágenes y la referencia. Las demostraciones clínicas locales, en cambio, modifican de manera sustancial la salida del VLM. La correspondencia entre ejemplos y población objetivo resulta más informativa que el número de ejemplos por sí solo.
+En cambio, el modelo basado en ICL no generaliza sin ejemplos: Gemma~4 no detecta positivos ni en el simulador ni en el HUCA. Con las instrucciones probadas, su conocimiento previo no basta para resolver estas tareas. Necesita demostraciones que orienten la clasificación, especialmente cuando se enfrenta a una distribución de trazados y a una relación entre morfología y etiqueta que no forman parte de su conocimiento previo. Aprender a separar las familias del simulador tampoco demuestra que reconozca todas las variantes clínicas del síndrome de Brugada.
 
-\section{Interpretación y relación con la literatura}
+La caída al evaluar el HUCA puede relacionarse tanto con la apariencia de las imágenes como con el distinto significado de las etiquetas. Las imágenes clínicas introducen ruido, deriva de línea base, anotaciones y variaciones de formato que no aparecen de la misma manera en el simulador. Además, las etiquetas sintéticas describen la presencia combinada de tres rasgos morfológicos definidos al generar el latido, mientras que la etiqueta del HUCA resume la valoración clínica de cada paciente. Por tanto, un modelo puede aprender a separar las familias sintéticas y aun así no identificar qué combinación visual sustenta la etiqueta clínica.
 
-Los trabajos supervisados a gran escala han mostrado que las imágenes de ECG conservan información diagnóstica cuando el entrenamiento reúne millones de registros, diversidad de formato y validación externa \cite{sangha2022}. El descenso observado en esta memoria no contradice esos resultados. Delimita un régimen diferente, con un máximo de 32 pacientes etiquetados y una fuente sintética más homogénea que la población de evaluación. La comparación refuerza la importancia de la escala y de la correspondencia entre el dominio de entrenamiento y el de uso.
+Los antecedentes ayudan a acotar esta interpretación. Gliner y colaboradores muestran que la adaptación adversarial puede reducir diferencias de formato entre imágenes limpias y fotografías \cite{gliner2023}, mientras que Sangha y colaboradores validan una CNN con millones de registros en un conjunto externo \cite{sangha2022}. Sin embargo, esos trabajos no permiten concluir que alinear características resuelva el cambio de tarea de este estudio ni que la arquitectura explique por sí sola la caída observada: aquí se trabaja con un máximo de 32 pacientes de entrenamiento y con etiquetas clínicas distintas de las reglas que generan el simulador. La comparación apunta, por tanto, a una limitación conjunta del tamaño muestral, el cambio de distribución y la definición de la etiqueta, más que a un problema atribuible únicamente al modelo.
 
-Gliner y colaboradores redujeron la pérdida de rendimiento entre imágenes limpias y formatos no observados mediante adaptación adversarial \cite{gliner2023}. En este trabajo, CORAL y MMD corrigen parcialmente algunos puntos de la curva. El mejor resultado sigue correspondiendo a la CNN base. La diferencia puede proceder tanto de la apariencia de las imágenes como del cambio semántico entre las etiquetas morfológicas del simulador y la referencia clínica del HUCA. Los experimentos disponibles no permiten separar ambos efectos.
+Las mejoras de CORAL y MMD son limitadas y el rendimiento sigue cerca del azar. Aproximar representaciones puede reducir diferencias superficiales de textura o presentación, pero no basta para cerrar la brecha entre el mundo sintético y el clínico: las etiquetas del HUCA no describen directamente los tres rasgos usados para construir las familias del simulador. El modelo puede acercar las imágenes y, aun así, no aprender qué relación clínica justifica la etiqueta. Si esta línea de adaptación mejorara en futuras pruebas, debería evaluarse con pacientes de centros distintos y con imágenes reservadas que no participen en el ajuste. Solo así podría comprobarse si la mejora refleja una transferencia clínica real y no una adaptación específica a las imágenes del HUCA utilizadas durante el experimento.
 
-La literatura sobre ICL señala que la selección, el orden y la información textual de las demostraciones pueden ser tan relevantes como su número \cite{chen2024,zhang2024mmicl}. Los resultados son coherentes con esa observación: equilibrar las clases solo ofrece el mejor punto cuando el contexto es suficientemente amplio, y sustituir ejemplos sintéticos por clínicos produce un cambio mucho mayor que aumentar \(K\) dentro del dominio sintético. Esta concordancia no demuestra que Gemma~4 interprete correctamente la morfología. Muestra que su decisión es sensible a la composición y al origen del contexto.
+\subsection{CNN entrenada con el HUCA frente al aprendizaje en contexto}
 
-\section{Aportaciones}
+Con ejemplos del HUCA, Gemma~4 mejora frente al uso de ejemplos del simulador y supera a la CNN entrenada con el HUCA desde \(K=8\). Consigue aplicar las demostraciones a pacientes del mismo conjunto que no aparecen en su consulta como ejemplos resueltos. Esta comparación aborda la misma etiqueta, por lo que la diferencia no se explica únicamente por la tarea de la CNN entrenada con el simulador. Aun así, se desconoce qué rasgos visuales producen la mejora. Los antecedentes sobre dependencia del texto y selección de ejemplos aconsejan distinguir rendimiento de clasificación e interpretación de la morfología \cite{chen2024,zhang2024mmicl}.
 
-El trabajo aporta un protocolo documentado para estudiar ECG como imagen con pocos datos. Incluye generación sintética, preprocesamiento de V1, separación LOOCV por paciente, tres semillas y métricas sensibles al desequilibrio. La ausencia del manifiesto clínico intermedio limita la reproducibilidad de la muestra final, pero el procedimiento queda trazado una vez fijadas sus entradas.
+\begin{samepage}
+La diferencia entre los mejores puntos de la Figura~\ref{fig:clinical_cnn_gemma_performance} es amplia en términos descriptivos, pero las configuraciones no difieren solo en cómo reciben los ejemplos. ResNet18 parte de un preentrenamiento visual y se ajusta con muy pocos ECG. Gemma~4 utiliza una representación multimodal de mayor escala y recibe la tarea mediante instrucciones y demostraciones. Su preentrenamiento podría facilitar esa adaptación, aunque el experimento no aísla su efecto frente a la arquitectura, la escala o el prompt. No se conoce tampoco si esos ECG estuvieron presentes en sus datos de preentrenamiento.
+\par
+\end{samepage}
 
-La evaluación por etapas separa la capacidad de aprender la combinación sintética, la transferencia al HUCA y el efecto del contexto clínico local. Esta separación evita atribuir a la arquitectura una pérdida que también puede depender del dominio o de la definición de la referencia.
+La CNN ajusta todos sus pesos con un número de imágenes muy pequeño respecto de su capacidad. Es posible que ese ajuste sea inestable o que conserve características poco útiles para esta tarea. La selección de época y umbral con pocos pacientes añade otra fuente de variación. Para comprobar estas posibles explicaciones harían falta comparaciones con capas congeladas, otros ritmos de aprendizaje o más pacientes de entrenamiento.
 
-La brecha sintético-real queda cuantificada mediante dos análisis complementarios. Ni la adaptación de dominio de la CNN ni el contexto sintético de Gemma~4 resuelven la tarea clínica. El resultado sitúa el simulador como banco de pruebas y señala la necesidad de anotaciones clínicas compatibles.
+El umbral no explica por sí solo el resultado de la CNN entrenada con el HUCA. En su mejor configuración balanceada, el área bajo la curva ROC es 0,511. La ordenación de positivos y negativos por probabilidad también queda cerca del azar, no únicamente la clasificación después del corte. Cambiar el umbral intercambia sensibilidad y especificidad, pero no crea una separación que las probabilidades no contienen.
 
-El alcance permanece restringido a un prototipo de investigación para priorizar la revisión. La identificación del síndrome de Brugada requiere el ECG completo, el contexto clínico, valoración especializada y, cuando corresponda, pruebas adicionales.
+La ligera ventaja de la CNN con \(K=2\) y \(K=4\) no demuestra que sea preferible con pocos datos, porque dispone de validación adicional. Desde ocho demostraciones mejora Gemma~4 con las configuraciones probadas, lo que justifica estudiar su uso con pocos ejemplos sin extender la conclusión a todas las CNN o conjuntos de datos.
 
-\section{Limitaciones}
+\subsection{Efecto de los ejemplos y análisis de errores}
 
-La limitación principal reside en la muestra del HUCA. Los 317 pacientes proceden de un único origen y la referencia clínica no incluye anotaciones independientes de RBBB, elevación del ST e inversión de T. La tarea combina así información morfológica y diagnóstica que una sola ventana V1 no puede representar por completo. Por la misma razón, la arquitectura actual no permite entrenar una CNN directamente con esa referencia sin redefinir la tarea.
+La mejora de Gemma~4 desde \(K=8\) sugiere que la composición del contexto importa. Varios ejemplos pueden mostrar más variación que una única pareja positiva y negativa y orientar mejor la respuesta. No se ha probado, sin embargo, un número mínimo suficiente ni un mecanismo causal. Los pacientes cambian entre selecciones y los cinco tamaños no permiten localizar un umbral de aprendizaje preciso.
 
-La procedencia exacta de la referencia debe resolverse antes de reutilizar el conjunto procesado. Los archivos finales contienen 116 positivos y 201 negativos, mientras que Brugada-HUCA v1.0.0 documenta 76 registros asociados al síndrome de Brugada y 287 registros normales antes del procesamiento \cite{costacortez2026brugada}. Al faltar el manifiesto que relaciona ambas distribuciones, las métricas describen la campaña final. La comparación directa con la distribución pública queda pendiente.
+La selección balanceada aumenta la representación de positivos y obtiene mejores resultados de Gemma~4 en los tamaños mayores. Como cambian también las imágenes concretas, haría falta controlar la selección y su orden para aislar el efecto del balance. En la CNN, ponderar la pérdida tampoco asegura que igualar las clases mejore el entrenamiento.
 
-La segunda limitación es la distancia entre el simulador y la práctica clínica. Sus imágenes son más homogéneas y las etiquetas responden a reglas explícitas. Ni las alineaciones probadas ni las demostraciones sintéticas eliminan esa diferencia. Además, las tres semillas se aplican sobre los mismos pacientes: su desviación estándar mide variabilidad experimental y no incertidumbre poblacional.
+Gemma~4 mejora ambas clases respecto de la CNN en la Figura~\ref{fig:clinical_cnn_gemma_confusions}, sin aumentar la BA a costa de ignorar una de ellas. Con ejemplos del simulador, Gemma~4 predice casi todos los ECG como negativos, con especificidad alta y BA cercana al azar.
 
-La tercera limitación afecta al VLM. Solo se evalúa Gemma~4, por lo que no puede establecerse una comparación entre modelos médicos y generalistas. El ICL también depende del prompt, del orden, de la selección de demostraciones y de la ventana de contexto. La literatura señala además la influencia de la información textual y de la recuperación de ejemplos \cite{chen2024,zhang2024mmicl}. Los resultados no se generalizan, por tanto, a otros VLM o diseños de contexto.
+\begin{samepage}
+Los errores de las matrices se definen respecto de las etiquetas disponibles, sin revisión clínica independiente que confirme diagnósticos omitidos o falsas alertas. Tampoco identifican si el error procede del ST, la onda T, el recorte o un artefacto. Para determinarlo habría que revisar cada imagen y su etiqueta con especialistas. Grad-CAM ilustra activaciones de la CNN, pero no sustituye esa revisión ni explica el razonamiento de Gemma~4.
+\par
+\end{samepage}
 
-No se ha realizado una evaluación prospectiva ni un análisis del impacto sobre el circuito clínico. Tampoco se estudian la calibración, el coste de los errores por subgrupo o los cambios en la carga de revisión. Las métricas disponibles son insuficientes para justificar un despliegue.
+\section{Aportaciones y limitaciones}
+\label{sec:limitaciones}
 
-\section{Trabajo futuro}
+La evaluación conjunta permite identificar cuándo ayudan los ejemplos del simulador y cuándo resultan más útiles los del HUCA, siguiendo el protocolo del capítulo~\ref{chap:diseno}.
 
-La prioridad es obtener anotaciones morfológicas clínicas por derivación. Con ellas podría compararse la misma tarea en los dominios sintético y real, separar el error morfológico del asociado a la referencia clínica y entrenar una CNN real-real sin reutilizar etiquetas incompatibles.
+Las métricas del HUCA miden la concordancia con las etiquetas de la versión facilitada para este estudio. No se ha realizado una revisión clínica independiente de estas etiquetas, por lo que los resultados no deben interpretarse como una validación diagnóstica.
 
-También se necesita una validación externa con más casos positivos. Un modelo evaluado en un único centro puede aprovechar propiedades del equipo, del procesamiento o del renderizado. Cualquier evaluación orientada a un uso asistencial debería incorporar datos de otros hospitales, revisión experta de los errores, intervalos de incertidumbre, calibración y rendimiento por subgrupos definidos con antelación.
+La muestra procede además de un único centro y carece de anotaciones independientes de los tres rasgos. Incluso con una etiqueta diagnóstica confirmada, lo visible en un único latido V1 puede no reflejar toda la información utilizada para establecerla. La selección de pacientes excluye determinados patrones basales y, por ello, tampoco representa sin más todos los ECG que llegarían a un circuito de triaje.
 
-En el VLM conviene estudiar la recuperación y el orden de las demostraciones, así como modelos especializados en ECG. La comparación debería incorporar latencia y coste, además de BA. Una CNN ligera requiere entrenamiento local, pero abarata la inferencia. Un VLM evita el ajuste de pesos a costa de más cómputo por consulta y de una construcción cuidadosa del contexto.
+La validación adicional de la CNN puede ser sensible a un solo error y no iguala sus condiciones a las de Gemma~4. Los resultados describen las configuraciones probadas, no la mejor CNN posible.
 
-El siguiente paso requiere alinear la representación, las etiquetas y la población de evaluación. Hasta disponer de esa evidencia, cualquier uso debe permanecer limitado a investigación, con trazabilidad y supervisión especializada.
+Las tres semillas evalúan a los mismos pacientes y comparten ejemplos entre pliegues, por lo que su dispersión no estima incertidumbre poblacional ni asegura estabilidad con pacientes nuevos. Los resultados de Gemma~4 tampoco se extienden a otros modelos, prompts, selecciones u órdenes de ejemplos.
+
+No se ha realizado validación externa ni prospectiva. Tampoco se evalúan calibración, coste de los errores por subgrupos o cambios en la carga de revisión. El tamaño y la selección de la muestra impiden estimar con precisión ese rendimiento desglosado.
+
+\section{Continuación del trabajo}
+
+Antes de una aplicación clínica, será necesario revisar con especialistas las etiquetas y los casos dudosos y evaluar los modelos sobre ese conjunto revisado.
+
+Después conviene reunir más ECG, casos positivos y anotaciones morfológicas por derivación. Esto permitiría entrenar modelos tradicionales con más pacientes y comparar la misma tarea con el simulador y con imágenes reales, separando el error de reconocimiento del asociado a la etiqueta clínica. Con más datos también podrían compararse el ajuste completo de ResNet18, un extractor congelado y un modelo especializado en ECG.
+
+Una nueva evaluación debería incluir otros hospitales, revisión experta de errores, intervalos de incertidumbre, calibración y subgrupos definidos previamente. La validación externa ayudaría a comprobar si los modelos aprovechan rasgos del equipo, del procesamiento o del formato.
+
+Para Gemma~4 conviene estudiar la selección por similitud y el orden de los ejemplos y compararlo con modelos especializados en ECG. La comparación con CNN debería igualar el número total de pacientes etiquetados y medir latencia y coste. La CNN requiere entrenamiento previo y Gemma~4 procesa las demostraciones en cada consulta. Sin una medición común de recursos, esas diferencias de ejecución no permiten cuantificar cuál resulta más barato en esta aplicación.
+
+Podría evaluarse el uso de Gemma~4 para priorizar revisiones y recoger nuevos casos confirmados por especialistas, con los que investigar modelos supervisados de mayor rendimiento o explicabilidad. Este proceso debería acompañarse del estudio clínico completo de la sección~\ref{sec:evaluacion_clinica}, sin descartar una enfermedad por una predicción negativa.
+
+\section{Conclusiones}
+
+Gemma~4 sin ejemplos no identifica positivos con las instrucciones probadas, y los ejemplos del simulador no bastan para trasladar a los ECG del HUCA el rendimiento conseguido con datos generados. La CNN entrenada con el simulador presenta la misma dificultad de transferencia, incluso con las variantes de adaptación evaluadas.
+
+El resultado cambia cuando Gemma~4 recibe ejemplos del HUCA y clasifica a otros pacientes del mismo conjunto. Desde ocho demostraciones supera a la CNN entrenada con esos datos, que permanece cerca del azar aunque obtiene una ligera ventaja con dos y cuatro ejemplos. Esto muestra la utilidad del aprendizaje en contexto en este conjunto y con estas configuraciones.
+
+Estos resultados justifican investigar el apoyo al triaje para priorizar la revisión de casos y ampliar los datos disponibles, con los que después podrían entrenarse modelos de mayor rendimiento o explicabilidad. Cualquier uso debería acompañarse de la evaluación clínica completa descrita en la sección~\ref{sec:evaluacion_clinica} y requeriría validación externa y prospectiva antes de incorporarse a la asistencia.

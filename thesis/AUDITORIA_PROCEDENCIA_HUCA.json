@@ -1,0 +1,82 @@
+{
+  "checked_on": "2026-10-28",
+  "scope": "Metadata and labels only. No ECG signals or results were modified.",
+  "local_metadata_sha256": "1b3aef36832535f6e09ac1e93d914edf21d79e14769c9cb11a51a1c61eddcb71",
+  "local_metadata_label_counts": {
+    "0": 201,
+    "1": 162
+  },
+  "local_metadata_cross_counts": {
+    "basal_0_brugada_0": 201,
+    "basal_0_brugada_1": 116,
+    "basal_1_brugada_1": 46
+  },
+  "current_builder_selection_label_counts": {
+    "0": 201,
+    "1": 116
+  },
+  "processed_manifest": {
+    "patients": 317,
+    "rows": 951,
+    "leads": {
+      "V1": 317,
+      "V2": 317,
+      "V3": 317
+    },
+    "label_counts": {
+      "0": 201,
+      "1": 116
+    }
+  },
+  "canonical_clinical_runs": 30,
+  "canonical_label_counts": {
+    "0": 201,
+    "1": 116
+  },
+  "builder_vs_canonical": {
+    "shared_patients": 317,
+    "different_labels": 0,
+    "only_left": 0,
+    "only_right": 0
+  },
+  "processed_vs_canonical": {
+    "shared_patients": 317,
+    "different_labels": 0,
+    "only_left": 0,
+    "only_right": 0
+  },
+  "public_metadata": {
+    "url": "https://physionet.org/files/brugada-huca/1.0.0/metadata.csv",
+    "sha256": "2ae5e0c11e86f1675ebc3e1efb5a7a9ff6b6abdce75796a4013020fe46b11ef8",
+    "publisher_checksum_verified": true,
+    "label_counts": {
+      "0": 287,
+      "1": 69,
+      "2": 7
+    },
+    "public_vs_local": {
+      "shared_patients": 363,
+      "different_labels": 93,
+      "only_left": 0,
+      "only_right": 0
+    },
+    "public_vs_canonical": {
+      "shared_patients": 317,
+      "different_labels": 66,
+      "only_left": 46,
+      "only_right": 0
+    },
+    "public_to_local_label_counts": {
+      "0_to_0": 201,
+      "0_to_1": 86,
+      "1_to_1": 69,
+      "2_to_1": 7
+    },
+    "public_to_canonical_label_counts": {
+      "0_to_0": 201,
+      "0_to_1": 63,
+      "1_to_1": 50,
+      "2_to_1": 3
+    }
+  }
+}

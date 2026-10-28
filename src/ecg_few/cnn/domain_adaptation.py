@@ -157,9 +157,7 @@ def build_ssl_encoder(*, resnet_weights: str) -> nn.Module:
 
 def copy_encoder_weights(supervised_model: nn.Module, encoder: nn.Module) -> None:
     encoder_state = {
-        key: value
-        for key, value in encoder.state_dict().items()
-        if not key.startswith("fc.")
+        key: value for key, value in encoder.state_dict().items() if not key.startswith("fc.")
     }
     supervised_state = supervised_model.state_dict()
     supervised_state.update(

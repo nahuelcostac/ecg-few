@@ -1,14 +1,10 @@
 \chapter{Resultados}
 \label{chap:resultados}
 
-\section{Dominio sintético}
+\section{Resultados con los datos del simulador}
 \label{chap:comparacion_simulador}
 
-El dominio sintético permite evaluar una regla morfológica conocida antes de analizar los ECG reales. Un caso se considera positivo solo cuando reúne los tres hallazgos: morfología compatible con RBBB, elevación del segmento ST e inversión de la onda T. Si falta cualquiera de ellos, la referencia es negativa. Esta tarea comprueba si la CNN y el VLM identifican una combinación visual definida en una imagen de ECG. Su alcance se limita a ese entorno controlado.
-
-Cada uno de los 100 pacientes aporta una imagen V1. La evaluación LOOCV se repite con las semillas 42, 123 y 2026, de modo que las matrices agregadas contienen 300 predicciones sobre las mismas 100 imágenes.
-
-La Tabla~\ref{tab:comparacion_simulador} reúne los puntos principales de la CNN y de Gemma~4. Los resultados de todos los valores de \(K\) se incluyen en el apéndice~\ref{app:resultados}.
+La Tabla~\ref{tab:comparacion_simulador} recoge las mejores configuraciones. Las curvas de la Figura~\ref{fig:comparacion_simulador_curvas} muestran su evolución con \(K\), y el apéndice~\ref{app:resultados} contiene todos los puntos.
 
 \begin{table}[H]
   \centering
@@ -19,54 +15,53 @@ La Tabla~\ref{tab:comparacion_simulador} reúne los puntos principales de la CNN
     \midrule
     CNN ResNet18 & 32 & \(0,885 \pm 0,013\) & 0,771 & 0,867 & 0,904 \\
     Gemma~4 zero-shot & 0 & \(0,500 \pm 0,000\) & 0,000 & 0,000 & 1,000 \\
-    Gemma~4 ICL estándar & 32 & \(0,879 \pm 0,008\) & 0,781 & 0,833 & 0,925 \\
-    Gemma~4 ICL balanceado & 32 & \(0,904 \pm 0,011\) & 0,825 & 0,867 & 0,942 \\
+    Gemma~4, selección estándar & 32 & \(0,879 \pm 0,008\) & 0,781 & 0,833 & 0,925 \\
+    Gemma~4, selección balanceada & 32 & \(0,904 \pm 0,011\) & 0,825 & 0,867 & 0,942 \\
     \bottomrule
   \end{tabularx}
-  \caption{Mejores resultados en el simulador QRS/ST. La BA se presenta como media y desviación estándar de tres semillas.}
+  \caption{Mejores resultados en el simulador QRS/ST.}
   \label{tab:comparacion_simulador}
+  \resultstablenote
 \end{table}
 
-La Figura~\ref{fig:comparacion_simulador_curvas} muestra la evolución de la \textit{Balanced Accuracy} (BA) y F1 con \(K\).
+La CNN mejora con cada aumento de \(K\), especialmente entre 8 y 16 pacientes, y su curva aún crece en el último punto evaluado.
+
+Sin demostraciones, Gemma~4 clasifica todos los casos como negativos. Al recibir ejemplos, generaliza a latidos del simulador que no aparecen en su contexto y alcanza un rendimiento próximo al de la CNN. Con \(K=32\), la selección balanceada obtiene los mejores BA y F1. La Figura~\ref{fig:simulator_confusions} muestra los errores.
 
 \begin{figure}[H]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.90\textwidth}
     \centering
-    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_ba_by_k.png}
-    \caption{Balanced Accuracy (BA).}
+    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_ba_by_k.pdf}
+    \caption{Exactitud balanceada (BA).}
   \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.48\textwidth}
+  \par\medskip
+  \begin{subfigure}{0.90\textwidth}
     \centering
-    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_f1_by_k.png}
+    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_f1_by_k.pdf}
     \caption{F1.}
   \end{subfigure}
-  \caption{Rendimiento de CNN e ICL en el simulador según el número de ejemplos. Las barras representan la desviación estándar entre semillas.}
+  \caption{Rendimiento de la CNN y Gemma~4 con datos del simulador según el número de ejemplos. Las barras representan la desviación estándar entre semillas.}
   \label{fig:comparacion_simulador_curvas}
 \end{figure}
-
-La CNN mejora en todos los valores sucesivos de \(K\). El incremento más acusado aparece al pasar de 8 a 16 pacientes. En \(K=32\) alcanza una BA de 0,885, F1 de 0,771, sensibilidad de 0,867 y especificidad de 0,904. La BA aumenta 0,071 respecto a \(K=16\), por lo que la curva no muestra saturación dentro del intervalo evaluado.
-
-En zero-shot, Gemma~4 asigna todos los casos a la clase negativa y obtiene una BA de 0,500. Las demostraciones modifican este comportamiento: el ICL balanceado ya recupera algunos positivos con \(K=2\), mientras que el estándar comienza a hacerlo en \(K=4\). A partir de \(K=8\), ambas curvas mejoran de forma continuada. El valor numéricamente más alto corresponde al contexto balanceado con \(K=32\), con BA de 0,904 y F1 de 0,825. Frente al ICL estándar del mismo tamaño, la sensibilidad pasa de 0,833 a 0,867 y la especificidad de 0,925 a 0,942. La comparación es descriptiva, pues no se realizó un contraste inferencial. La Figura~\ref{fig:simulator_confusions} muestra los errores agregados de los mejores puntos.
 
 \begin{figure}[H]
   \centering
   \begin{subfigure}{0.42\textwidth}
     \centering
-    \safeincludegraphics[width=\textwidth]{results/cnn_simulator_qrs_k32_confusion_matrix.png}
+    \safeincludegraphics[width=\textwidth]{results/cnn_simulator_qrs_k32_confusion_matrix.pdf}
     \caption{CNN, \(K=32\).}
   \end{subfigure}
   \hfill
   \begin{subfigure}{0.42\textwidth}
     \centering
-    \safeincludegraphics[width=\textwidth]{results/vlm_simulator_qrs_balanced_k32_confusion_matrix.png}
-    \caption{ICL balanceado, \(K=32\).}
+    \safeincludegraphics[width=\textwidth]{results/vlm_simulator_qrs_balanced_k32_confusion_matrix.pdf}
+    \caption{Gemma~4, selección balanceada, \(K=32\).}
   \end{subfigure}
   \caption{Matrices de confusión agregadas en el simulador. Cada matriz suma las predicciones de tres semillas sobre los mismos 100 pacientes.}
   \label{fig:simulator_confusions}
 \end{figure}
 
-El aumento de ejemplos mejora ambos enfoques en este dominio. En Gemma~4, las demostraciones cambian además la predicción monoclase observada en zero-shot. El mayor valor numérico del ICL se restringe a un escenario con imágenes homogéneas y etiquetas derivadas de reglas, sin la variabilidad de adquisición o de fenotipo de un ECG clínico. El resultado sirve como referencia controlada para interpretar la evaluación real.
+Las matrices muestran que ambos modelos aprenden a distinguir las dos clases del simulador, aunque Gemma~4 produce menos falsos positivos.
 
 \input{chapters/10_resultados_reales}

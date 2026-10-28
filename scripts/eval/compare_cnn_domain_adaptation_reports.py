@@ -92,18 +92,10 @@ def build_comparison(
     method_rows: dict[str, dict[int, dict[str, str]]],
 ) -> list[dict[str, object]]:
     adaptation_k_values = {
-        k
-        for method, rows_by_k in method_rows.items()
-        if method != "baseline"
-        for k in rows_by_k
+        k for method, rows_by_k in method_rows.items() if method != "baseline" for k in rows_by_k
     }
     k_values = sorted(
-        adaptation_k_values
-        or {
-            k
-            for rows_by_k in method_rows.values()
-            for k in rows_by_k
-        }
+        adaptation_k_values or {k for rows_by_k in method_rows.values() for k in rows_by_k}
     )
     output: list[dict[str, object]] = []
     for k in k_values:

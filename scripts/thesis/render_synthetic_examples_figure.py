@@ -6,7 +6,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib
-from matplotlib.colors import to_rgba
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -25,7 +24,6 @@ BLUE = "#005BBB"
 RED = "#D71920"
 GREEN = "#4F8F3A"
 GRAY = "#666666"
-ATTENTION = "#D71920"
 PREFERRED_SEEDS = {
     # Clear isolated ST elevation; the first accepted seed is visually too subtle.
     "ST_ELEVATION": 4735,
@@ -35,7 +33,7 @@ PREFERRED_SEEDS = {
 def main() -> None:
     set_style()
     examples = [
-        ("NORMAL", "Normal", "sin hallazgos", "#F2F2F2"),
+        ("NORMAL", "Normal", "sin alteraciones", "#F2F2F2"),
         ("RBBB", "RBBB", "R' terminal", "#DCE8F8"),
         ("ST_ELEVATION", "ST elevado", "J-ST elevado", "#FBE2D3"),
         ("T_WAVE_INVERSION", "T invertida", "T negativa", "#DDEDD5"),
@@ -47,17 +45,17 @@ def main() -> None:
         waveform, metadata = accepted_waveform(family)
         rows.append((family, title, subtitle, color, waveform, metadata["feature_labels"]))
 
-    fig = plt.figure(figsize=(6.45, 4.10))
+    fig = plt.figure(figsize=(7.15, 4.55))
     grid = fig.add_gridspec(
         len(rows),
         2,
-        width_ratios=(0.19, 1.0),
-        hspace=0.12,
+        width_ratios=(0.22, 1.0),
+        hspace=0.16,
         wspace=0.015,
     )
 
     strip_axes: list[plt.Axes] = []
-    for idx, (family, title, subtitle, color, waveform, labels) in enumerate(rows):
+    for idx, (_family, title, subtitle, color, waveform, labels) in enumerate(rows):
         label_ax = fig.add_subplot(grid[idx, 0])
         share_ax = strip_axes[0] if strip_axes else None
         strip_ax = fig.add_subplot(grid[idx, 1], sharex=share_ax)
@@ -66,10 +64,9 @@ def main() -> None:
         draw_label(label_ax, title, subtitle, color)
         draw_strip(strip_ax, waveform, show_x=idx == len(rows) - 1)
         highlight_findings(strip_ax, labels)
-        draw_attention_marks(strip_ax, family, waveform)
 
-    strip_axes[-1].set_xlabel("Tiempo (ms)", labelpad=2, fontsize=8.2)
-    fig.subplots_adjust(left=0.018, right=0.995, bottom=0.09, top=0.995)
+    strip_axes[-1].set_xlabel("Tiempo (ms)", labelpad=2, fontsize=9)
+    fig.subplots_adjust(left=0.018, right=0.995, bottom=0.09, top=0.99)
     save(fig, OUT_DIR / "fig_synthetic_examples.png")
     save(fig, OUT_DIR / "fig_synthetic_examples.pdf")
 
@@ -168,11 +165,11 @@ def draw_label(ax: plt.Axes, title: str, subtitle: str, color: str) -> None:
         title,
         ha="left",
         va="center",
-        fontsize=7.8,
+        fontsize=9,
         fontweight="bold",
         color=BLACK,
     )
-    ax.text(0.08, 0.385, subtitle, ha="left", va="center", fontsize=6.9, color=GRAY)
+    ax.text(0.08, 0.385, subtitle, ha="left", va="center", fontsize=8, color=GRAY)
 
 
 def highlight_findings(ax: plt.Axes, labels: dict[str, int]) -> None:
@@ -182,57 +179,6 @@ def highlight_findings(ax: plt.Axes, labels: dict[str, int]) -> None:
         ax.axvspan(392, 585, color=RED, alpha=0.08, zorder=1)
     if int(labels.get("T_WAVE_INVERSION", 0)):
         ax.axvspan(560, 830, color=GREEN, alpha=0.08, zorder=1)
-
-
-def draw_attention_marks(ax: plt.Axes, family: str, waveform: np.ndarray) -> None:
-    t_ms = np.arange(waveform.shape[0], dtype=float) / 500.0 * 1000.0
-    windows = {
-        "RBBB": [("max", 360, 470)],
-        "ST_ELEVATION": [("at", 500, 500)],
-        "T_WAVE_INVERSION": [("min", 590, 830)],
-        "BRUGADA": [("max", 380, 470), ("at", 500, 500), ("min", 590, 830)],
-    }
-    points = [
-        window_point(t_ms, waveform, mode, start, end)
-        for mode, start, end in windows.get(family, [])
-    ]
-    if not points:
-        return
-
-    for x, y in points:
-        add_heat_spot(ax, x, y)
-
-
-def add_heat_spot(ax: plt.Axes, x: float, y: float) -> None:
-    size = 80
-    yy, xx = np.mgrid[-1 : 1 : complex(size), -1 : 1 : complex(size)]
-    heat = np.exp(-2.8 * (xx**2 + yy**2))
-    color = np.array(to_rgba(ATTENTION))
-    rgba = np.zeros((size, size, 4), dtype=float)
-    rgba[..., :3] = color[:3]
-    rgba[..., 3] = 0.50 * heat
-    ax.imshow(
-        rgba,
-        extent=(x - 30, x + 30, y - 0.40, y + 0.40),
-        origin="lower",
-        interpolation="bicubic",
-        aspect="auto",
-        zorder=3,
-    )
-
-
-def window_point(
-    t_ms: np.ndarray, waveform: np.ndarray, mode: str, start: float, end: float
-) -> tuple[float, float]:
-    mask = (t_ms >= start) & (t_ms <= end)
-    if not np.any(mask):
-        raise ValueError(f"Empty time window: {start}-{end} ms")
-    values = waveform[mask]
-    if mode == "at":
-        idx = int(np.argmin(np.abs(t_ms[mask] - start)))
-    else:
-        idx = int(np.argmin(values) if mode == "min" else np.argmax(values))
-    return float(t_ms[mask][idx]), float(values[idx])
 
 
 def save(fig: plt.Figure, path: Path) -> None:
