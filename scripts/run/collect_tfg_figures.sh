@@ -63,6 +63,7 @@ collect_readme() {
   fi
   printf '%s\n' "$matches" \
     | sed 's#^thesis/thesis/assets/results/##' \
+    | sed 's/[),.;:]*$//' \
     | while IFS= read -r figure; do
         add_reference "$figure" "README.md"
       done

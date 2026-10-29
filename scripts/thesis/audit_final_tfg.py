@@ -259,6 +259,7 @@ def audit_thesis(thesis_root: Path) -> None:
             raise AssertionError(f"Unicode dash in {path}: U+{ord(match.group()):04X}")
 
     drawio_assets = (
+        "coral_alignment.drawio.pdf",
         "fig_pipeline_experimental.pdf",
         "gaussian_generator.drawio.pdf",
         "cnn_convolutional_pipeline.pdf",

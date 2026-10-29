@@ -113,6 +113,10 @@ if [ "$RUN_COMPARISONS" = "1" ]; then
 fi
 
 if [ "$RUN_RENDERERS" = "1" ]; then
+  run_step "Render editable Deep CORAL diagram" run_python \
+    "$ROOT_DIR/scripts/thesis/render_coral_alignment_drawio.py" \
+    --output-dir "$THESIS_FIGURES_DIR"
+
   run_step "Render synthetic label-distribution figure" run_python \
     "$ROOT_DIR/scripts/thesis/render_label_distribution_figure.py" \
     --output-dir "$THESIS_FIGURES_DIR"
