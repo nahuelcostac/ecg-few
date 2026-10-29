@@ -85,15 +85,15 @@ La selección y la preparación de los pacientes se describen en la sección~\re
     Lote & \multicolumn{2}{l}{32 imágenes} \\
     Épocas máximas & 20 & 20, con \textit{early stopping} \\
     Paciencia & No corresponde & 5 épocas sin mejora de BA \\
-    Decaimiento de pesos & No registrado & \(10^{-4}\) \\
+    \textit{Weight decay} & No registrado & \(10^{-4}\) \\
     Entrenamiento & \(K\) pacientes del simulador & \(K\) pacientes del HUCA \\
     Valores de \(K\) & \multicolumn{2}{l}{\(2,4,8,16,32\)} \\
-    Selección clínica & No corresponde & Estándar y balanceada \\
+    Balance de clases & No corresponde & Estándar y balanceada \\
     Semillas & \multicolumn{2}{l}{42, 123 y 2026} \\
     Validación & Por pliegue & 8 pacientes, 4 por clase \\
     Umbral & \multicolumn{2}{l}{Máxima BA por paciente en validación} \\
     Métrica principal & \multicolumn{2}{l}{Exactitud balanceada por paciente} \\
-    Paneles Grad-CAM & 12 por ejecución del simulador y 6 del HUCA & No se presentan paneles clínicos en la memoria \\
+    Paneles Grad-CAM & 12 (simulador) y 6 (HUCA) & No corresponde \\
     \bottomrule
   \end{tabularx}
   \caption{Configuración completa de las dos CNN.}
