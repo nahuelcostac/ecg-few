@@ -259,7 +259,6 @@ def audit_thesis(thesis_root: Path) -> None:
             raise AssertionError(f"Unicode dash in {path}: U+{ord(match.group()):04X}")
 
     drawio_assets = (
-        "coral_alignment.drawio.pdf",
         "fig_pipeline_experimental.pdf",
         "gaussian_generator.drawio.pdf",
         "cnn_convolutional_pipeline.pdf",
@@ -270,8 +269,9 @@ def audit_thesis(thesis_root: Path) -> None:
         count = joined.count(asset)
         if count != 1:
             raise AssertionError(f"{asset}: expected one TeX reference, found {count}")
-    if "fig_k_examples_split.pdf" in joined:
-        raise AssertionError("The removed example-selection diagram is still included")
+    for removed_asset in ("fig_k_examples_split.pdf", "coral_alignment.drawio.pdf"):
+        if removed_asset in joined:
+            raise AssertionError(f"The removed diagram is still included: {removed_asset}")
     for asset in (
         "clinical_cnn_vs_gemma_performance.pdf",
         "clinical_cnn_vs_gemma_confusions.pdf",

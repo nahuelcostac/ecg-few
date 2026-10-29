@@ -51,14 +51,7 @@ Un modelo puede perder rendimiento cuando las imágenes utilizadas para aprender
 
 Cuando el conjunto objetivo carece de etiquetas, una posibilidad consiste en preparar el extractor para reconocer regularidades de sus imágenes antes de entrenar un clasificador. SimCLR, propuesto por Chen y colaboradores, utiliza aprendizaje autosupervisado, o SSL, para acercar las representaciones de dos versiones aumentadas de una misma imagen y separarlas de las correspondientes a otras imágenes \cite{chen2020simclr}. Una red de proyección transforma las características antes de calcular la pérdida contrastiva. Las transformaciones utilizadas son parte del problema de aprendizaje, pues definen qué variaciones debe tolerar la representación. Este procedimiento prepara las características sin necesitar respuestas clínicas para cada imagen.
 
-Otra línea mantiene el aprendizaje con etiquetas del origen y añade un objetivo para aproximar sus representaciones a las del conjunto objetivo. Deep CORAL, el alineamiento de correlaciones de Sun y Saenko para redes profundas, reduce la diferencia entre las covarianzas de ambos grupos \cite{sun2016deepcoral}. Estas matrices describen cómo varían conjuntamente las características y permiten actuar sobre sus relaciones, además de conservar la pérdida de clasificación del origen. La Figura~\ref{fig:deep_coral_alignment} resume este mecanismo en el contexto del simulador y el HUCA.
-
-\begin{figure}[H]
-  \centering
-  \safeincludegraphics[width=0.98\textwidth]{results/coral_alignment.drawio.pdf}
-  \caption{Esquema de Deep CORAL. El extractor compartido aprende la tarea con las etiquetas del simulador y recibe además una penalización que aproxima las covarianzas de las representaciones del simulador y del HUCA, sin utilizar etiquetas clínicas.}
-  \label{fig:deep_coral_alignment}
-\end{figure}
+Otra línea mantiene el aprendizaje con etiquetas del origen y añade un objetivo para aproximar sus representaciones a las del conjunto objetivo. Deep CORAL, el alineamiento de correlaciones de Sun y Saenko para redes profundas, reduce la diferencia entre las covarianzas de ambos grupos \cite{sun2016deepcoral}. Estas matrices describen cómo varían conjuntamente las características y permiten actuar sobre sus relaciones, mientras el modelo conserva la pérdida de clasificación del origen.
 
 Long y colaboradores emplean en las redes de adaptación profunda la discrepancia máxima de medias, o MMD, para comparar distribuciones de características \cite{long2015dan}. La comparación se realiza en un espacio definido por kernels, funciones que miden semejanza entre representaciones, y permite recoger diferencias que no quedarían descritas por la media de los vectores originales. Los kernels de base radial, o RBF, expresan esa semejanza en función de la distancia, mientras que combinar escalas permite considerar proximidades distintas.
 
