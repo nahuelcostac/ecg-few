@@ -5,7 +5,7 @@
 
 Se utiliza \texttt{google/gemma-4-E4B-it} \cite{gemma4card}, una variante preparada para seguir instrucciones que recibe conjuntamente las imágenes de ECG y el texto de la tarea. Sus pesos permanecen fijos durante los experimentos, de modo que cada predicción se obtiene a partir de las instrucciones y de los ejemplos incluidos en la consulta. El número y el origen de esas demostraciones permiten estudiar cómo cambia su respuesta al disponer de distintos contextos.
 
-El modelo se ejecuta en un clúster mediante vLLM, que mantiene el servicio de inferencia encargado de generar las respuestas. Dentro de cada tarea se mantienen el mismo modelo y los parámetros de inferencia, incluida una temperatura configurada de cero para reducir la variación asociada a la generación de texto. La Tabla~\ref{tab:config_vlm_appendix} recoge la configuración completa y el capítulo~\ref{chap:gestion_etica} desarrolla las implicaciones de privacidad asociadas al uso de grandes modelos de lenguaje con datos clínicos.
+El modelo se ejecuta mediante vLLM en un clúster privado de computación equipado con dos GPU NVIDIA A100 y 96~GB de VRAM en total. El servicio mantiene el modelo cargado y genera las respuestas. Dentro de cada tarea se conservan el mismo modelo y los parámetros de inferencia, incluida una temperatura configurada de cero para reducir la variación asociada a la generación de texto. La Tabla~\ref{tab:config_vlm_appendix} recoge la configuración completa y el capítulo~\ref{chap:gestion_etica} desarrolla las implicaciones de privacidad asociadas al uso de grandes modelos de lenguaje con datos clínicos.
 
 \subsection{Prompt y respuesta}
 
