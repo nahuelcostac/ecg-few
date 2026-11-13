@@ -83,11 +83,11 @@
     "title": "Síndrome de Brugada y derivación V1",
     "seconds": 30,
     "figures": [
-      "brugada_type1_ecgpedia.pdf",
+      "fig_brugada_pattern.pdf",
       "brugada_patterns_orphanet.pdf"
     ],
-    "latex": "\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.55\\textwidth}\n\\centering\n\\includegraphics[trim=3bp 4bp 5bp 9bp,clip,width=\\linewidth,height=108mm,keepaspectratio]{assets/brugada_type1_ecgpedia.pdf}\n\\end{column}\n\\begin{column}{.43\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth,height=101mm,keepaspectratio]{assets/brugada_patterns_orphanet.pdf}\n\\end{column}\n\\end{columns}\n\\centering\n{\\fontsize{18}{24}\\selectfont QRS terminal \\enspace\\textperiodcentered\\enspace Elevación del ST \\enspace\\textperiodcentered\\enspace Onda T negativa\\par}\n\\credit{Izquierda: ECGpedia / CardioNetworks, CC BY-SA 3.0. Derecha: Napolitano y Priori (2006), CC BY 2.0.}",
-    "notes": "V1 es una derivación precordial derecha. En estos ejemplos, fijaos en cómo termina el QRS y cómo continúa el trazado. En el patrón de Brugada tipo 1, el ST desciende desde un punto elevado y le sigue una onda T negativa. El simulador modifica de forma controlada la parte terminal del QRS, el ST y la onda T.",
+    "latex": "\\vspace{3mm}\n\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.63\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth]{assets/fig_brugada_pattern.pdf}\\par\n\\credit{Comparación esquemática. Figura 3.4 de la memoria.}\n\\vspace{5mm}\n{\\fontsize{18}{24}\\selectfont QRS terminal \\enspace\\textperiodcentered\\enspace Elevación del ST \\enspace\\textperiodcentered\\enspace Onda T negativa\\par}\n\\end{column}\n\\begin{column}{.35\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth,height=101mm,keepaspectratio]{assets/brugada_patterns_orphanet.pdf}\\par\n\\credit{Napolitano y Priori (2006), CC BY 2.0.}\n\\end{column}\n\\end{columns}",
+    "notes": "V1 es una derivación precordial derecha. En el esquema de la izquierda, la curva azul sirve de referencia y la roja ilustra el patrón de Brugada tipo 1. El QRS terminal es el último tramo del complejo QRS, justo antes del punto J, donde comienza el ST. En la curva roja, el punto J está elevado, el ST desciende desde ahí y la onda T se invierte. A la derecha se pueden comparar los tres patrones en las precordiales derechas. El simulador modifica por separado la parte final del QRS, el ST y la onda T.",
     "transition": "A continuación veremos las dos formas de aprender a partir de las imágenes.",
     "section": "main",
     "block": "Fundamentos clínicos"

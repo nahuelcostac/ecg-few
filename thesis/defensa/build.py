@@ -73,8 +73,6 @@ def refresh() -> None:
     shutil.copy2(ROOT / "thesis/thesis/config/metadata.tex", HERE / "metadata.tex")
     for directory in ("results", "sources"):
         for path in (ROOT / "thesis/thesis/assets" / directory).glob("*.pdf"):
-            if path.name == "fig_brugada_pattern.pdf":
-                continue
             shutil.copy2(path, HERE / "assets" / path.name)
     metrics()
     crop_panels()

@@ -12,17 +12,6 @@
       "format": "vector PDF"
     },
     {
-      "file": "assets/brugada_type1_ecgpedia.pdf",
-      "sha256": "7920f063c989046f2cbdaf1dd460f04e7d1f2b2da963924a335a8c8d82e29314",
-      "slides": [
-        "p03"
-      ],
-      "pages_18min": [
-        8
-      ],
-      "format": "vector PDF"
-    },
-    {
       "file": "assets/clinical_cnn_vs_gemma_confusions.pdf",
       "sha256": "75f29a58f30e8d5eb96fa5a570389c82b82c01dd1e5cf4c668222f956b805f28",
       "slides": [
@@ -131,6 +120,17 @@
       "pages_18min": [
         30,
         31
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_brugada_pattern.pdf",
+      "sha256": "c1e3f56ed4061c1314f95f18372fefc8b592f1551bdd39516546cab8d607d45e",
+      "slides": [
+        "p03"
+      ],
+      "pages_18min": [
+        8
       ],
       "format": "vector PDF"
     },
