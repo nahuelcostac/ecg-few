@@ -32,14 +32,14 @@ La Tabla~\ref{tab:datasets_finales} recoge los dos conjuntos. En el simulador, u
   \label{tab:huca_datos_finales}
 \end{table}
 
-El capítulo~\ref{chap:simulador} describe el generador. Las señales clínicas proceden de Brugada-HUCA \cite{costacortez2026brugada}. Por recomendación de los médicos colaboradores, se excluyeron 46 de los 363 pacientes iniciales cuya clasificación todavía no estaba clara al preparar el estudio, para evitar que esos casos dudosos condicionaran la comparación. En los 317 restantes se selecciona V1, se detecta un latido central y se recorta desde 300 ms antes de R hasta 600 ms después. El apéndice~\ref{app:configuracion} recoge los parámetros completos.
+El capítulo~\ref{chap:simulador} describe el simulador. Las señales clínicas proceden de Brugada-HUCA \cite{costacortez2026brugada}. Por recomendación de los médicos colaboradores, se excluyeron 46 de los 363 pacientes iniciales cuya clasificación todavía no estaba clara al preparar el estudio, para evitar que esos casos dudosos condicionaran la comparación. En los 317 restantes se selecciona V1, se detecta un latido central y se recorta desde 300 ms antes de R hasta 600 ms después. El apéndice~\ref{app:configuracion} recoge los parámetros completos.
 
-La Figura~\ref{fig:synthetic_real_comparison} ilustra las diferencias de forma entre un latido del simulador y un trazado clínico del HUCA.
+La Figura~\ref{fig:synthetic_real_comparison} ilustra las diferencias de forma y presentación mediante dos ejemplos independientes, uno del simulador y otro del HUCA. Su selección tiene una finalidad ilustrativa: los trazados no están emparejados ni representan casos equivalentes, de modo que la proximidad visual en la figura no implica una correspondencia entre sus etiquetas o su morfología.
 
 \begin{figure}[H]
   \centering
   \safeincludegraphics[width=0.92\textwidth]{results/fig_synthetic_real_comparison.pdf}
-  \caption{Ejemplo del simulador y trazado clínico V1.}
+  \caption{Ejemplos independientes del simulador y del HUCA en V1, sin emparejamiento ni equivalencia entre ambos casos.}
   \label{fig:synthetic_real_comparison}
 \end{figure}
 
@@ -114,8 +114,8 @@ La exactitud balanceada (BA) promedia sensibilidad y especificidad y da igual pe
   \mathrm{BA}=\frac{1}{2}\left(\frac{TP}{TP+FN}+\frac{TN}{TN+FP}\right).
 \]
 
-La sensibilidad y la especificidad son las proporciones de positivos y negativos bien clasificados, respectivamente. TP y TN cuentan esos aciertos. Los falsos negativos (FN) son positivos clasificados como negativos y los falsos positivos (FP), negativos clasificados como positivos.
+La sensibilidad y la especificidad son las proporciones de positivos y negativos bien clasificados, respectivamente, cuyos aciertos se cuentan mediante TP y TN. Los errores se distinguen según su efecto: los falsos negativos (FN) son positivos clasificados como negativos y los falsos positivos (FP), negativos clasificados como positivos.
 
-F1 es la media armónica de precisión y sensibilidad. La precisión indica la proporción de predicciones positivas correctas. El área bajo la curva ROC (ROC-AUC) resume la separación entre clases al variar el umbral. La precisión media resume la precisión obtenida a distintos niveles de sensibilidad. Las matrices de confusión cruzan etiquetas y predicciones para separar aciertos y errores.
+F1 combina la precisión, que indica la proporción de predicciones positivas correctas, con la sensibilidad mediante su media armónica. Para las salidas probabilísticas se calculan además el área bajo la curva ROC (ROC-AUC), que resume la separación entre clases al variar el umbral, y la precisión media, que recoge la precisión a distintos niveles de sensibilidad. Las matrices de confusión complementan estas métricas al cruzar etiquetas y predicciones para mostrar qué tipos de aciertos y errores produce cada modelo.
 
 Para el triaje se interpretan juntas sensibilidad y especificidad, porque detectar más positivos puede aumentar falsas alertas y carga de revisión, especialmente con baja prevalencia.

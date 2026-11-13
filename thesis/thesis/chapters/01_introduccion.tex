@@ -1,36 +1,30 @@
 \chapter{Introducción}
 \label{chap:introduccion}
 
-El electrocardiograma (ECG) registra la actividad eléctrica del corazón mediante electrodos colocados sobre el cuerpo. El trazado permite estudiar el ritmo cardíaco y cambios en la forma de sus ondas. Este Trabajo de Fin de Grado analiza imágenes de ECG con pocos ejemplos etiquetados y toma como caso de estudio la sospecha de síndrome de Brugada, una enfermedad poco frecuente asociada a arritmias ventriculares y muerte súbita \cite{zeppenfeld2022,wilde2023scbt}.
+El electrocardiograma (ECG) es una prueba diagnóstica que registra la actividad eléctrica del corazón mediante electrodos colocados sobre el cuerpo. Su interpretación permite estudiar el ritmo cardíaco y los cambios en la forma de las ondas, aunque automatizar este análisis resulta especialmente difícil cuando se dispone de pocos ejemplos de una patología. Este Trabajo de Fin de Grado tiene como objetivo estudiar el análisis automático de ECG representados como imágenes en esas condiciones y toma como caso de estudio la sospecha de síndrome de Brugada, una enfermedad poco frecuente asociada a arritmias ventriculares y muerte súbita \cite{zeppenfeld2022,wilde2023scbt}.
 
-Se comparan dos formas de aprovechar esos ejemplos. En el aprendizaje supervisado, el modelo recibe imágenes junto con sus etiquetas, las respuestas asignadas a cada caso, y aprende ajustando sus parámetros internos o pesos. Se utiliza una red neuronal convolucional (CNN) con la arquitectura ResNet18.
-
-La alternativa es Gemma~4, un modelo de visión y lenguaje (VLM) que procesa imágenes e instrucciones escritas. Mediante aprendizaje en contexto (ICL), recibe ejemplos resueltos junto con la imagen que debe clasificar. Esos ejemplos, llamados demostraciones, forman parte de la información de la consulta o contexto y orientan la respuesta sin cambiar los pesos del modelo. Los mecanismos de ambos métodos se desarrollan en las secciones~\ref{sec:fundamentos_cnn} y~\ref{sec:fundamentos_icl}.
+Para aprovechar los ejemplos disponibles se comparan dos aproximaciones. Por una parte, se emplea aprendizaje supervisado clásico, en el que el modelo recibe imágenes junto con sus etiquetas y aprende ajustando sus parámetros internos o pesos. Para ello se utiliza una red neuronal convolucional (CNN) con arquitectura ResNet18. Por otro lado, se propone una aproximación basada en Gemma~4, un modelo de visión y lenguaje (VLM) que procesa conjuntamente imágenes e instrucciones escritas. Mediante aprendizaje en contexto (ICL), el modelo recibe ejemplos resueltos junto con la imagen que debe clasificar, de manera que esas demostraciones orientan su respuesta sin modificar sus pesos.
 
 \section{Motivación y alcance}
 
-La escasez de pacientes etiquetados dificulta aplicar los métodos de aprendizaje profundo, que aprenden mediante redes de varias capas y suelen entrenarse con grandes colecciones de ECG \cite{ribeiro2020,sangha2022}. Además, confirmar un caso de Brugada exige revisión especializada y, en ocasiones, pruebas complementarias. El patrón puede ser intermitente y no aparecer en un registro aislado, por lo que un ECG normal no descarta el síndrome. Sus criterios clínicos se describen en la sección~\ref{sec:brugada_clinica}.
+La escasez de pacientes etiquetados dificulta la aplicación de métodos de aprendizaje profundo que suelen entrenarse con grandes colecciones de ECG \cite{ribeiro2020,sangha2022}. Reunir muchos registros no garantiza que las patologías poco frecuentes estén suficientemente representadas, y obtener sus etiquetas requiere revisión especializada. Por ello interesa estudiar cómo cambia el rendimiento cuando solo se dispone de unos pocos casos y si resulta más útil utilizarlos para ajustar una CNN o incorporarlos como demostraciones a un modelo preentrenado.
 
-El análisis de imágenes permite trabajar con trazados disponibles como documentos, sin exigir la señal digital original, es decir, la secuencia numérica de medidas del ECG. El recorte y el redimensionado de la imagen pueden, sin embargo, alterar su escala. En este estudio interesa comprobar a partir de cuántos ejemplos puede resultar más útil ajustar una CNN frente a proporcionar casos resueltos a Gemma~4.
+A diferencia del análisis convencional de la señal digital, en este trabajo se propone procesar directamente imágenes del trazado. Esta representación permite trabajar con ECG disponibles como documentos sin exigir la secuencia numérica original, aunque el recorte y el redimensionado pueden alterar su escala. La comparación se centra en una imagen V1 por paciente, de modo que ambos enfoques reciben el mismo tipo de información visual.
 
-Para disponer de ejemplos de forma controlada, el estudio utiliza un simulador de latidos artificiales denominado QRS/ST por las regiones del trazado que modela, descritas en la sección~\ref{sec:componentes_ecg}. Se cuenta además con ECG de 317 pacientes del Hospital Universitario Central de Asturias (HUCA).
+Para evaluar las dos aproximaciones de forma controlada se utiliza un simulador QRS/ST que produce latidos con combinaciones conocidas de rasgos morfológicos. Para la evaluación con datos reales se cuenta con ECG de 317 pacientes del Hospital Universitario Central de Asturias (HUCA). Los ejemplos simulados permiten estudiar primero el reconocimiento de esas combinaciones y después la transferencia a registros clínicos. A continuación se compara qué ocurre cuando tanto la CNN como Gemma~4 aprenden a partir de ejemplos del propio HUCA.
 
-Los ejemplos del simulador se utilizan primero para clasificar otros latidos generados y después para estudiar la transferencia a ECG del HUCA, es decir, cuánto de lo aprendido permite reconocer casos reales. También se entrena una segunda CNN con pacientes del HUCA y se compara con Gemma~4 cuando ambos aprenden de ejemplos clínicos.
-
-La aplicación que motiva el trabajo es el apoyo al triaje mediante la identificación de ECG sospechosos para priorizar su revisión y facilitar la recogida de más casos etiquetados. Esta ayuda no sustituiría la evaluación clínica de la sección~\ref{sec:evaluacion_clinica}, ni la confirmación diagnóstica, las pruebas o el tratamiento, que corresponden al personal sanitario.
+La aplicación que motiva el estudio es el apoyo al triaje mediante la identificación de ECG sospechosos, con el fin de priorizar su revisión y facilitar la recogida de nuevos casos etiquetados. Esta posibilidad exige comprobar su utilidad antes de incorporarla a la asistencia, ya que la clasificación de un latido aislado no sustituye la valoración clínica completa ni las decisiones diagnósticas y terapéuticas del personal sanitario.
 
 \section{Objetivos}
 
-El objetivo general es comparar ambos métodos cuando solo se dispone de unos pocos pacientes etiquetados. Se denomina \(K\) al número de ejemplos de entrenamiento de la CNN o de demostraciones incluidas en el contexto de Gemma~4. Se plantean las siguientes tres preguntas.
+El objetivo general es comparar el aprendizaje supervisado y el aprendizaje en contexto cuando solo se dispone de unos pocos ejemplos etiquetados. Se denomina \(K\) al número de pacientes de entrenamiento de la CNN o de demostraciones incluidas en la consulta a Gemma~4. La comparación se articula en tres preguntas complementarias:
 
 \begin{enumerate}
-  \item ¿Cómo cambia el rendimiento de ResNet18 y Gemma~4 al aumentar el número de ejemplos del simulador?
-  \item ¿Cómo se compara el ICL con una CNN entrenada directamente con ECG clínicos usando los mismos valores de \(K\)?
-  \item ¿Qué rendimiento se conserva al pasar del simulador al HUCA y cómo influye el origen de los datos de entrenamiento de la CNN y de las demostraciones de Gemma~4?
+  \item ¿Cómo cambia el rendimiento de ResNet18 y Gemma~4 al aumentar el número de ejemplos disponibles?
+  \item ¿Cómo se compara el aprendizaje en contexto con una aproximación clásica basada en una CNN supervisada?
+  \item ¿Qué rendimiento se conserva al pasar de datos sintéticos a datos reales y cómo cambia al utilizar ejemplos del propio conjunto clínico?
 \end{enumerate}
-
-El capítulo~\ref{chap:diseno} precisa la selección de esos ejemplos y las diferencias de validación entre ambos métodos.
 
 \section{Estructura de la memoria}
 
-Los capítulos~\ref{chap:relacionados} y~\ref{chap:fundamentos} presentan los antecedentes y los fundamentos clínicos y técnicos. Los capítulos~\ref{chap:diseno}, \ref{chap:simulador} y~\ref{chap:modelos} describen el diseño experimental, el generador y la ejecución de los modelos. Los resultados se presentan en el capítulo~\ref{chap:resultados}, su discusión y conclusiones en el capítulo~\ref{chap:conclusiones}, y los aspectos éticos y de privacidad en el capítulo~\ref{chap:gestion_etica}.
+Los capítulos~\ref{chap:relacionados} y~\ref{chap:fundamentos} presentan los antecedentes y los fundamentos clínicos y técnicos que permiten situar la comparación. A partir de esa base, los capítulos~\ref{chap:diseno}, \ref{chap:simulador} y~\ref{chap:modelos} describen el diseño experimental, el simulador y la ejecución de los modelos. El capítulo~\ref{chap:resultados} reúne los resultados de los tres escenarios, que se interpretan en el capítulo~\ref{chap:conclusiones}, mientras que el capítulo~\ref{chap:gestion_etica} aborda los aspectos éticos y de protección de datos.

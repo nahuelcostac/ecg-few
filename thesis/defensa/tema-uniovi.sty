@@ -1,0 +1,84 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tema-uniovi}[2026/11/03 Adaptacion Beamer del manual UniOvi]
+\RequirePackage{fontspec}
+\RequirePackage[spanish,es-nodecimaldot]{babel}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{appendixnumberbeamer}
+\IfFontExistsTF{Georgia}{\setsansfont{Georgia}\setmainfont{Georgia}}{\setsansfont{TeX Gyre Termes}\setmainfont{TeX Gyre Termes}}
+\geometry{paperwidth=320mm,paperheight=180mm}
+\definecolor{UOInk}{HTML}{252C2D}
+\definecolor{UOGray}{HTML}{65696C}
+\definecolor{UOGreen}{HTML}{006F70}
+\definecolor{UOLine}{HTML}{B7B9BC}
+\definecolor{ScenarioRed}{HTML}{A3222A}
+\setbeamercolor{normal text}{fg=UOInk,bg=white}
+\setbeamercolor{frametitle}{fg=UOInk,bg=white}
+\setbeamercolor{structure}{fg=UOGreen}
+\setbeamercolor{alerted text}{fg=UOGreen}
+\setbeamerfont{normal text}{size*= {22}{28}}
+\setbeamerfont{frametitle}{size*= {30}{36},series=\mdseries}
+\setbeamerfont{title}{size*= {34}{43},series=\mdseries}
+\setbeamerfont{footline}{size*= {11}{14}}
+\setbeamersize{text margin left=15mm,text margin right=15mm}
+\setbeamertemplate{navigation symbols}{}
+\newif\ifdefenseappendix
+\newcommand{\defenseblock}{}
+\newcommand{\defensenav}{}
+\setbeamertemplate{itemize items}{\raisebox{0.15ex}{\scriptsize\textbullet}}
+\setbeamertemplate{headline}{%
+  \vskip3mm
+  \hbox to\paperwidth{\hspace{15mm}\raisebox{3mm}[0pt][0pt]{\color{UOGray}\fontsize{13}{16}\selectfont\defenseblock}\hfill\includegraphics[height=10mm]{assets/logo_uniovi_portada.pdf}\hspace{15mm}}%
+  \vskip1mm
+}
+\setbeamertemplate{frametitle}{%
+  \vskip0mm\usebeamerfont{frametitle}\insertframetitle\par
+  \vskip2mm{\color{UOLine}\hrule height0.35pt}\vskip2mm
+}
+\setbeamertemplate{footline}{%
+  \hspace{15mm}\begin{minipage}{290mm}
+  {\color{UOLine}\hrule height0.3pt}\vspace{2mm}
+  \usebeamerfont{footline}\color{UOGray}%
+  Alejandro Moris Lara\hfill
+  \defensenav
+  \hspace{6mm}\insertframenumber\par\vspace{3mm}
+  \end{minipage}
+}
+\setbeamertemplate{note page}{\insertnote}
+\setbeameroption{hide notes}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newcommand{\takeaway}[1]{\par\vspace{2mm}{\fontsize{22}{29}\selectfont #1\par}}
+\newcommand{\credit}[1]{\par\vspace{2mm}{\fontsize{11}{14}\selectfont\color{UOGray}#1\par}}
+\newcommand{\scenarioheading}{%
+  {\fontsize{20}{26}\selectfont\bfseries Escenario} &
+  {\fontsize{20}{26}\selectfont\bfseries Origen de ejemplos} &
+  {\fontsize{20}{26}\selectfont\bfseries Datos de prueba}\\}
+\newcommand{\scenariofocus}[3]{%
+  \vfill
+  \begin{center}
+    \setlength{\tabcolsep}{4mm}%
+    \renewcommand{\arraystretch}{1.4}%
+    \begin{tabular}{@{}p{107mm}p{88mm}p{74mm}@{}}
+      \scenarioheading
+      \midrule
+      {\fontsize{30}{38}\selectfont\color{ScenarioRed}\bfseries #1} &
+      {\fontsize{30}{38}\selectfont\color{ScenarioRed}\bfseries #2} &
+      {\fontsize{30}{38}\selectfont\color{ScenarioRed}\bfseries #3}\\
+    \end{tabular}
+  \end{center}
+  \vfill
+}
+\newcommand{\fullfigure}[2][96mm]{\centering\includegraphics[width=285mm,height=#1,keepaspectratio]{assets/#2}\par}
+\newcommand{\plotfigure}[2][100mm]{\centering\includegraphics[width=260mm,height=#1,keepaspectratio]{assets/#2}\par}
+\newcommand{\twopictures}[2]{%
+  \begin{columns}[c,onlytextwidth]
+  \begin{column}{.49\textwidth}\centering\includegraphics[width=\linewidth,height=95mm,keepaspectratio]{assets/#1}\end{column}
+  \begin{column}{.49\textwidth}\centering\includegraphics[width=\linewidth,height=95mm,keepaspectratio]{assets/#2}\end{column}
+  \end{columns}
+}
+\newcommand{\backtoconclusions}{\ifdefenseappendix\credit{\hyperlink{conclusion}{Volver al cierre}}\fi}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\emergencystretch=2em

@@ -44,7 +44,7 @@ Conforme recibe más ejemplos del conjunto cedido por el HUCA, Gemma~4 mejora la
 
 \IfFileExists{generated/clinical_cnn_comparison_table.tex}{\input{generated/clinical_cnn_comparison_table.tex}}{}
 
-Sin demostraciones, Gemma~4 obtiene una BA de 0,499 y no identifica ningún positivo del HUCA. Al igual que en el simulador, su configuración \textit{zero-shot} no consigue resolver la tarea con las instrucciones utilizadas. La mejor CNN supera ligeramente a Gemma~4 con \(K=2\), 0,519 frente a 0,492, y con \(K=4\), 0,520 frente a 0,503. Desde \(K=8\) cambia el orden y Gemma~4 con selección balanceada alcanza 0,661 frente a 0,507 de la mejor CNN. Con \(K=16\), las mejores BA son 0,710 y 0,546, y con \(K=32\), 0,761 y 0,535.
+Sin demostraciones, Gemma~4 obtiene una BA de 0,499 y no identifica ningún positivo del HUCA, por lo que las instrucciones utilizadas no bastan para resolver la tarea. Al incorporar dos o cuatro ejemplos, la mejor CNN conserva una ligera ventaja y ambos métodos permanecen próximos al azar. Desde \(K=8\) cambia el orden: Gemma~4 con selección balanceada mejora de forma sostenida hasta alcanzar una BA de 0,761 con 32 demostraciones, frente a 0,535 de la mejor CNN con ese mismo \(K\). Las curvas y las tablas completas permiten seguir esta separación sin reducir la comparación a su mejor punto.
 
 \begin{figure}[H]
   \centering

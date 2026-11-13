@@ -7,6 +7,14 @@ Este repositorio contiene el código y la memoria de un estudio sobre clasificac
 
 El trabajo es experimental. No proporciona diagnóstico, no descarta enfermedad y no sustituye la revisión especializada.
 
+## Entrega del TFG
+
+- [PDF de la defensa](thesis/defensa/Defensa_TFG.pdf)
+- [PDF de la memoria](output/pdf/TFG_Alejandro_Moris_Lara_FINAL.pdf)
+- [Defensa en PowerPoint](thesis/defensa/Defensa_TFG.pptx)
+- [Guion de la defensa](thesis/defensa/Guion_defensa.pdf)
+- [Fuentes, imágenes e instrucciones de la defensa](thesis/defensa/README.md) · [ZIP de la defensa](thesis/defensa/Fuentes_defensa_TFG.zip) · [Fuentes e imágenes de la memoria](thesis/thesis/)
+
 ## Diseño y datos
 
 Los dos enfoques se evalúan por paciente con `K = 2, 4, 8, 16, 32` y las semillas `42, 123, 2026`. El VLM añade una condición zero-shot con `K = 0`.

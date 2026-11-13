@@ -33,14 +33,14 @@ x(t) =
 
 El signo de \(a_i\) determina la dirección de la deflexión y su valor absoluto, la magnitud. El parámetro \(\mu_i\) sitúa el componente en el eje temporal, mientras que \(\sigma_i\) controla su extensión. Al sumar los átomos se obtienen transiciones suaves y sin discontinuidades.
 
-A diferencia del modelo dinámico de Sayadi y colaboradores \cite{sayadi2010}, el generador suma directamente los componentes. Cada parámetro modifica una región identificable del latido.
+A diferencia del modelo dinámico de Sayadi y colaboradores \cite{sayadi2010}, el simulador suma directamente los componentes. Cada parámetro modifica una región identificable del latido.
 
 \begin{table}[H]
 \centering
 \small
 \begin{tabularx}{\textwidth}{p{2.2cm} p{3.8cm} X}
 \toprule
-\textbf{Átomo} & \textbf{Región principal} & \textbf{Función dentro del generador} \\
+\textbf{Átomo} & \textbf{Región principal} & \textbf{Función dentro del simulador} \\
 \midrule
 \texttt{P} & Onda P & Añade una deflexión auricular positiva anterior al QRS \\
 \texttt{Q} & Inicio del QRS & Permite una pequeña deflexión negativa, aunque la configuración actual la mantiene anulada \\
@@ -64,7 +64,7 @@ La Figura~\ref{fig:gaussian_generator} muestra cómo se combinan los átomos de 
   \centering
   % Fuente editable: assets/results/gaussian_generator.drawio.svg.
   \safeincludegraphics[width=\textwidth]{results/gaussian_generator.drawio.pdf}
-  \caption{Generador gaussiano de un latido del simulador. Los parámetros de cada átomo fijan su amplitud, posición y anchura antes de sumar las regiones P, QRS, ST y T.}
+  \caption{simulador gaussiano de un latido del simulador. Los parámetros de cada átomo fijan su amplitud, posición y anchura antes de sumar las regiones P, QRS, ST y T.}
   \label{fig:gaussian_generator}
 \end{figure}
 
@@ -103,7 +103,7 @@ Los rangos de repolarización se definieron para una duración de referencia de 
 
 Las anchuras de los componentes tardíos se escalan con el mismo factor y tienen un mínimo para evitar gaussianas degeneradas. Los componentes anteriores a 390 ms permanecen fijos, de modo que el QRS conserva su posición y las regiones ST y T se ajustan a la duración disponible.
 
-\section{Familias generadoras}
+\section{Familias del simulador}
 
 El simulador organiza la generación en cinco grupos de latidos, denominados familias, según la forma que se quiere obtener. Una familia reúne los ajustes de los componentes gaussianos necesarios para favorecer un trazado normal, una alteración concreta o una combinación de rasgos. A partir de esos ajustes se generan señales con pequeñas variaciones de amplitud, posición y anchura, y los validadores comprueban después qué etiquetas corresponden al latido completo. Así, cada familia orienta la forma de la señal y permite obtener ejemplos distintos dentro del mismo grupo.
 
@@ -145,7 +145,7 @@ Inversión de T & Repolarización tardía negativa & Componente de inversión de
 \texttt{BRUGADA} & J elevado, ST descendente y T negativa & Familia compuesta reservable para transferencia \\
 \bottomrule
 \end{tabularx}
-\caption{Relación entre familias generadoras y rasgos favorecidos}
+\caption{Relación entre familias del simulador y rasgos favorecidos}
 \label{tab:familias}
 \end{table}
 
@@ -189,7 +189,7 @@ La generación utiliza muestreo con rechazo. Para una familia \(c\), el procedim
 \item Aceptar la señal si supera las reglas o volver al paso de muestreo.
 \end{enumerate}
 
-El generador admite un máximo de 400 intentos. Si no encuentra una señal válida, devuelve un error y conserva las últimas métricas.
+El simulador admite un máximo de 400 intentos. Si no encuentra una señal válida, devuelve un error y conserva las últimas métricas.
 
 Sea \(q_c\) la probabilidad de aceptación de una propuesta de la familia \(c\). El número esperado de intentos antes de una aceptación es aproximadamente
 
@@ -198,7 +198,7 @@ Sea \(q_c\) la probabilidad de aceptación de una propuesta de la familia \(c\).
 \frac{1}{q_c}.
 \end{equation}
 
-Una tasa de aceptación baja indica que gran parte del espacio paramétrico queda fuera de la definición de la etiqueta. Por eso forma parte de la revisión del generador.
+Una tasa de aceptación baja indica que gran parte del espacio paramétrico queda fuera de la definición de la etiqueta. Por eso forma parte de la revisión del simulador.
 
 \section{Validadores y asignación de etiquetas}
 
@@ -252,4 +252,4 @@ El simulador representa un latido aislado de apariencia precordial, por lo que s
 
 La suma de gaussianas produce curvas suaves y el formato de imagen es homogéneo, frente a los registros clínicos, que pueden contener ruido, deriva de línea base, anotaciones y trazos superpuestos. Las variaciones de grosor, contraste, posición o escala permiten examinar parte de estas diferencias visuales, aunque la generación sigue dependiendo de las formas y relaciones previstas al diseñarla.
 
-Además, el muestreo con rechazo concentra los ejemplos en las regiones de parámetros aceptadas por los validadores. Esto puede hacer que un modelo aprenda regularidades propias del generador y obtenga buenos resultados con sus imágenes. Por ello, la evaluación con ECG del HUCA permite estudiar cuánto de ese aprendizaje se conserva al cambiar a registros de pacientes y qué diferencias requieren adaptación.
+Además, el muestreo con rechazo concentra los ejemplos en las regiones de parámetros aceptadas por los validadores. Esto puede hacer que un modelo aprenda regularidades propias del simulador y obtenga buenos resultados con sus imágenes. Por ello, la evaluación con ECG del HUCA permite estudiar cuánto de ese aprendizaje se conserva al cambiar a registros de pacientes y qué diferencias requieren adaptación.

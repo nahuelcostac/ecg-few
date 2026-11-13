@@ -15,7 +15,7 @@ Para interpretar sus amplitudes y duraciones es necesario conocer la colocación
   \label{fig:signal_to_image}
 \end{figure}
 
-La despolarización es la activación eléctrica de las células cardíacas y la repolarización, la recuperación de su estado eléctrico tras esa activación. La onda P representa la despolarización auricular y el intervalo PR, la propagación hacia los ventrículos. El complejo QRS corresponde a la despolarización ventricular. El punto J marca su final y el inicio del segmento ST. La onda T representa la repolarización ventricular. La Figura~\ref{fig:morfologia_ecg} sitúa estos componentes.
+El trazado refleja la activación eléctrica de las células cardíacas, denominada despolarización, y la recuperación posterior de su estado eléctrico, o repolarización. La onda P representa la despolarización auricular y el intervalo PR recoge su propagación hacia los ventrículos, cuya despolarización corresponde al complejo QRS. Al final de este complejo se sitúa el punto J, que da paso al segmento ST y, después, a la onda T de repolarización ventricular. La Figura~\ref{fig:morfologia_ecg} sitúa estos componentes y permite relacionar su posición con la secuencia del latido.
 
 \begin{figure}[H]
   \centering
@@ -29,7 +29,7 @@ Q es la primera deflexión negativa anterior a una positiva, R la primera positi
 \section{Síndrome de Brugada y rasgos estudiados}
 \label{sec:brugada_clinica}
 
-El síndrome de Brugada es una canalopatía hereditaria, una alteración de los canales que regulan el paso de iones en las células cardíacas. Se relaciona con los canales de sodio y con variantes en el gen \emph{SCN5A}. Predispone a fibrilación ventricular y muerte súbita, especialmente durante el reposo o el sueño en varones jóvenes, aunque puede manifestarse a cualquier edad \cite{zeppenfeld2022,wilde2023scbt}. Las estimaciones citadas sitúan su prevalencia entre 1 y 5 casos por cada 10\,000 personas \cite{sieira2017}, con intervalos también descritos de una persona por cada 2\,000 a 5\,000. Puede estar infradiagnosticado porque muchos afectados permanecen asintomáticos.
+El síndrome de Brugada es una canalopatía hereditaria relacionada con alteraciones de los canales que regulan el paso de iones en las células cardíacas, entre ellas variantes del canal de sodio asociadas al gen \emph{SCN5A}. Predispone a arritmias ventriculares y muerte súbita, aunque sus manifestaciones y el riesgo varían entre pacientes \cite{zeppenfeld2022,wilde2023scbt}. Su baja frecuencia y la posibilidad de que el patrón no aparezca en un registro aislado dificultan reunir ejemplos etiquetados para el análisis automático.
 
 El patrón tipo~1, o \emph{coved}, presenta elevación del ST de al menos 2 mm en V1 o V2, de forma convexa y descendente, seguida de T negativa. Los patrones tipo~2 y tipo~3 no bastan para establecer el diagnóstico \cite{zeppenfeld2022}. El patrón puede ser intermitente, por lo que un ECG basal normal no descarta el síndrome.
 
@@ -67,6 +67,8 @@ La Figura~\ref{fig:brugada_clinical_examples} muestra ejemplos clínicos de esto
 
 \subsection{Morfología compatible con bloqueo de rama derecha}
 
+Al revisar un ECG sospechoso de síndrome de Brugada se examinan conjuntamente la parte terminal del QRS, la elevación del ST y la polaridad de T en las precordiales derechas \cite{zeppenfeld2022,wilde2023scbt}. Estas regiones motivan los tres rasgos que se describen a continuación y que el simulador controla por separado. Su combinación es una regla experimental para estudiar el reconocimiento de formas, por lo que no debe confundirse con un criterio diagnóstico suficiente ni con la exigencia de un bloqueo completo de rama derecha.
+
 El bloqueo de rama derecha (RBBB, por sus siglas en inglés) es una alteración de la conducción eléctrica que retrasa la activación del ventrículo derecho. Como esa activación ocurre después que la del izquierdo, cambia la parte final del complejo QRS y puede aparecer una segunda deflexión positiva en las derivaciones que observan el lado derecho del corazón.
 
 En el bloqueo completo, el ECG presenta un QRS de al menos 120 ms, patrones como rsR prima o rSR prima en V1 o V2 y una onda S ensanchada en derivaciones laterales \cite{surawicz2009}. Estos criterios describen un problema de conducción eléctrica y algunos de sus rasgos visuales también aparecen en patrones asociados al síndrome de Brugada.
@@ -97,7 +99,7 @@ Por ello, cuando solo se dispone de un documento, hay que elegir entre analizar 
 \section{Clasificación y salida de los modelos}
 \label{sec:clasificacion}
 
-En clasificación multiclase las categorías son exclusivas. En clasificación multietiqueta pueden coexistir, como ocurre con los rasgos del ECG \cite{tsoumakas2007}. Para una imagen \(x\) y \(L\) etiquetas se define
+En este trabajo, los rasgos morfológicos pueden coexistir en una misma imagen, por lo que se representan mediante etiquetas binarias separadas en una tarea multietiqueta. Para una imagen \(x\) y \(L\) etiquetas se define
 \begin{equation}
 \mathbf{y}=(y_1,\ldots,y_L), \qquad y_j\in\{0,1\}.
 \end{equation}
@@ -137,7 +139,7 @@ Para inspeccionar la CNN se utiliza Grad-CAM, que construye un mapa de regiones 
 
 En un modelo de visión y lenguaje también puede solicitarse una explicación escrita, pero que resulte comprensible no garantiza que describa el proceso que produjo la predicción. Por eso se distinguen las etiquetas estructuradas utilizadas para evaluar el rendimiento de las justificaciones examinadas de forma cualitativa.
 
-Esta precaución también importa al cambiar de conjunto de datos, porque la red puede aprender el estilo de representación en lugar de la forma de las ondas. La adaptación de dominio intenta reducir esa diferencia cuando se pasa de los latidos alineados y las cuadrículas uniformes del simulador a ECG con ruido, deriva de línea base, variación de frecuencia, anotaciones y trazos superpuestos. El capítulo~\ref{chap:simulador} describe los controles del generador y la sección~\ref{sec:adaptacion_cnn}, los métodos empleados para estudiar ese cambio.
+Esta precaución también importa al cambiar de conjunto de datos, porque la red puede aprender el estilo de representación en lugar de la forma de las ondas. La adaptación de dominio intenta reducir esa diferencia cuando se pasa de los latidos alineados y las cuadrículas uniformes del simulador a ECG con ruido, deriva de línea base, variación de frecuencia, anotaciones y trazos superpuestos. El capítulo~\ref{chap:simulador} describe los controles del simulador y la sección~\ref{sec:adaptacion_cnn}, los métodos empleados para estudiar ese cambio.
 
 \section{Modelos de visión y lenguaje y aprendizaje en contexto}
 \label{sec:fundamentos_icl}

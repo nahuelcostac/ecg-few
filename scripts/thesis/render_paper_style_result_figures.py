@@ -12,9 +12,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from figure_layout import external_legend
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LOOCV_DIR = ROOT / "reports" / "loocv"
+DEFAULT_LOOCV_DIR = ROOT / "outputs" / "final_results_tfg" / "loocv"
 DEFAULT_OUTPUT_DIR = ROOT / "thesis" / "thesis" / "assets" / "results"
 
 BLUE = "#005BBB"
@@ -316,7 +317,7 @@ def plot_confusion(path: Path, row: dict[str, str], *, title: str) -> None:
 
 def save(fig: plt.Figure, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.tight_layout(pad=0.35)
+    external_legend(fig)
     fig.savefig(path, bbox_inches="tight", pad_inches=0.02)
     fig.savefig(path.with_suffix(".pdf"), bbox_inches="tight", pad_inches=0.02)
     fig.savefig(path.with_suffix(".svg"), bbox_inches="tight", pad_inches=0.02)

@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "scientific_figures": 22,
+  "narrative_order_verified": true,
+  "concepts_before_implementations": true,
+  "canonical_aggregate_files_verified": 7,
+  "protected_files_unchanged": 230,
+  "presentations_and_guide": {
+    "Defensa_TFG": {
+      "pages": 41,
+      "main_slides": 39,
+      "appendix_slides": 2,
+      "vector_forms": 180,
+      "sha256": "361eff65f344a2cee7c0ec0388058a1c41c2ebfbdf4df73dc1e6ead812a19a9d"
+    },
+    "Guion_defensa": {
+      "pages": 12,
+      "sha256": "ef8925fb9ff9534e293fd94574d008b0dea732477d2955b789abe979f0143b67"
+    }
+  },
+  "notes": [
+    "Durations are rehearsal targets; the current tribunal limit is not confirmed.",
+    "All inventoried scientific figures appear in the main route.",
+    "The original ICL scheme and published visual references may contain raster elements.",
+    "No per-patient predictions or identifiers are packaged."
+  ]
+}
