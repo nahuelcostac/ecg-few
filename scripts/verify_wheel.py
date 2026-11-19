@@ -13,7 +13,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--python", required=True, type=Path)
     args = parser.parse_args()
-    interpreter = args.python.resolve()
+    interpreter = args.python.absolute()
     repository = Path(__file__).resolve().parents[1]
     with tempfile.TemporaryDirectory(prefix="ecg-wheel-") as temporary:
         working = Path(temporary)
