@@ -2,7 +2,6 @@
 set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-UV="${UV:-uv}"
 
 OUTDIR="${OUTDIR:-$ROOT_DIR/data/simulator_qrs}"
 PATIENTS_PER_SOURCE_FAMILY="${PATIENTS_PER_SOURCE_FAMILY:-20}"
@@ -11,17 +10,13 @@ K_VALUES="${K_VALUES:-2,4,8,16,32}"
 SEEDS="${SEEDS:-42,123,2026}"
 VAL_PER_CLASS="${VAL_PER_CLASS:-4}"
 
-PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-MPLBACKEND="${MPLBACKEND:-Agg}"
-export PYTHONPATH MPLBACKEND
+. "$ROOT_DIR/scripts/run/_common.sh"
 
-run_python() {
-  if command -v "$UV" >/dev/null 2>&1; then
-    "$UV" run --no-sync python "$@"
-  else
-    python "$@"
-  fi
-}
+OVERWRITE="${OVERWRITE:-0}"
+set --
+if [ "$OVERWRITE" = "1" ]; then
+  set -- --overwrite
+fi
 
 run_python \
   "$ROOT_DIR/scripts/dataset/build_simulator_qrs_dataset.py" \
@@ -30,4 +25,5 @@ run_python \
   --seed "$SEED" \
   --k-values "$K_VALUES" \
   --seeds "$SEEDS" \
-  --val-per-class "$VAL_PER_CLASS"
+  --val-per-class "$VAL_PER_CLASS" \
+  "$@"

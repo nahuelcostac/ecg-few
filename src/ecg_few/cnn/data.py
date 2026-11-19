@@ -12,7 +12,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from ecg_few.findings import LABEL_NAMES
-from ecg_few.loocv import BrugadaImageRow
+from ecg_few.protocols.loocv import BrugadaImageRow
 
 
 @dataclass(frozen=True)

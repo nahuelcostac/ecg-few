@@ -2,10 +2,9 @@
 set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-UV="${UV:-uv}"
 
 DATASET_ROOT="${DATASET_ROOT:-$ROOT_DIR/data/brugada_huca}"
-REPORT_DIR="${REPORT_DIR:-$ROOT_DIR/reports/loocv/vlm}"
+REPORT_DIR="${REPORT_DIR:-$ROOT_DIR/outputs/work/vlm_loocv/reports}"
 K_VALUES="${K_VALUES:-0,2,4,8,16,32}"
 CONTROL_K_VALUES="${CONTROL_K_VALUES:-8,16,32}"
 SEEDS="${SEEDS:-42,123,2026}"
@@ -24,18 +23,9 @@ VLM_RUNTIME="${VLM_RUNTIME:-remote_api}"
 MODELS="${MODELS:-${VLM_MODELS:-${MODEL:-${VLM_MODEL:-google/gemma-4-E4B-it,google/medgemma-4b-it}}}}"
 CONDITIONS="${CONDITIONS:-zero_shot,estandar,balanced,permuted,no_support_images}"
 API_BASE="${API_BASE:-${VLM_API_BASE:-}}"
-OUTPUT="${OUTPUT:-$REPORT_DIR/vlm_setup_validation.json}"
+OUTPUT="${OUTPUT:-$ROOT_DIR/outputs/work/preflight/vlm_setup_validation.json}"
 
-PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-export PYTHONPATH
-
-run_python() {
-  if command -v "$UV" >/dev/null 2>&1; then
-    "$UV" run --no-sync python "$@"
-  else
-    python "$@"
-  fi
-}
+. "$ROOT_DIR/scripts/run/_common.sh"
 
 ARGS=""
 if [ "$API_BASE" != "" ]; then

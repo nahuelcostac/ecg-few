@@ -2,7 +2,6 @@
 set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-UV="${UV:-uv}"
 
 RAW_ROOT="${RAW_ROOT:-$ROOT_DIR/data/raw/brugada-huca/1.0.0}"
 OUTDIR="${OUTDIR:-$ROOT_DIR/data/brugada_huca}"
@@ -13,17 +12,13 @@ DPI="${DPI:-130}"
 PRE_R_MS="${PRE_R_MS:-300}"
 POST_R_MS="${POST_R_MS:-600}"
 
-PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-MPLBACKEND="${MPLBACKEND:-Agg}"
-export PYTHONPATH MPLBACKEND
+. "$ROOT_DIR/scripts/run/_common.sh"
 
-run_python() {
-  if command -v "$UV" >/dev/null 2>&1; then
-    "$UV" run --no-sync python "$@"
-  else
-    python "$@"
-  fi
-}
+OVERWRITE="${OVERWRITE:-0}"
+set --
+if [ "$OVERWRITE" = "1" ]; then
+  set -- --overwrite
+fi
 
 run_python \
   "$ROOT_DIR/scripts/dataset/build_brugada_huca_dataset.py" \
@@ -34,4 +29,5 @@ run_python \
   --val-per-class "$VAL_PER_CLASS" \
   --dpi "$DPI" \
   --pre-r-ms "$PRE_R_MS" \
-  --post-r-ms "$POST_R_MS"
+  --post-r-ms "$POST_R_MS" \
+  "$@"

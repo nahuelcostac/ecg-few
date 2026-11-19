@@ -1,26 +1,35 @@
-# Instrucciones para agentes de IA
+# Agent instructions
 
-Estas instrucciones se aplican a todo el repositorio.
+These instructions apply throughout the repository.
 
-## Fuente única de resultados finales
+## Canonical final results
 
-- La única fuente canónica de resultados experimentales es `outputs/final_results_tfg/`.
-- El paquete base fue importado de `outputs/final_results_tfg/source/final_results_tfg.zip`. Su SHA-256 está registrado en `outputs/final_results_tfg/SOURCE.sha256`.
-- La campaña binaria clínica se promovió de forma aditiva desde `outputs/work/cnn_clinical_brugada_loocv/`. Su archivo, hash y procedencia están en `source/cnn_clinical_brugada_loocv.zip`, `SOURCE_CNN_CLINICAL.sha256` y `CNN_CLINICAL_PROMOTION.json`.
-- `outputs/final_results_tfg/loocv/` contiene los informes agregados finales; `outputs/final_results_tfg/runs/` contiene las salidas completas por ejecución; y `outputs/final_results_tfg/tfg_figures/` contiene la selección final de figuras.
-- `reports/loocv/` es únicamente el espejo versionado de los informes agregados finales. Si alguna vez difiere de la carpeta canónica, prevalece `outputs/final_results_tfg/loocv/` y debe corregirse el espejo.
-- Las figuras de `thesis/thesis/assets/results/`, el texto de la memoria y las tablas del `README.md` son artefactos de presentación derivados. No deben utilizarse como fuente numérica primaria.
+- The only canonical experimental results are in `outputs/final_results_tfg/`.
+- The base package was imported from `outputs/final_results_tfg/source/final_results_tfg.zip`. Its SHA-256 is recorded in `outputs/final_results_tfg/SOURCE.sha256`.
+- The clinical binary campaign was promoted additively from `outputs/work/cnn_clinical_brugada_loocv/`. Its archive, hash, and provenance are recorded in `source/cnn_clinical_brugada_loocv.zip`, `SOURCE_CNN_CLINICAL.sha256`, and `CNN_CLINICAL_PROMOTION.json` inside the canonical directory.
+- `outputs/final_results_tfg/loocv/` contains the final aggregate reports; `runs/` contains full run outputs; `tfg_figures/` contains the final figure selection.
+- `reports/loocv/` is only the versioned mirror of the canonical aggregate reports. If they differ, the canonical directory takes precedence and the mirror must be corrected.
+- Figures in `thesis/thesis/assets/results/`, thesis text, and README tables are derived presentation artifacts, not primary numerical sources.
 
-No se deben consultar, mezclar, restaurar ni citar resultados de ejecuciones anteriores, carpetas temporales, copias de seguridad o cualquier otro directorio de salida. Tampoco se debe elegir una campaña por la fecha de modificación de sus archivos.
+Do not consult, combine, restore, or cite results from older runs, temporary folders, backups, or other output directories. Do not select a campaign by file modification time.
 
-## Trabajo con nuevos experimentos
+## New experiments
 
-- No sobrescribir, regenerar ni modificar `outputs/final_results_tfg/` salvo petición expresa del usuario de sustituir la campaña final.
-- Guardar cualquier experimento nuevo en una ubicación separada, por ejemplo `outputs/work/<nombre_de_campaña>/`, y etiquetarlo como provisional.
-- No promover un experimento nuevo a resultado final ni sincronizarlo con `reports/loocv/` sin autorización expresa.
-- Al actualizar cifras en documentación o en la memoria, rastrear cada valor hasta un CSV o JSON de la fuente canónica y mantener sincronizados los artefactos derivados.
-- Las salidas completas pueden contener identificadores o información granular. No exponer datos a nivel de paciente; para documentación y análisis compartibles, preferir siempre los agregados de `reports/loocv/`.
+- Do not overwrite, regenerate, or modify `outputs/final_results_tfg/` unless the user explicitly requests replacement of the final campaign.
+- Store new experiments separately under `outputs/work/<campaign>/` and mark them provisional.
+- Do not promote new results or synchronize them into `reports/loocv/` without explicit authorization.
+- Trace every documented numerical result to a canonical CSV or JSON and keep derived artifacts consistent.
+- Full run outputs may contain patient identifiers. Do not expose patient-level information; use aggregate reports for shared documentation and analysis.
 
-## Conservación
+## Preservation
 
-No eliminar ninguno de los ZIP fuente ni sus archivos SHA-256. Si el usuario autoriza una campaña final nueva, registrar su procedencia y hash, actualizar de forma atómica la ubicación canónica, sincronizar el espejo agregado y revisar esta guía y los README relacionados.
+Never delete source ZIP files or SHA-256 records. An authorized replacement campaign must record provenance and hashes, update the canonical location atomically, synchronize the aggregate mirror, and update these instructions and related READMEs.
+
+## Software maintenance
+
+- Keep software documentation, public messages, and new code in English.
+- Put reusable code in `src/ecg_few/`; keep script entry points small.
+- Preserve patient-level separation and existing experimental semantics during refactors.
+- Keep dataset contents, credentials, weights, and granular outputs outside Git. Preserve structural `.gitkeep` files.
+- Use synthetic fixtures and temporary directories for tests.
+- Run `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest -q` after code changes. Use `--no-sync` when preserving a custom local environment.

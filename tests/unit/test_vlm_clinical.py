@@ -1,20 +1,15 @@
 import argparse
-import importlib.util
 from pathlib import Path
 
-from ecg_few.loocv import BrugadaImageRow, build_fold_plan
+from ecg_few.protocols.loocv import BrugadaImageRow, build_fold_plan
+from ecg_few.vlm import pipeline
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 RUNNER_PATH = ROOT / "scripts" / "eval" / "run_vlm_loocv.py"
 
 
 def load_runner():
-    spec = importlib.util.spec_from_file_location("run_vlm_loocv", RUNNER_PATH)
-    assert spec is not None
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
+    return pipeline
 
 
 def row(

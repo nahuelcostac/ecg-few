@@ -1,0 +1,9 @@
+[experiment]
+outdir = "data/synthetic/smoke"
+patients_per_source_family = 1
+seed = 2026
+fs = 100
+dpi = 80
+k_values = [1]
+seeds = [42]
+val_per_class = 0

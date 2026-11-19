@@ -1,0 +1,10 @@
+[experiment]
+dataset_root = "data/brugada_huca"
+output_root = "outputs/work/vlm_clinical_loocv"
+task = "clinical"
+conditions = ["zero_shot", "estandar", "balanced"]
+k_values = [0, 2, 4, 8, 16, 32]
+seeds = [42, 123, 2026]
+vlm_runtime = "remote_api"
+temperature = 0.0
+max_output_tokens = 96

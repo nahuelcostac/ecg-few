@@ -1,0 +1,7 @@
+[experiment]
+outdir = "data/simulator_qrs"
+patients_per_source_family = 20
+seed = 2026
+k_values = [2, 4, 8, 16, 32]
+seeds = [42, 123, 2026]
+val_per_class = 4

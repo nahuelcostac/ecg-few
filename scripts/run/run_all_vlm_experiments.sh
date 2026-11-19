@@ -94,7 +94,7 @@ run_vlm_campaign() {
       DATASET_ROOT="$campaign_dataset_root" \
       CONTEXT_DATASET_ROOT="$campaign_context_root" \
       REPORT_DIR="$campaign_report_dir" \
-      OUTPUT="$campaign_report_dir/vlm_setup_validation.json" \
+      OUTPUT="$ROOT_DIR/outputs/work/preflight/$(basename "$campaign_output_root").json" \
       K_VALUES="$VLM_K_VALUES" \
       sh "$RUN_DIR/validate_vlm_loocv.sh"
   fi
@@ -124,47 +124,47 @@ run_vlm_campaign \
   "morphology" \
   "$SIMULATOR_DATASET_ROOT" \
   "$SIMULATOR_DATASET_ROOT" \
-  "$ROOT_DIR/outputs/vlm_simulator_qrs_loocv" \
-  "$ROOT_DIR/reports/loocv/vlm_simulator_qrs"
+  "$ROOT_DIR/outputs/work/vlm_simulator_qrs_loocv" \
+  "$ROOT_DIR/outputs/work/vlm_simulator_qrs_loocv/reports"
 
 run_vlm_campaign \
   "VLM HUCA morphology LOOCV with simulator context" \
   "morphology" \
   "$HUCA_DATASET_ROOT" \
   "$SIMULATOR_DATASET_ROOT" \
-  "$ROOT_DIR/outputs/vlm_loocv" \
-  "$ROOT_DIR/reports/loocv/vlm"
+  "$ROOT_DIR/outputs/work/vlm_loocv" \
+  "$ROOT_DIR/outputs/work/vlm_loocv/reports"
 
 run_vlm_campaign \
   "VLM HUCA clinical LOOCV with real context" \
   "clinical" \
   "$HUCA_DATASET_ROOT" \
   "" \
-  "$ROOT_DIR/outputs/vlm_real_context_loocv" \
-  "$ROOT_DIR/reports/loocv/vlm_real_context"
+  "$ROOT_DIR/outputs/work/vlm_real_context_loocv" \
+  "$ROOT_DIR/outputs/work/vlm_real_context_loocv/reports"
 
 run_comparison \
   "Compare CNN vs VLM on simulator QRS" \
-  "$ROOT_DIR/reports/loocv/cnn_simulator_qrs/cnn_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/vlm_simulator_qrs/vlm_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/comparison_vlm_simulator_qrs"
+  "$ROOT_DIR/outputs/work/cnn_simulator_qrs_loocv/reports/cnn_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/vlm_simulator_qrs_loocv/reports/vlm_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/comparison_vlm_simulator_qrs/reports"
 
 run_comparison \
   "Compare CNN vs VLM on HUCA morphology" \
-  "$ROOT_DIR/reports/loocv/cnn/cnn_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/vlm/vlm_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/comparison"
+  "$ROOT_DIR/outputs/work/cnn_loocv/reports/cnn_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/vlm_loocv/reports/vlm_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/comparison/reports"
 
 run_comparison \
   "Compare CNN vs VLM on HUCA clinical" \
-  "$ROOT_DIR/reports/loocv/cnn/cnn_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/vlm_real_context/vlm_summary_by_seed.csv" \
-  "$ROOT_DIR/reports/loocv/comparison_vlm_real_context"
+  "$ROOT_DIR/outputs/work/cnn_loocv/reports/cnn_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/vlm_real_context_loocv/reports/vlm_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/comparison_vlm_real_context/reports"
 
 if [ "$RUN_AUDIT" != "0" ]; then
   missing="$(missing_file \
-    "$ROOT_DIR/reports/loocv/cnn/cnn_summary_by_seed.csv" \
-    "$ROOT_DIR/reports/loocv/cnn_simulator_qrs/cnn_summary_by_seed.csv" \
+    "$ROOT_DIR/outputs/work/cnn_loocv/reports/cnn_summary_by_seed.csv" \
+    "$ROOT_DIR/outputs/work/cnn_simulator_qrs_loocv/reports/cnn_summary_by_seed.csv" \
     || true)"
   if [ "$missing" != "" ] && [ "$RUN_AUDIT" = "auto" ]; then
     printf "\n==> Skip Audit LOOCV results\nMissing required CNN summary: %s\n" "$missing"

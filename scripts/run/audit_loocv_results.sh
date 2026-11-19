@@ -2,27 +2,17 @@
 set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-UV="${UV:-uv}"
 
 RAW_ROOT="${RAW_ROOT:-$ROOT_DIR/data/raw/brugada-huca/1.0.0}"
 DATASET_ROOT="${DATASET_ROOT:-$ROOT_DIR/data/brugada_huca}"
-CNN_REPORT_DIR="${CNN_REPORT_DIR:-$ROOT_DIR/reports/loocv/cnn}"
-VLM_REPORT_DIR="${VLM_REPORT_DIR:-$ROOT_DIR/reports/loocv/vlm}"
-COMPARISON_DIR="${COMPARISON_DIR:-$ROOT_DIR/reports/loocv/comparison}"
-OUTPUT_DIR="${OUTPUT_DIR:-$ROOT_DIR/reports/loocv/audit}"
+CNN_REPORT_DIR="${CNN_REPORT_DIR:-$ROOT_DIR/outputs/work/cnn_loocv/reports}"
+VLM_REPORT_DIR="${VLM_REPORT_DIR:-$ROOT_DIR/outputs/work/vlm_loocv/reports}"
+COMPARISON_DIR="${COMPARISON_DIR:-$ROOT_DIR/outputs/work/comparison/reports}"
+OUTPUT_DIR="${OUTPUT_DIR:-$ROOT_DIR/outputs/work/audit/reports}"
 K_VALUES="${K_VALUES:-2,4,8,16,32}"
 SEEDS="${SEEDS:-42,123,2026}"
 
-PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-export PYTHONPATH
-
-run_python() {
-  if command -v "$UV" >/dev/null 2>&1; then
-    "$UV" run --no-sync python "$@"
-  else
-    python "$@"
-  fi
-}
+. "$ROOT_DIR/scripts/run/_common.sh"
 
 run_python \
   "$ROOT_DIR/scripts/eval/audit_loocv_results.py" \

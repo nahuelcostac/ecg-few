@@ -1,0 +1,10 @@
+[experiment]
+dataset_root = "data/synthetic/smoke"
+output_root = "outputs/work/smoke_vlm"
+model = "smoke/model"
+api_base = "http://localhost:8000/v1"
+conditions = ["zero_shot", "estandar"]
+k_values = [0, 1]
+seeds = [42]
+limit_folds = 2
+dry_run_predictions = "negative"

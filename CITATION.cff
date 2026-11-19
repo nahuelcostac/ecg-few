@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Please cite the software and the original datasets used in your work."
+title: "ECG Few-Shot Learning"
+type: software
+version: 0.1.0
+authors:
+  - name: "ECG Few-Shot contributors"
+repository-code: "https://github.com/nahuelcostac/ecg-few"
+url: "https://github.com/nahuelcostac/ecg-few"

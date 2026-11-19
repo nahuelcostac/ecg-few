@@ -1,7 +1,7 @@
 [project]
 name = "ecg-vlm"
 version = "0.1.0"
-description = "ECG QRS/ST morphology experiments with derived Brugada evaluation."
+description = "Patient-level few-shot ECG image experiments with CNNs and vision-language models."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -20,13 +20,25 @@ cnn = [
     "torch>=2.3",
     "torchvision>=0.18",
 ]
-dev = [
-    "pytest>=8.3",
-    "ruff>=0.6",
-]
 real-data = [
     "wfdb>=4.1",
 ]
+vlm-local = [
+    "torch>=2.3",
+    "transformers>=4.57",
+    "accelerate>=1.0",
+    "sentencepiece>=0.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.6"]
+
+[project.scripts]
+ecg-few = "ecg_few.cli.main:main"
+
+[project.urls]
+Repository = "https://github.com/nahuelcostac/ecg-few"
+Issues = "https://github.com/nahuelcostac/ecg-few/issues"
 
 [build-system]
 requires = ["hatchling"]
@@ -35,13 +47,48 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/ecg_few"]
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/scripts/dataset",
+    "/scripts/eval",
+    "/scripts/run",
+    "/scripts/verify_wheel.py",
+    "/configs",
+    "/tests/unit",
+    "/tests/integration",
+    "/tests/conftest.py",
+    "/tests/fixtures",
+    "/docs",
+    "/data/README.md",
+    "/README.md",
+    "/CONTRIBUTING.md",
+    "/LICENSE",
+    "/CITATION.cff",
+    "/AGENTS.md",
+    "/pyproject.toml",
+    "/uv.lock",
+]
+exclude = ["/scripts/run/*tfg*", "/scripts/run/*figures*"]
+
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
+extend-exclude = ["scripts/thesis", "thesis", "old", "tmp", "output", "outputs"]
+include = [
+    "pyproject.toml",
+    "src/**/*.py",
+    "scripts/dataset/*.py",
+    "scripts/eval/*.py",
+    "scripts/verify_wheel.py",
+    "tests/unit/**/*.py",
+    "tests/integration/**/*.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = [".", "src"]
+testpaths = ["tests/unit", "tests/integration"]
+addopts = "--import-mode=importlib --strict-config --strict-markers"
+markers = ["integration: exercises multiple components with generated data"]

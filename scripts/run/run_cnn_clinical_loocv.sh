@@ -2,7 +2,6 @@
 set -eu
 
 ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-UV="${UV:-uv}"
 
 DATASET_ROOT="${DATASET_ROOT:-$ROOT_DIR/data/brugada_huca}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$ROOT_DIR/outputs/work/cnn_clinical_brugada_loocv}"
@@ -15,17 +14,7 @@ DEVICE="${DEVICE:-auto}"
 LIMIT_FOLDS="${LIMIT_FOLDS:-0}"
 RESUME="${RESUME:-1}"
 
-PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-MPLBACKEND="${MPLBACKEND:-Agg}"
-export PYTHONPATH MPLBACKEND
-
-run_python() {
-  if command -v "$UV" >/dev/null 2>&1; then
-    "$UV" run --no-sync python "$@"
-  else
-    python "$@"
-  fi
-}
+. "$ROOT_DIR/scripts/run/_common.sh"
 
 ARGS=""
 if [ "$LIMIT_FOLDS" != "0" ]; then

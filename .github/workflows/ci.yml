@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.10.4"
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - name: Check shell syntax
+        run: |
+          for script in scripts/run/*.sh; do
+            case "$script" in *tfg*|*figures*) continue ;; esac
+            bash -n "$script"
+          done
+
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      MPLBACKEND: Agg
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.10.4"
+          python-version: "3.12"
+          enable-cache: true
+      - if: runner.os == 'Windows'
+        run: uv sync --locked --extra cnn --extra real-data
+      - if: runner.os != 'Windows'
+        run: uv sync --locked --extra real-data
+      - run: uv run --no-sync pytest -q
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.10.4"
+          python-version: "3.12"
+      - run: uv build
+      - run: uv venv .cache/wheel-env
+      - run: uv export --locked --no-dev --no-emit-project --format requirements-txt --output-file .cache/wheel-requirements.txt
+      - run: uv pip sync --python .cache/wheel-env/bin/python .cache/wheel-requirements.txt
+      - run: uv pip install --python .cache/wheel-env/bin/python --no-deps dist/*.whl
+      - run: .cache/wheel-env/bin/python scripts/verify_wheel.py --python .cache/wheel-env/bin/python

@@ -1,5 +1,7 @@
 .DS_Store
 .env
+.env.*
+!.env.example
 .venv/
 .uv-cache/
 .cache/
@@ -8,14 +10,18 @@ __pycache__/
 *.bkp
 .pytest_cache/
 .ruff_cache/
-tests/*
-!tests/test_vlm_clinical.py
+dist/
+build/
+*.egg-info/
+.coverage
+htmlcov/
 jobs/vlm_server.sh
 
 # Generated experiment artifacts
 data/**
 !data/**/
 !data/**/.gitkeep
+!data/README.md
 reports/**
 !reports/
 !reports/.gitkeep
@@ -29,6 +35,8 @@ outputs/**
 !outputs/final_results_tfg/SOURCE.sha256
 !outputs/final_results_tfg/SOURCE_CNN_CLINICAL.sha256
 !outputs/final_results_tfg/CNN_CLINICAL_PROMOTION.json
+!outputs/work/
+!outputs/work/.gitkeep
 tmp/
 old/
 
@@ -47,4 +55,3 @@ CLAUDE.md
 Project.canvas
 RULES.md
 canvas-tool.py
-docs/**

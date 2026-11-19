@@ -1,166 +1,119 @@
-# ECG como imagen para Brugada con pocos ejemplos
+# ECG Few-Shot Learning
 
-Este repositorio contiene el código y la memoria de un estudio sobre clasificación de ECG representados como imagen. Se comparan dos usos de un conjunto pequeño de ejemplos:
+Patient-level ECG image experiments with convolutional neural networks and vision-language models.
 
-- una CNN ResNet18 morfológica transferida desde el simulador y una variante que decide entre una etiqueta clínica positiva y negativa
-- Gemma 4 E4B como modelo de visión y lenguaje con aprendizaje en contexto
+The project supports three workflows:
 
-El trabajo es experimental. No proporciona diagnóstico, no descarta enfermedad y no sustituye la revisión especializada.
+- **Morphological CNN:** predict RBBB, ST elevation, and T-wave inversion, then apply a shared Brugada rule.
+- **Clinical CNN:** learn the dataset's binary clinical reference directly.
+- **VLM evaluation:** compare zero-shot and in-context predictions using the same patient-level fold plans.
 
-## Entrega del TFG
+This is research software, not a diagnostic tool.
 
-- [PDF de la defensa](thesis/defensa/Defensa_TFG.pdf)
-- [PDF de la memoria](output/pdf/TFG_Alejandro_Moris_Lara_FINAL.pdf)
-- [Defensa en PowerPoint](thesis/defensa/Defensa_TFG.pptx)
-- [Guion de la defensa](thesis/defensa/Guion_defensa.pdf)
-- [Fuentes, imágenes e instrucciones de la defensa](thesis/defensa/README.md) · [ZIP de la defensa](thesis/defensa/Fuentes_defensa_TFG.zip) · [Fuentes e imágenes de la memoria](thesis/thesis/)
+## Requirements
 
-## Diseño y datos
+Python 3.12 or newer and [uv](https://docs.astral.sh/uv/getting-started/installation/). The quick start runs on CPU without clinical data, model downloads, or API credentials.
 
-Los dos enfoques se evalúan por paciente con `K = 2, 4, 8, 16, 32` y las semillas `42, 123, 2026`. El VLM añade una condición zero-shot con `K = 0`.
-
-| Conjunto | Pacientes | Imágenes únicas | Positivos | Negativos | Referencia |
-|---|---:|---:|---:|---:|---|
-| Simulador QRS/ST | 100 | 100 | 20 | 80 | Regla morfológica |
-| Subconjunto HUCA procesado | 317 | 317 | 116 | 201 | `clinical_brugada` de la campaña |
-
-Las matrices agregadas contienen 300 y 951 predicciones, respectivamente, porque suman tres semillas sobre los mismos pacientes. Esos valores no son tamaños de muestra ni números de imágenes únicas.
-
-La CNN morfológica aprende RBBB, elevación ST e inversión de T en el simulador. La muestra clínica no contiene esas tres anotaciones por imagen, por lo que su evaluación real mide transferencia hacia una referencia clínica. La CNN clínica aprende directamente `clinical_brugada`. Gemma 4 se evalúa con contexto estándar, contexto balanceado y sin demostraciones.
-
-La campaña `cnn_clinical_brugada_loocv` añade una ResNet18 binaria entrenada directamente con imágenes V1 del HUCA. Su promoción final es aditiva y conserva sin cambios el paquete original. La procedencia y el hash propio se registran en `outputs/final_results_tfg/CNN_CLINICAL_PROMOTION.json` y `outputs/final_results_tfg/SOURCE_CNN_CLINICAL.sha256`.
-
-## Resultados finales
-
-La única fuente canónica es [`outputs/final_results_tfg/`](outputs/final_results_tfg/README.md). Contiene el paquete `Final Results TFG`, importado el 30 de agosto de 2026, y la promoción aditiva de la CNN clínica, autorizada el 25 de octubre de 2026. No deben mezclarse estos resultados con campañas anteriores. `reports/loocv/` es su espejo agregado y versionado. Las tablas y figuras de esta página son derivados.
-
-### Datos generados por el simulador
-
-| Método | K | BA, media y DE | F1 | Sens. | Esp. |
-|---|---:|---:|---:|---:|---:|
-| CNN ResNet18 | 32 | 0.885 ± 0.013 | 0.771 | 0.867 | 0.904 |
-| Gemma 4 zero-shot | 0 | 0.500 ± 0.000 | 0.000 | 0.000 | 1.000 |
-| Gemma 4 ICL estándar | 32 | 0.879 ± 0.008 | 0.781 | 0.833 | 0.925 |
-| Gemma 4 ICL balanceado | 32 | 0.904 ± 0.011 | 0.825 | 0.867 | 0.942 |
-
-![Comparación en el simulador](thesis/thesis/assets/results/comparison_simulator_ba_by_k.png)
-
-### Transferencia entre el simulador y los ECG clínicos
-
-La CNN base alcanza su mejor punto real en `K=4`, con BA `0.551 ± 0.034`. MMD mejora la base de `K=32` desde `0.498` hasta `0.546`, pero no supera el mejor resultado global de la CNN.
-
-Gemma 4 con demostraciones del simulador permanece cerca del azar. El mejor punto balanceado aparece en `K=16`, con BA `0.514 ± 0.008`, sensibilidad `0.063` y especificidad `0.965`.
-
-### Aprendizaje clínico directo
-
-| Método | K | BA, media y DE | F1 | Sens. | Esp. |
-|---|---:|---:|---:|---:|---:|
-| CNN clínica estándar | 32 | 0.532 ± 0.002 | 0.469 | 0.580 | 0.483 |
-| CNN clínica balanceada | 16 | 0.546 ± 0.017 | 0.478 | 0.580 | 0.511 |
-| Gemma 4 zero-shot | 0 | 0.499 ± 0.001 | 0.000 | 0.000 | 0.998 |
-| Gemma 4 ICL estándar | 32 | 0.743 ± 0.011 | 0.675 | 0.690 | 0.796 |
-| Gemma 4 ICL balanceado | 32 | 0.761 ± 0.011 | 0.699 | 0.741 | 0.781 |
-
-![Comparación clínica directa](thesis/thesis/assets/results/clinical_cnn_vs_gemma_performance.png)
-
-La CNN supera ligeramente al mejor ICL con `K=2` y `K=4`. Gemma 4 se distancia desde `K=8` y alcanza su máximo balanceado en `K=32`. La comparación es descriptiva: la CNN utiliza además ocho pacientes etiquetados de validación por pliegue y los modelos difieren en escala y preentrenamiento. El resultado no incluye validación externa ni pruebas inferenciales planificadas y no justifica un uso asistencial.
-
-## Organización
-
-```text
-src/ecg_few/                    Código Python principal
-scripts/eval/                   Evaluación y comparaciones
-scripts/run/                    Entradas reproducibles
-scripts/thesis/                 Figuras y auditoría de la memoria
-prompts/                        Prompts VLM
-reports/loocv/                  Resultados agregados para regenerar las gráficas
-outputs/final_results_tfg/      Paquete final canónico (completo y local)
-thesis/thesis/                  Fuente LaTeX
-thesis/thesis/assets/results/   Figuras versionadas
-```
-
-El ZIP original y las salidas completas se conservan bajo `outputs/final_results_tfg/`, fuera de Git por tamaño y granularidad. `reports/loocv/` contiene el espejo versionado de sus informes agregados y es la ubicación que consumen los renderizadores del TFG. La relación entre ambas carpetas se documenta en `outputs/final_results_tfg/README.md` y `reports/loocv/README.md`.
-
-La fuente LaTeX, los logos y todas las figuras utilizadas por la memoria también se versionan. Los datos clínicos del HUCA y las salidas LOOCV a nivel de paciente no son necesarios para compilar el PDF ni para regenerar sus gráficas; no deben exponerse ni utilizarse como fuente documental cuando existen agregados.
-
-## Reproducción
-
-Instalación:
+## Installation
 
 ```bash
-uv sync --extra dev --extra cnn
+git clone https://github.com/nahuelcostac/ecg-few.git
+cd ecg-few
+uv sync --locked
+uv run ecg-few --help
 ```
 
-Regeneración de las figuras finales con los resultados agregados incluidos en el repositorio:
+Install the extras needed for your workflow:
 
 ```bash
-RUN_COMPARISONS=0 sh scripts/run/build_tfg_report_figures.sh
+uv sync --locked --extra cnn --extra real-data
+uv sync --locked --extra vlm-local
 ```
 
-Auditoría de cifras, unidades, figuras y uso de Draw.io:
+`cnn` adds PyTorch and torchvision; `real-data` adds WFDB; `vlm-local` adds the local Hugging Face backend. Each `uv sync` installs exactly the selected extras: include all extras you want to keep. GPU builds require a compatible PyTorch installation; see [development](docs/development.md).
+
+The distribution is named `ecg-vlm`; its import package is `ecg_few` and its CLI is `ecg-few`.
+
+## Quick start
+
+Generate five synthetic records and exercise the VLM pipeline with fixed mock predictions:
 
 ```bash
-uv run --no-sync python scripts/thesis/audit_final_tfg.py
+uv run ecg-few build-synthetic --config configs/smoke_dataset.toml
+uv run ecg-few vlm --config configs/smoke_vlm.toml
 ```
 
-### Compilación de la memoria
+The dataset is written to `data/synthetic/smoke/` and the provisional outputs to `outputs/work/smoke_vlm/`. The predictions test the execution pipeline; they do not measure model performance. Repeating the VLM command resumes the same run. Rebuilding an existing dataset requires `--overwrite`.
 
-Tectonic descarga automáticamente los paquetes LaTeX requeridos y compila el proyecto con un motor compatible con XeTeX:
+## Data preparation
+
+Synthetic data can be generated locally:
 
 ```bash
-cd thesis/thesis
-tectonic -X compile main.tex
+uv run ecg-few build-synthetic --config configs/simulator.toml
 ```
 
-Con una instalación completa de TeX Live también puede utilizarse XeLaTeX:
+To prepare clinical data, obtain [Brugada-HUCA 1.0.0](https://physionet.org/content/brugada-huca/1.0.0/), retain its original directory layout under `data/raw/brugada-huca/1.0.0/`, and run:
 
 ```bash
-cd thesis/thesis
-xelatex main.tex
-xelatex main.tex
+uv run --extra real-data ecg-few build-huca
 ```
 
-El resultado se genera en `thesis/thesis/main.pdf`. La plantilla usa Times New Roman cuando la fuente está instalada y recurre a TeX Gyre Termes en caso contrario.
+Clinical records, processed images, patient-level manifests, predictions, and model weights stay outside Git. See [data layout and provenance](docs/data.md).
 
-Ejecuciones principales:
+## Running experiments
 
 ```bash
-scripts/run/build_simulator_qrs_dataset.sh
-scripts/run/build_brugada_huca_dataset.sh
-scripts/run/run_cnn_simulator_qrs_loocv.sh
-scripts/run/run_cnn_loocv.sh
-scripts/run/run_cnn_clinical_loocv.sh
-scripts/run/run_all_vlm_experiments.sh
+uv run --extra cnn ecg-few cnn --config configs/cnn_morphology.toml
+uv run --extra cnn ecg-few cnn-clinical --config configs/cnn_clinical.toml
+uv run ecg-few vlm --config configs/vlm.toml --model MODEL_ID
 ```
 
-Una nueva campaña de CNN clínica se ejecuta de forma provisional con:
+Remote VLM inference requires `VLM_API_BASE` and, when the endpoint requires authentication, `VLM_API_KEY`. Set these in your shell. `.env.example` lists the supported environment variables; `.env` files are not loaded automatically. The configured endpoint receives the selected images.
+
+Use `--vlm-runtime local_gpu` with the `vlm-local` extra to run locally. Model access may require `HF_TOKEN`. Check model compatibility and GPU memory before starting a full campaign.
+
+Every command supports `--help`. Experiment and dataset commands accept a TOML `[experiment]` table through `--config`; CLI options override its values. Paths are relative to the current working directory.
+
+## Outputs and reproducibility
+
+- New experiments belong in `outputs/work/<campaign>/` and are marked provisional.
+- `run_manifest.json` records configuration, input hashes, prompt hashes, source hashes, and environment details. Resume rejects incompatible runs.
+- `outputs/final_results_tfg/` is the preserved canonical final campaign. Its archives and granular outputs remain local.
+- `reports/loocv/` is the versioned aggregate mirror. Normal experiment commands cannot write to it or to the canonical campaign.
+
+Final provenance is documented in the [canonical metadata](outputs/final_results_tfg/README.md). No command promotes provisional results automatically. See [experiment protocols](docs/experiments.md) for selection rules and limitations.
+
+## Repository structure
+
+| Path | Purpose |
+| --- | --- |
+| `src/ecg_few/datasets/` | Clinical and synthetic dataset construction |
+| `src/ecg_few/protocols/` | Patient-level folds and sample selection |
+| `src/ecg_few/cnn/` | Models, training, thresholds, and CNN pipelines |
+| `src/ecg_few/vlm/` | Context selection, messages, inference, and validation |
+| `src/ecg_few/prompts/templates/` | Packaged Markdown prompts |
+| `src/ecg_few/evaluation/` | Metrics and campaign audits |
+| `src/ecg_few/reporting/` | Aggregation, comparisons, and plots |
+| `src/ecg_few/experiment_io/` | Storage, output protection, and provenance |
+| `configs/` | Reproducible experiment presets |
+| `scripts/` | Compatibility entry points and shell wrappers |
+| `tests/unit/`, `tests/integration/` | Synthetic and offline tests |
+
+See [architecture](docs/architecture.md) for module boundaries.
+
+## Development
 
 ```bash
-scripts/run/run_cnn_clinical_loocv.sh
+uv sync --locked --extra cnn --extra real-data
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest -q
+uv build
 ```
 
-Las ejecuciones nuevas se escriben bajo `outputs/work/cnn_clinical_brugada_loocv/` y no sustituyen los resultados finales. Las figuras y tablas actuales se regeneran exclusivamente desde la fuente canónica con:
+CI checks the code, exercises CPU workflows, and installs the wheel outside the source tree. See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow.
 
-```bash
-scripts/run/build_cnn_clinical_tfg_figures.sh
-```
+## License and citation
 
-Validación del código:
-
-```bash
-uv run --no-sync pytest -q
-uv run --no-sync ruff check src scripts tests
-uv run --no-sync python -m compileall -q src scripts
-```
-
-## Limitaciones
-
-La muestra clínica procede de un único centro y sus etiquetas no equivalen a los tres rasgos del simulador. La auditoría del 25 de octubre de 2026 confirma 93 etiquetas distintas entre los metadatos públicos y locales, y 66 entre los 317 pacientes evaluados. El CSV público contiene 287 valores 0, 69 valores 1 y siete valores 2. El CSV local contiene 201 negativos y 162 positivos. Al excluir 46 positivos con `basal_pattern=1`, se reproduce exactamente la selección final 116/201, pero no se dispone de la justificación clínica de los cambios de etiqueta. Las métricas miden las etiquetas locales, no exactitud diagnóstica verificada. No se han cambiado datos ni paquetes experimentales.
-
-`thesis/AUDITORIA_PROCEDENCIA_HUCA.json` conserva recuentos y hashes, sin identificadores. La comprobación se reproduce con:
-
-```bash
-uv run --no-sync python scripts/thesis/audit_huca_provenance.py --check-public --output thesis/AUDITORIA_PROCEDENCIA_HUCA.json
-```
-
-La CNN clínica utiliza ocho pacientes de validación adicionales a los \(K\) de entrenamiento, mientras que el ICL solo usa \(K\) demostraciones. Las tres semillas repiten la evaluación sobre los mismos pacientes y su desviación estándar no representa incertidumbre poblacional.
+No open-source license has been granted; see [LICENSE](LICENSE). Dataset and model terms apply separately. Software citation metadata is provided in [CITATION.cff](CITATION.cff).

@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 from torchvision import models
 
 from ecg_few.cnn.data import PreprocessConfig, UnlabeledECGImageDataset
-from ecg_few.loocv import BrugadaImageRow
+from ecg_few.protocols.loocv import BrugadaImageRow
 
 
 class GradientReversal(torch.autograd.Function):

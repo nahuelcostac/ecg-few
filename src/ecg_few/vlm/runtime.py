@@ -99,7 +99,7 @@ class LocalGPUGenerator:
         self.device = device
         self.dtype_name = dtype
         self.attn_implementation = attn_implementation
-        self.offload_dir = offload_dir or Path("outputs/vlm_outputs/offload")
+        self.offload_dir = offload_dir or Path("outputs/work/vlm_outputs/offload")
         self.token = token or os.environ.get("HF_TOKEN", "")
         self.processor: Any | None = None
         self.model: Any | None = None
