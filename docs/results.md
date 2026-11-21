@@ -57,17 +57,18 @@ The selection fixes K at 32 instead of choosing the best K for each method. Gemm
 
 ## Published assets
 
-All PNGs below were copied byte-for-byte from canonical aggregate reports or the final figure selection. Editable procedure diagrams were copied from the corresponding local draw.io sources. Existing diagram labels retain their original language. Diagram panels are explanatory illustrations; use the CSV selections above for reported metrics.
+Except for the experimental pipeline export described below, PNGs were copied byte-for-byte from canonical aggregate reports or the final figure selection. Editable procedure diagrams originate from the corresponding local draw.io sources. Existing diagram labels retain their original language. Diagram panels are explanatory illustrations; use the CSV selections above for reported metrics.
 
 ### `docs/assets/diagrams/experimental_pipeline.png`
 
-- Source: `outputs/final_results_tfg/tfg_figures/results/fig_pipeline_experimental.drawio.png`.
-- SHA-256: `e292c5d73dc3cd3056426474bebcd641f00d593eed678c506212e2fdcd05c149`.
+- Source: `docs/assets/diagrams/experimental_pipeline.drawio`.
+- Export: draw.io Desktop 29.6.1, PNG, scale 1.4, border 0; labels read "A: Entrada" and "D: Evaluación".
+- SHA-256: `5909a0d8ab192ed99f3271e5df259ffccbfba1836a6598bcd83cda217e69f849`.
 
 ### `docs/assets/diagrams/experimental_pipeline.drawio`
 
-- Source: `thesis/thesis/assets/results/fig_pipeline_experimental.drawio`.
-- SHA-256: `39b64792b1d950f6d53b8a168e172a4f9f434a8df323906d6dc333204e2964fe`.
+- Source: `thesis/thesis/assets/results/fig_pipeline_experimental.drawio`, with only "Entrada común" and "Evaluación común" shortened to "Entrada" and "Evaluación" in this public copy.
+- SHA-256: `acf60301fde4275c6dff3dcfc0bf522b47428567d141ff0907567c3c8cfaf00d`.
 
 ### `docs/assets/diagrams/gaussian_generator.png`
 
