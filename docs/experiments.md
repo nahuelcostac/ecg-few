@@ -1,14 +1,22 @@
 # Experiments
 
-## Protocol
+## Research question and input
+
+The study asks whether in-context learning can use a small set of labelled ECG examples to guide classification while Gemma's weights remain fixed. ResNet18 supplies the supervised reference, with weights adjusted using the selected training examples. The evaluation first examines controlled morphology from the QRS/ST simulator, then real HUCA recordings, including synthetic-to-real transfer and classification with clinical examples.
+
+The input is a rendered tracing of a central beat of V1. The numerical ECG is the source from which the clinical beat is extracted; the model receives its image. A patient-level clinical reference can depend on information absent from that beat, so concordance with the reference must not be described as a complete clinical assessment.
+
+## Labelled examples and patient separation
+
+K denotes the number of labelled examples used for a fold: demonstrations for Gemma or training examples for ResNet18. Demonstrations supply the requested labels and visual references at inference time without updating Gemma's weights. In the preserved clinical comparison, the CNN additionally uses eight validation patients, four per class, for early stopping and threshold selection. These are additional to K and are separate from training and test patients. Gemma does not use this extra validation set.
 
 All leads from a patient belong to the same held-out fold. CNN and VLM workflows consume the shared fold plan. CNN training and validation sets are disjoint and exclude the held-out patient. VLM context excludes the held-out patient; the VLM does not fit or tune on a validation set. Domain adaptation excludes held-out and validation patients from the target pool.
 
-Morphological CNNs learn three findings and derive the Brugada decision through the shared rule. Clinical CNNs learn the binary clinical reference. VLM tasks support morphology or clinical prediction; the current clinical workflow uses V1.
+The simulated task defines RBBB, ST elevation, and T-wave inversion explicitly. Both morphological model branches predict these findings before applying the shared Brugada rule. Clinical branches predict the dataset's binary clinical reference. Findings can coexist in simulated and real beats; the distinction is in the available annotation and prediction target. Missing clinical finding annotations must not become negative labels.
 
 `estandar` is the retained condition identifier for standard context selection. `balanced` samples both classes. Zero-shot and control conditions are available in the VLM CLI.
 
-The CNN validation set is additional to the K training examples. VLM demonstrations use K examples. Comparisons must disclose this difference. Repeated seeds evaluate the same patients; variation across seeds is not population uncertainty.
+The clinical comparison therefore uses K plus eight labelled patients for the CNN and K for Gemma. For a new dataset, inspect the generated fold plan and its validation configuration rather than assuming that this historical setting holds. Repeated seeds evaluate the same patients; variation across seeds is not population uncertainty.
 
 ## Configuration
 
@@ -60,4 +68,8 @@ The comparison command checks fold/context alignment and rejects incompatible ru
 
 ## Limits
 
-Clinical references and synthetic morphology are different targets. The code does not establish diagnostic validity or external generalization. Verify dataset provenance, model revisions, hardware, and backend settings when comparing runs. Fixed seeds alone do not guarantee identical results across devices or software versions.
+Clinical references and synthetic morphology are different targets. Transfer experiments can reflect both visual differences and differences in label meaning; a performance difference does not isolate either mechanism. Real clinical examples may help ICL because they share the query's label definition and tracing variation, but this remains an interpretation. Adjusting all ResNet18 layers with few examples creates an overfitting risk, not a demonstrated explanation for every error.
+
+The study evaluates rendered central V1 beats. It does not establish performance on photographs or scans, a complete ECG examination, diagnostic validity, or external generalization. Verify dataset provenance, model revisions, hardware, and backend settings when comparing runs. Fixed seeds alone do not guarantee identical results across devices or software versions.
+
+Future ICL experiments can increase the number or diversity of labelled demonstrations. Updating Gemma's weights would instead require a separate fine-tuning experiment and a new evaluation protocol; it is not part of the fixed-weight results summarized here.

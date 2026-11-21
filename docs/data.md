@@ -29,7 +29,7 @@ Obtain [Brugada-HUCA 1.0.0](https://physionet.org/content/brugada-huca/1.0.0/) f
 uv run --extra real-data ecg-few build-huca
 ```
 
-The builder extracts V1 images around a central R peak. Its default filtering excludes the atypical label and borderline positive records. Review the flags before changing the cohort definition.
+The builder reads numerical ECG recordings, extracts a central beat of V1 around an R peak, and renders that tracing as an image. The model receives this image; the held-out evaluation unit remains the patient. The input does not contain the full recording, other leads, or the patient's complete clinical assessment. Its default filtering excludes the atypical label and borderline positive records. Review the flags before changing the cohort definition.
 
 The released source metadata and the labels used by the preserved final campaign differ. Rebuilding from the public source is a new provisional dataset; it does not reproduce or replace the final clinical labels. Keep provenance for any reviewed label changes.
 
@@ -44,7 +44,9 @@ The released source metadata and the labels used by the preserved final campaign
 | `labels/excluded_patients.csv` | Exclusions and reasons; local only |
 | `vlm/all_records.jsonl` | VLM input records; local only |
 
-Synthetic records contain morphological labels. Clinical records contain the clinical reference and may lack morphological annotations. Missing annotations must not be converted to negative labels.
+The QRS/ST simulator generates rendered beats with explicit morphological labels. Clinical records contain the patient-level clinical reference and may lack morphological annotations. RBBB, ST elevation, and T-wave inversion can coexist in either domain; the difference is what was annotated. Missing finding annotations must not be converted to negative labels or treated as proof that the finding is absent.
+
+The experiments use rendered tracings. Photographs or scans of ECG documents are a separate input domain whose capture conditions are not validated by these results.
 
 ## Rebuilding
 

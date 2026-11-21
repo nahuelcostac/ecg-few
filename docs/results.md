@@ -13,7 +13,7 @@ A clone contains selected presentation figures and this provenance record; it do
 
 ## README table
 
-The selection fixes K at 32 instead of choosing the best K for each method. Gemma means `google/gemma-4-E4B-it`. The displayed standard deviations are the recorded run-to-run values; three seeds repeat the same cohort and do not provide population confidence intervals. Synthetic morphology and clinical reference classification are different tasks. CNN validation examples are additional to K; VLM context contains K demonstrations.
+The selection fixes K at 32 instead of choosing the best K for each method. Gemma means `google/gemma-4-E4B-it`. The displayed standard deviations are the recorded run-to-run values; three seeds repeat the same cohort and do not provide population confidence intervals. Synthetic morphology and clinical reference classification are different tasks. The preserved clinical CNN protocol uses K training patients plus eight additional validation patients, four per class; Gemma uses K labelled demonstrations. This is a protocol setting, not a performance metric. The validation policy is recorded in the canonical clinical run configurations; the four-per-class selection is implemented in `build_fold_plan` in `src/ecg_few/protocols/loocv.py`.
 
 ### ResNet18 CNN — Synthetic morphology
 
@@ -54,6 +54,25 @@ The selection fixes K at 32 instead of choosing the best K for each method. Gemm
 - Fields: `balanced_accuracy_mean`, `balanced_accuracy_std`, `f1_mean`, `f1_std`.
 - Display: multiply by 100 and round to two decimal places.
 - Source SHA-256: `a1d2c35da7b86c40a511323f17f7f857ba0d368a2ef3a44da0728c98fa0b14fa`.
+
+## Clinical error profile and comparison conditions
+
+The clinical discussion uses the same `vlm_real_context/vlm_summary_by_model_condition_k.csv` source and `k=32, condition=balanced, model=google/gemma-4-E4B-it` selection as the main clinical table. Additional fields are `sensitivity_mean` and `specificity_mean`: after multiplication by 100 and rounding, they give **74.14% sensitivity** and **78.11% specificity**. These are cohort results; they do not establish diagnostic validity.
+
+For the no-example clinical contrast, select `k=0, condition=zero_shot, model=google/gemma-4-E4B-it` from that same CSV. Its `sensitivity_mean=0` and aggregate `tp=0` support the statement that Gemma did not identify positive cases in that evaluation. The no-example result must not be described as a K=32 run.
+
+The synthetic-to-HUCA contrast uses two additional aggregate sources:
+
+- Canonical source: `outputs/final_results_tfg/loocv/vlm/vlm_summary_by_model_condition_k.csv`; selection: `k=32, condition=balanced, model=google/gemma-4-E4B-it`; field: `balanced_accuracy_mean`; SHA-256: `e74c4792b78dce090be97624bada83a6ed0e0a14ac058976579df6320d58c403`.
+- Canonical source: `outputs/final_results_tfg/loocv/cnn/cnn_summary_by_k.csv`; selection: `k=32`; field: `balanced_accuracy_mean`; SHA-256: `f20b60b014ab0d877e5232c3e548777d6d570862cd44e6248528a9f052c8c74a`.
+
+These branches predict morphological findings from which the shared rule derives a decision, evaluated against the clinical reference on HUCA. The real-example branch directly requests the clinical label. Their comparison therefore changes the annotation target as well as the origin of examples. Sharing the query's label definition and tracing variation is a possible explanation for the clinical ICL result, not an experimentally isolated cause. Overfitting is a risk when all ResNet18 layers are adjusted using few cases; the aggregate results do not establish it as the cause of the observed errors.
+
+## Software reproduction reference
+
+Repository: [nahuelcostac/ecg-few](https://github.com/nahuelcostac/ecg-few). The refactored experiment package was verified at revision [`10f853d`](https://github.com/nahuelcostac/ecg-few/commit/10f853d40c60c2d3aeb4e52f1d38d02f63be52ae). This identifies the checked reproduction entry points, not the software revision that produced the historical archives.
+
+The portable entry points are `ecg-few build-synthetic`, `ecg-few build-huca`, `ecg-few vlm`, `ecg-few cnn`, and `ecg-few cnn-clinical`. Use the [README](../README.md#run-experiments) for installation and presets and the [experiment method](experiments.md) for patient separation and labelled-data use.
 
 ## Published assets
 

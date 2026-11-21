@@ -34,3 +34,11 @@ Never delete source ZIP files or SHA-256 records. An authorized replacement camp
 - Keep dataset contents, credentials, weights, and granular outputs outside Git. Preserve structural `.gitkeep` files.
 - Use synthetic fixtures and temporary directories for tests.
 - Run `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest -q` after code changes. Use `--no-sync` when preserving a custom local environment.
+
+## Research documentation
+
+- Apply the Nahuel TFG editorial criteria to the README and research documentation: explain the scarcity of confirmed labelled examples, introduce fixed-weight in-context learning before the supervised ResNet18 reference, and connect each result to its condition and source.
+- Preserve the official thesis title, use the term QRS/ST simulator, and describe the input as a rendered tracing of a central V1 beat. Keep numerical recordings, rendered tracings, and photographs distinct.
+- Define K in the method. State that the preserved clinical CNN comparison uses eight additional validation patients, four per class, whereas Gemma uses K labelled demonstrations without that extra validation set.
+- Separate observed results from interpretations about demonstration relevance or overfitting. Contrast clinical ICL with no-example and synthetic-example conditions while disclosing their different annotation targets.
+- Keep implementation commands intact when revising prose. Keep editorial comment mappings and thesis revision artifacts local; publish the scientific explanation and aggregate provenance only.
