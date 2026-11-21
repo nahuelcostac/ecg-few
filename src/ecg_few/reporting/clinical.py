@@ -15,7 +15,7 @@ from ecg_few.experiment_io import validate_output_path
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from ecg_few.cnn.clinical_settings import CONDITIONS
+from ecg_few.cnn.clinical.settings import CONDITIONS
 from ecg_few.experiment_io import read_csv, save_json, write_csv
 from ecg_few.reporting.plots import plot_confusion_matrix
 

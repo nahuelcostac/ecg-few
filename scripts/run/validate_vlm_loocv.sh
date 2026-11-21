@@ -32,8 +32,7 @@ if [ "$API_BASE" != "" ]; then
   ARGS="$ARGS --api-base $API_BASE"
 fi
 
-run_python \
-  "$ROOT_DIR/scripts/eval/validate_vlm_loocv.py" \
+run_ecg validate-vlm \
   --dataset-root "$DATASET_ROOT" \
   --context-dataset-root "$CONTEXT_DATASET_ROOT" \
   --k-values "$K_VALUES" \

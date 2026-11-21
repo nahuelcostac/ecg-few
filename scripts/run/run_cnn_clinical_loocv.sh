@@ -24,8 +24,7 @@ if [ "$RESUME" = "0" ]; then
   ARGS="$ARGS --no-resume"
 fi
 
-run_python \
-  "$ROOT_DIR/scripts/eval/run_cnn_clinical_loocv.py" \
+run_ecg cnn-clinical \
   --dataset-root "$DATASET_ROOT" \
   --output-root "$OUTPUT_ROOT" \
   --k-values "$K_VALUES" \

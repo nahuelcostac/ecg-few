@@ -18,8 +18,7 @@ if [ "$OVERWRITE" = "1" ]; then
   set -- --overwrite
 fi
 
-run_python \
-  "$ROOT_DIR/scripts/dataset/build_simulator_qrs_dataset.py" \
+run_ecg build-synthetic \
   --outdir "$OUTDIR" \
   --patients-per-source-family "$PATIENTS_PER_SOURCE_FAMILY" \
   --seed "$SEED" \

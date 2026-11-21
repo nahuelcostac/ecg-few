@@ -14,4 +14,4 @@ Keep reusable logic in `src/ecg_few/`; scripts should delegate to it. Import hel
 
 Update documentation and presets when changing commands or configuration. Update `uv.lock` with dependency changes. Keep generated data, model weights, and per-patient outputs outside Git.
 
-Final results and their aggregate mirror are reserved. Use `outputs/work/<campaign>/` for experiments and do not promote results without explicit authorization.
+Final results and their local aggregate mirror are reserved and outside Git. Use `outputs/work/<campaign>/` for experiments and do not promote results without explicit authorization. Public figures belong in `docs/assets/` with their provenance in `docs/results.md`. Keep thesis sources, defense deliverables, and GitHub Actions out of the tracked repository.

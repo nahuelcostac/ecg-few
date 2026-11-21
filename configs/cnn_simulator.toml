@@ -1,0 +1,8 @@
+[experiment]
+dataset_root = "data/simulator_qrs"
+output_root = "outputs/work/cnn_simulator_qrs_loocv"
+k_values = [2, 4, 8, 16, 32]
+seeds = [42, 123, 2026]
+epochs = 20
+batch_size = 32
+device = "auto"

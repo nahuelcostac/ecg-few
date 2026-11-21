@@ -50,8 +50,6 @@ packages = ["src/ecg_few"]
 [tool.hatch.build.targets.sdist]
 include = [
     "/src",
-    "/scripts/dataset",
-    "/scripts/eval",
     "/scripts/run",
     "/scripts/verify_wheel.py",
     "/configs",
@@ -69,7 +67,7 @@ include = [
     "/pyproject.toml",
     "/uv.lock",
 ]
-exclude = ["/scripts/run/*tfg*", "/scripts/run/*figures*"]
+exclude = ["/scripts/run/*tfg*"]
 
 [tool.ruff]
 line-length = 100
@@ -78,8 +76,6 @@ extend-exclude = ["scripts/thesis", "thesis", "old", "tmp", "output", "outputs"]
 include = [
     "pyproject.toml",
     "src/**/*.py",
-    "scripts/dataset/*.py",
-    "scripts/eval/*.py",
     "scripts/verify_wheel.py",
     "tests/unit/**/*.py",
     "tests/integration/**/*.py",

@@ -8,8 +8,8 @@ These instructions apply throughout the repository.
 - The base package was imported from `outputs/final_results_tfg/source/final_results_tfg.zip`. Its SHA-256 is recorded in `outputs/final_results_tfg/SOURCE.sha256`.
 - The clinical binary campaign was promoted additively from `outputs/work/cnn_clinical_brugada_loocv/`. Its archive, hash, and provenance are recorded in `source/cnn_clinical_brugada_loocv.zip`, `SOURCE_CNN_CLINICAL.sha256`, and `CNN_CLINICAL_PROMOTION.json` inside the canonical directory.
 - `outputs/final_results_tfg/loocv/` contains the final aggregate reports; `runs/` contains full run outputs; `tfg_figures/` contains the final figure selection.
-- `reports/loocv/` is only the versioned mirror of the canonical aggregate reports. If they differ, the canonical directory takes precedence and the mirror must be corrected.
-- Figures in `thesis/thesis/assets/results/`, thesis text, and README tables are derived presentation artifacts, not primary numerical sources.
+- `reports/loocv/` is a local, unversioned aggregate mirror. If used, it must agree with the canonical reports. It must not be published to Git.
+- Figures in `docs/assets/results/`, `thesis/thesis/assets/results/`, thesis text, and README tables are derived presentation artifacts, not primary numerical sources. Public figure and table provenance is documented in `docs/results.md`.
 
 Do not consult, combine, restore, or cite results from older runs, temporary folders, backups, or other output directories. Do not select a campaign by file modification time.
 
@@ -27,6 +27,7 @@ Never delete source ZIP files or SHA-256 records. An authorized replacement camp
 
 ## Software maintenance
 
+- Publish only the experiment package, configs, tests, launchers, and supporting Markdown, diagrams, and selected result images. Keep `thesis/`, `output/`, `.github/`, `scripts/thesis/`, legacy Python launchers, datasets, and full result trees local and ignored. Never delete local thesis files, source ZIPs, or hash records when changing Git tracking.
 - Keep software documentation, public messages, and new code in English.
 - Put reusable code in `src/ecg_few/`; keep script entry points small.
 - Preserve patient-level separation and existing experimental semantics during refactors.

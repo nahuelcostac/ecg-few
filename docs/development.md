@@ -17,7 +17,7 @@ For an existing environment with a custom GPU build, avoid replacing it through 
 
 - Unit tests cover configuration, protocol selection, response handling, and storage protection.
 - Integration tests build small datasets and exercise CNN/VLM workflows in CPU mode.
-- CI checks formatting and lint, runs tests, builds the distribution, and runs the installed wheel from an unrelated directory.
+- Run formatting, lint, tests, and package checks locally. This repository does not distribute GitHub Actions or Dependabot configuration.
 
 ```bash
 uv run pytest -q -m 'not integration'
@@ -31,4 +31,6 @@ Test the installed package without adding the repository or `src/` to `PYTHONPAT
 
 Update `pyproject.toml` and `uv.lock` together. Keep backend-specific dependencies in their extras. Do not change dependency versions while comparing experimental runs.
 
-The package follows [PyPA's src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/), [pytest's integration practices](https://docs.pytest.org/en/stable/explanation/goodpractices.html), and [uv's GitHub Actions workflow](https://docs.astral.sh/uv/guides/integration/github/).
+The package follows [PyPA's src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/) and [pytest's integration practices](https://docs.pytest.org/en/stable/explanation/goodpractices.html).
+
+POSIX launchers in `scripts/run/` use the same installed CLI. On Windows, use the CLI directly or run the shell wrappers in a POSIX shell. Thesis-specific scripts and older Python forwarding entry points are local and are not part of the distributed code.

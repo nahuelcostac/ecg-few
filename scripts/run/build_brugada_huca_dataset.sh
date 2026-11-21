@@ -20,8 +20,7 @@ if [ "$OVERWRITE" = "1" ]; then
   set -- --overwrite
 fi
 
-run_python \
-  "$ROOT_DIR/scripts/dataset/build_brugada_huca_dataset.py" \
+run_ecg build-huca \
   --raw-root "$RAW_ROOT" \
   --outdir "$OUTDIR" \
   --k-values "$K_VALUES" \

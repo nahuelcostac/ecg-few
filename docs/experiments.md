@@ -30,7 +30,33 @@ A mock VLM run is identified by `dry_run_predictions` in its configuration. Its 
 
 ## Final results
 
-`outputs/final_results_tfg/` remains the sole canonical campaign. `reports/loocv/` is its versioned aggregate mirror. Their content and source archives are preserved. Experiment, comparison, and audit commands write provisional outputs under `outputs/work/`; they do not promote or synchronize results.
+`outputs/final_results_tfg/` remains the sole canonical campaign. It and the aggregate mirror `reports/loocv/` stay local and outside Git. Their content and source archives are preserved. Selected public images live in `docs/assets/results/`; [results provenance](results.md) traces README values to exact canonical CSVs. Experiment, comparison, and audit commands write provisional outputs under `outputs/work/`; they do not promote or synchronize results.
+
+## Campaign recipes
+
+The README lists the primary presets. These additional commands use the same package implementation as the shell launchers in `scripts/run/`. Run from the repository root after installing the relevant extras. Each output destination below is provisional.
+
+For CORAL adaptation from synthetic training data to the HUCA target domain:
+
+```bash
+uv run --no-sync ecg-few cnn --config configs/cnn_morphology.toml --domain-adaptation coral --k-values 16,32 --output-root outputs/work/cnn_coral_trial
+```
+
+Use `--domain-adaptation mmd` or `--domain-adaptation dann` for the other adaptation losses. For the SSL pretraining control, keep `--domain-adaptation none` and set `--ssl-pretrain-epochs 3`. Held-out and validation patients remain excluded from the target adaptation pool.
+
+Validate a VLM setup before inference:
+
+```bash
+uv run --no-sync ecg-few validate-vlm --dataset-root data/simulator_qrs --context-dataset-root data/simulator_qrs --task morphology --models MODEL_ID --conditions zero_shot,estandar,balanced --output outputs/work/preflight/simulator.json
+```
+
+Compare completed morphology campaigns using the same K values, seeds, and fold/context selections:
+
+```bash
+uv run --no-sync ecg-few compare --cnn-summary outputs/work/cnn_simulator_qrs_loocv/reports/cnn_summary_by_seed.csv --vlm-summary outputs/work/vlm_simulator_qrs_loocv/reports/vlm_summary_by_seed.csv --vlm-condition balanced --vlm-model MODEL_ID --output-dir outputs/work/simulator_comparison/reports
+```
+
+The comparison command checks fold/context alignment and rejects incompatible runs. The selected VLM context condition must match the CNN support selections. Clinical and morphological targets must be reported separately. Use `ecg-few audit --help` and `ecg-few audit-clinical --help` to select provisional campaign inputs for their respective audits.
 
 ## Limits
 

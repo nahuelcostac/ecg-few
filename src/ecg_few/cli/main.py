@@ -9,8 +9,8 @@ from importlib import import_module
 COMMANDS = {
     "build-synthetic": ("ecg_few.datasets.synthetic", "Generate a synthetic ECG dataset."),
     "build-huca": ("ecg_few.datasets.huca", "Prepare locally available HUCA records."),
-    "cnn": ("ecg_few.cnn.pipeline", "Run morphological CNN evaluation."),
-    "cnn-clinical": ("ecg_few.cnn.clinical_pipeline", "Run clinical CNN evaluation."),
+    "cnn": ("ecg_few.cnn.morphology.pipeline", "Run morphological CNN evaluation."),
+    "cnn-clinical": ("ecg_few.cnn.clinical.pipeline", "Run clinical CNN evaluation."),
     "vlm": ("ecg_few.vlm.pipeline", "Run VLM evaluation."),
     "validate-vlm": ("ecg_few.vlm.validation", "Validate a VLM setup without inference."),
     "compare": ("ecg_few.reporting.comparison", "Compare aligned CNN and VLM predictions."),

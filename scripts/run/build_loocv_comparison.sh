@@ -11,8 +11,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$ROOT_DIR/outputs/work/comparison/reports}"
 
 . "$ROOT_DIR/scripts/run/_common.sh"
 
-run_python \
-  "$ROOT_DIR/scripts/eval/compare_loocv_reports.py" \
+run_ecg compare \
   --cnn-summary "$CNN_SUMMARY" \
   --vlm-summary "$VLM_SUMMARY" \
   --vlm-condition "$VLM_CONDITION" \

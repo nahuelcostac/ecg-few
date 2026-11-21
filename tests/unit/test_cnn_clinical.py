@@ -5,7 +5,7 @@ import pytest
 pytest.importorskip("torch")
 pytest.importorskip("torchvision")
 
-from ecg_few.cnn.clinical_pipeline import (
+from ecg_few.cnn.clinical.pipeline import (
     aggregate_by_k,
     assert_no_leakage,
     build_binary_model,

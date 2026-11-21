@@ -157,7 +157,7 @@ run_comparison \
 
 run_comparison \
   "Compare CNN vs VLM on HUCA clinical" \
-  "$ROOT_DIR/outputs/work/cnn_loocv/reports/cnn_summary_by_seed.csv" \
+  "$ROOT_DIR/outputs/work/cnn_clinical_brugada_loocv/reports/$COMPARE_VLM_CONDITION/cnn_clinical_summary_by_seed.csv" \
   "$ROOT_DIR/outputs/work/vlm_real_context_loocv/reports/vlm_summary_by_seed.csv" \
   "$ROOT_DIR/outputs/work/comparison_vlm_real_context/reports"
 

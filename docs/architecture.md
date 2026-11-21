@@ -16,11 +16,28 @@ The installable package lives in `src/ecg_few/`. Command-line dispatch is lazy s
 
 Dataset builders and experiment pipelines coordinate these modules. Models and protocol functions do not parse CLI arguments. Shared storage belongs in `experiment_io`; new code should import from its defining module rather than another pipeline.
 
-## Compatibility
+The CNN package separates the two prediction targets:
 
-Existing Python script paths delegate to package modules. `ecg_few.loocv` forwards to `ecg_few.protocols.loocv`, and historical pipeline helper imports remain available through compatibility exports. New code should use the package API directly.
+| Path | Responsibility |
+| --- | --- |
+| `cnn/clinical/` | Binary clinical-reference training, folds, thresholds, and Grad-CAM |
+| `cnn/morphology/` | Morphological models, folds, training, thresholds, Grad-CAM, and adaptation |
+| `cnn/data.py` | Shared image loading and preprocessing |
+| `cnn/device.py` | Shared device selection and random seeds |
+
+The CLI commands remain `cnn` and `cnn-clinical`. Python callers should import `ecg_few.cnn.morphology.pipeline` and `ecg_few.cnn.clinical.pipeline` respectively; earlier flat CNN module paths are no longer distributed.
+
+## Entry points and local files
+
+`ecg-few` and `python -m ecg_few` dispatch to the same package modules. Shell launchers in `scripts/run/` pass arguments to this CLI. Dataset and evaluation logic have a single implementation in the package; the old `scripts/dataset/` and `scripts/eval/` Python forwarding files are no longer distributed. Replace calls to those paths with the corresponding CLI command listed in the README.
+
+`ecg_few.loocv` forwards to `ecg_few.protocols.loocv`, and historical pipeline helper imports remain available through compatibility exports. New code should use the package API directly.
 
 Shell wrappers remain available for existing automation. The CLI is the portable entry point on Windows, Linux, and macOS.
+
+Git contains the package, presets, launchers, tests, software documentation, and selected images. `docs/assets/diagrams/` holds editable draw.io sources and PNG exports; `docs/assets/results/` holds selected aggregate figures. `docs/results.md` records canonical numerical sources and image hashes.
+
+The thesis and defense (`thesis/`, `output/`), publication tooling (`scripts/thesis/` and thesis shell launchers), GitHub configuration (`.github/`), and full result trees are ignored local material. Removing them from Git tracking does not remove local copies. New experiments write to `outputs/work/`; preserved final archives remain local under `outputs/final_results_tfg/`.
 
 ## Resources
 

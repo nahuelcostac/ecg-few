@@ -41,8 +41,7 @@ if [ "$DRY_RUN_PREDICTIONS" != "none" ]; then
   ARGS="$ARGS --dry-run-predictions $DRY_RUN_PREDICTIONS"
 fi
 
-run_python \
-  "$ROOT_DIR/scripts/eval/run_vlm_loocv.py" \
+run_ecg vlm \
   --dataset-root "$DATASET_ROOT" \
   --context-dataset-root "$CONTEXT_DATASET_ROOT" \
   --output-root "$OUTPUT_ROOT" \

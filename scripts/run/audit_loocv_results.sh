@@ -14,8 +14,7 @@ SEEDS="${SEEDS:-42,123,2026}"
 
 . "$ROOT_DIR/scripts/run/_common.sh"
 
-run_python \
-  "$ROOT_DIR/scripts/eval/audit_loocv_results.py" \
+run_ecg audit \
   --raw-root "$RAW_ROOT" \
   --dataset-root "$DATASET_ROOT" \
   --cnn-report-dir "$CNN_REPORT_DIR" \

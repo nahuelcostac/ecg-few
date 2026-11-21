@@ -23,30 +23,27 @@ data/**
 !data/**/.gitkeep
 !data/README.md
 reports/**
-!reports/
-!reports/.gitkeep
-!reports/loocv/
-!reports/loocv/**
 notebooks/
 outputs/**
 !outputs/
-!outputs/final_results_tfg/
-!outputs/final_results_tfg/README.md
-!outputs/final_results_tfg/SOURCE.sha256
-!outputs/final_results_tfg/SOURCE_CNN_CLINICAL.sha256
-!outputs/final_results_tfg/CNN_CLINICAL_PROMOTION.json
 !outputs/work/
 !outputs/work/.gitkeep
 tmp/
 old/
 
-# Local LaTeX build output; the delivery PDF lives under output/pdf/.
-thesis/thesis/main.pdf
-
-# Generated review renders; keep only the final deliverable.
+# Thesis sources, defense deliverables, and local publication tooling
+thesis/
 output/**
-!output/pdf/
-!output/pdf/TFG_Alejandro_Moris_Lara_FINAL.pdf
+.github/
+scripts/thesis/
+scripts/dataset/
+scripts/eval/
+scripts/run/*tfg*.sh
+
+# Local review and browser artifacts
+.playwright-mcp/
+humanizer-context.md
+tests/test_huca_provenance.py
 
 # Local task-board/tooling files for this workspace
 .obsidian/

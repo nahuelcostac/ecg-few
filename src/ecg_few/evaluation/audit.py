@@ -7,11 +7,13 @@ import argparse
 import csv
 import json
 from collections import Counter
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any
 
 from ecg_few.configuration import parse_config_args
 from ecg_few.experiment_io import validate_output_path
+from ecg_few.prompts import load_markdown_prompt
 from ecg_few.protocols.loocv import (
     DEFAULT_K_VALUES,
     DEFAULT_SEEDS,
@@ -575,17 +577,21 @@ def audit_vlm_readiness(dataset_root: Path) -> dict[str, Any]:
     for path in (
         dataset_root / "labels" / "all_labels.csv",
         dataset_root / "labels" / "loocv_folds.jsonl",
-        Path("scripts/eval/run_vlm_loocv.py"),
-        Path("scripts/eval/validate_vlm_loocv.py"),
-        Path("scripts/eval/compare_loocv_reports.py"),
-        Path("scripts/run/run_vlm_loocv.sh"),
-        Path("scripts/run/validate_vlm_loocv.sh"),
-        Path("scripts/run/build_loocv_comparison.sh"),
-        Path("prompts/system/qrs_huca.md"),
-        Path("prompts/qrs/right_precordial_morphology.md"),
     ):
         if not path.exists():
             errors.append(f"Missing VLM readiness file: {path}")
+    for module in (
+        "ecg_few.vlm.pipeline",
+        "ecg_few.vlm.validation",
+        "ecg_few.reporting.comparison",
+    ):
+        if find_spec(module) is None:
+            errors.append(f"Missing VLM readiness module: {module}")
+    for prompt in ("system/qrs_huca.md", "qrs/right_precordial_morphology.md"):
+        try:
+            load_markdown_prompt(f"package:{prompt}")
+        except (OSError, ValueError) as exc:
+            errors.append(f"Missing VLM readiness prompt {prompt}: {exc}")
     return {"complete": not errors, "errors": errors}
 
 

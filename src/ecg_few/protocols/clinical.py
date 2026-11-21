@@ -6,7 +6,7 @@ import random
 from collections.abc import Sequence
 from typing import Any
 
-from ecg_few.cnn.clinical_settings import BASE_SEED_OFFSET, CONDITIONS
+from ecg_few.cnn.clinical.settings import BASE_SEED_OFFSET, CONDITIONS
 from ecg_few.protocols.loocv import (
     BrugadaImageRow,
     PatientRecord,

@@ -221,7 +221,7 @@ def test_compare_alignment_rejects_mismatched_context(tmp_path: Path) -> None:
 def test_cnn_and_vlm_smoke_share_loocv_outputs(tmp_path: Path) -> None:
     pytest.importorskip("torch")
     pytest.importorskip("torchvision")
-    from ecg_few.cnn.pipeline import run_with_args as run_cnn
+    from ecg_few.cnn.morphology.pipeline import run_with_args as run_cnn
     from ecg_few.vlm.pipeline import run_with_args as run_vlm
 
     dataset_root = _write_mini_dataset(tmp_path)
@@ -429,7 +429,7 @@ def test_vlm_clinical_real_context_uses_balanced_huca_examples(tmp_path: Path) -
 def test_cnn_ssl_pretraining_smoke(tmp_path: Path) -> None:
     pytest.importorskip("torch")
     pytest.importorskip("torchvision")
-    from ecg_few.cnn.pipeline import run_with_args as run_cnn
+    from ecg_few.cnn.morphology.pipeline import run_with_args as run_cnn
 
     dataset_root = _write_mini_dataset(tmp_path)
     report_dir = tmp_path / "reports" / "cnn_ssl"
@@ -464,8 +464,8 @@ def test_cnn_domain_adaptation_epoch_variants_train() -> None:
     from torch import nn
     from torch.utils.data import DataLoader, TensorDataset
 
-    from ecg_few.cnn.domain_adaptation import DomainClassifier
-    from ecg_few.cnn.pipeline import build_model, run_domain_train_epoch
+    from ecg_few.cnn.morphology.domain_adaptation import DomainClassifier
+    from ecg_few.cnn.morphology.pipeline import build_model, run_domain_train_epoch
 
     source_images = torch.rand(4, 3, 32, 32)
     source_labels = torch.tensor(
