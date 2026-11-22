@@ -76,18 +76,19 @@ The portable entry points are `ecg-few build-synthetic`, `ecg-few build-huca`, `
 
 ## Published assets
 
-Except for the experimental pipeline export described below, PNGs were copied byte-for-byte from canonical aggregate reports or the final figure selection. Editable procedure diagrams originate from the corresponding local draw.io sources. Existing diagram labels retain their original language. Diagram panels are explanatory illustrations; use the CSV selections above for reported metrics.
+Except for the experimental pipeline, CNN, and VLM diagram exports described below, PNGs were copied byte-for-byte from canonical aggregate reports or the final figure selection. Editable procedure diagrams originate from the corresponding local draw.io sources. Green boxes in the public experimental, CNN, and VLM diagrams use the reviewed PDF palette: fill `#D9EAD3` and border `#93C47D`. Existing diagram labels retain their original language. Diagram panels are explanatory illustrations; use the CSV selections above for reported metrics.
 
 ### `docs/assets/diagrams/experimental_pipeline.png`
 
 - Source: `docs/assets/diagrams/experimental_pipeline.drawio`.
-- Export: draw.io Desktop 29.6.1, PNG, scale 1.4, border 0; labels read "A: Entrada" and "D: Evaluación".
-- SHA-256: `5909a0d8ab192ed99f3271e5df259ffccbfba1836a6598bcd83cda217e69f849`.
+- Export: draw.io Desktop 29.6.1, PNG, scale 1.4, border 0; all green box fills use `#D9EAD3` with `#93C47D` borders, including embedded CNN and VLM vector panels.
+- SHA-256: `0e0ed2d20ad0e9cf595c8862b976303ab1e58f568d13af5f5217a0028479d3e3`.
 
 ### `docs/assets/diagrams/experimental_pipeline.drawio`
 
-- Source: `thesis/thesis/assets/results/fig_pipeline_experimental.drawio`, with only "Entrada común" and "Evaluación común" shortened to "Entrada" and "Evaluación" in this public copy.
-- SHA-256: `acf60301fde4275c6dff3dcfc0bf522b47428567d141ff0907567c3c8cfaf00d`.
+- Original source: `thesis/thesis/assets/results/fig_pipeline_experimental.drawio`; public palette aligned with the reviewed PDF and its sources in `thesis/revision_nahuel/memoria/assets/results/`.
+- Public edits: headings shortened to "A: Entrada" and "D: Evaluación"; green fills and borders normalized inside the embedded vector panels.
+- SHA-256: `36221ae52ca886ea8048c8e46dcf8dada339d18d39dd5115fc44ee23166702ea`.
 
 ### `docs/assets/diagrams/gaussian_generator.png`
 
@@ -101,23 +102,27 @@ Except for the experimental pipeline export described below, PNGs were copied by
 
 ### `docs/assets/diagrams/cnn_pipeline.png`
 
-- Source: `outputs/final_results_tfg/tfg_figures/results/cnn_convolutional_pipeline.drawio.png`.
-- SHA-256: `ea1fb639aed53a5427b6dc739aace03a418f1794553c67de2ba58a6237304865`.
+- Source: `docs/assets/diagrams/cnn_pipeline.drawio`.
+- Export: draw.io Desktop 29.6.1, PNG, scale 1.4, border 0; all green box fills use `#D9EAD3` with `#93C47D` borders, including embedded CNN and VLM vector panels.
+- SHA-256: `2184243c1a1c1b8669bcdc72ea7e89b10281b510b7107fb7a23f82e6795eaa14`.
 
 ### `docs/assets/diagrams/cnn_pipeline.drawio`
 
-- Source: `thesis/thesis/assets/results/cnn_convolutional_pipeline.drawio`.
-- SHA-256: `98324735e59202cfe7664af881c1fde7f344ca7475d7fe1a7bc89efb25d2afdb`.
+- Original source: `thesis/thesis/assets/results/cnn_convolutional_pipeline.drawio`; public palette aligned with the reviewed PDF and its sources in `thesis/revision_nahuel/memoria/assets/results/`.
+- Public edits: the test-sample box fill and border normalized to the common light-green palette; text, geometry, and signal content preserved.
+- SHA-256: `ed3f62731009f68985eeaab6818d3390a7e03aa4fe13230c280ccd14cb159157`.
 
 ### `docs/assets/diagrams/vlm_context.png`
 
-- Source: `outputs/final_results_tfg/tfg_figures/results/vlm_icl_context_window.drawio.png`.
-- SHA-256: `830abd8b99fec00e509b15be71ec76d1270b1edff843120555aa9e2ee77a3dcc`.
+- Source: `docs/assets/diagrams/vlm_context.drawio`.
+- Export: draw.io Desktop 29.6.1, PNG, scale 1.4, border 0; all green box fills use `#D9EAD3` with `#93C47D` borders, including embedded CNN and VLM vector panels.
+- SHA-256: `20a43ee46fef61bfa80881b417d454dfb0b31f9f1dd329b52cd2642a667c4624`.
 
 ### `docs/assets/diagrams/vlm_context.drawio`
 
-- Source: `thesis/thesis/assets/results/vlm_icl_context_window.drawio`.
-- SHA-256: `ff5de65e5863179305bfb7b04831cc51d41566a8dffca33e9397c5e9e78968a2`.
+- Original source: `thesis/thesis/assets/results/vlm_icl_context_window.drawio`; public palette aligned with the reviewed PDF and its sources in `thesis/revision_nahuel/memoria/assets/results/`.
+- Public edits: the test-sample box fill and border normalized to the common light-green palette; text, geometry, and signal content preserved.
+- SHA-256: `962986524a2753bdad026c93eb223c335f7768896200e21c66ba60b2af191dfe`.
 
 ### `docs/assets/results/clinical_comparison.png`
 
