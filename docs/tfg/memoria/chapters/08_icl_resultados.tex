@@ -1,0 +1,26 @@
+\subsection{Gemma con aprendizaje en contexto}
+\label{chap:vlm}
+
+\subsubsection{Modelo y servicio}
+
+Para los experimentos se utiliza Gemma~4 E4B, un modelo de visión y lenguaje de pesos abiertos desarrollado por Google. La variante \texttt{google/gemma-4-E4B-it} admite entradas de imagen y texto y está adaptada para seguir instrucciones \cite{gemma4card}. Durante la evaluación, los pesos del modelo permanecen fijos y se modifica el número y la procedencia de los ejemplos etiquetados incluidos en cada consulta.
+
+La inferencia se ejecuta mediante vLLM~\cite{kwon2023vllm} en un clúster privado equipado con dos unidades de procesamiento gráfico (GPU) NVIDIA A100 y 96~GB de memoria de vídeo (VRAM). La temperatura se fija en cero para reducir la variabilidad de las respuestas. Los parámetros de inferencia se recogen en la Tabla~\ref{tab:config_vlm_appendix}.
+
+\subsubsection{Prompt y respuesta}
+
+Cada consulta comienza con una instrucción de sistema que define la tarea de clasificación y el formato de respuesta esperado. A continuación, se incorporan las demostraciones mediante pares de turnos. En cada uno, el mensaje del usuario contiene una imagen de ECG de la derivación V1 y el del asistente proporciona su etiqueta conocida en formato JSON. Finalmente, se añade la imagen que debe clasificarse, cuya etiqueta se mantiene oculta durante la inferencia y se utiliza posteriormente para evaluar la predicción.
+
+La Figura~\ref{fig:icl_context_window} ilustra este procedimiento para la clasificación de los tres rasgos morfológicos del simulador. La selección de demostraciones sigue las condiciones estándar y balanceada descritas en la sección~\ref{sec:condiciones_vlm}.
+
+\begin{figure}[H]
+  \centering
+  % Fuente editable: assets/results/vlm_icl_context_window.drawio.
+  \safeincludegraphics[width=\textwidth]{results/vlm_icl_context_window.pdf}
+  \caption{Estructura de una consulta de aprendizaje en contexto con demostraciones etiquetadas y una imagen de prueba para la clasificación de los tres rasgos morfológicos del simulador.}
+  \label{fig:icl_context_window}
+\end{figure}
+
+El contenido de la respuesta depende de la tarea evaluada. En el simulador, Gemma~4 debe identificar por separado la presencia de RBBB, elevación del segmento ST e inversión de la onda T. A partir de estas tres etiquetas se obtiene también una clasificación binaria, considerando positivo un caso cuando presenta los tres rasgos simultáneamente. En los experimentos con registros del HUCA, el modelo genera directamente una etiqueta positiva o negativa correspondiente a la clasificación clínica de Brugada.
+
+El apéndice~\ref{app:prompts} recoge las instrucciones y los formatos de salida empleados en cada experimento.

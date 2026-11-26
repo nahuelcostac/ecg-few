@@ -1,0 +1,15 @@
+\section{Implementación de los modelos}
+\label{chap:modelos}
+
+Los experimentos comparan dos enfoques de clasificación que utilizan imágenes de un latido de V1, pero aprovechan los ejemplos etiquetados de manera diferente. ResNet18 utiliza estos ejemplos durante el entrenamiento supervisado para ajustar sus pesos, mientras que Gemma~4 los incorpora como demostraciones en la consulta mediante aprendizaje en contexto, manteniendo sus parámetros fijos. La Figura~\ref{fig:diseno_experimental_resumen} representa ambos procedimientos y el apéndice~\ref{app:configuracion} recoge los detalles de su configuración.
+
+\begin{figure}[H]
+  \centering
+  % Fuente editable: assets/results/fig_pipeline_experimental.drawio.
+  \safeincludegraphics[width=0.96\textwidth]{results/fig_pipeline_experimental.pdf}
+  \caption{Comparación de los procedimientos de clasificación utilizados. ResNet18 ajusta sus parámetros mediante entrenamiento supervisado, mientras que Gemma~4 utiliza demostraciones etiquetadas durante la inferencia sin modificar sus pesos.}
+  \label{fig:diseno_experimental_resumen}
+\end{figure}
+
+\input{chapters/08_icl_resultados}
+\input{chapters/07_cnn_resultados}

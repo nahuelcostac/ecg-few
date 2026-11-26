@@ -1,0 +1,110 @@
+\section{Datos y diseño de la evaluación}
+\label{chap:diseno}
+
+\subsection{Datos y tareas}
+\label{sec:datos_tareas}
+
+La evaluación utiliza dos conjuntos de datos con características y criterios de etiquetado diferentes, recogidos en la Tabla~\ref{tab:datasets_finales}. El simulador QRS/ST proporciona 100 latidos sintéticos con etiquetas que indican la presencia de tres rasgos morfológicos. Para la clasificación binaria, se considera positivo un caso cuando presenta simultáneamente RBBB, elevación del segmento ST e inversión de la onda T. Por su parte, los registros del HUCA utilizan una etiqueta clínica que indica la presencia o ausencia de síndrome de Brugada, sin identificar individualmente los rasgos del trazado. Aunque estas alteraciones pueden identificarse visualmente, su clasificación a partir de un único latido no equivale al diagnóstico de la enfermedad, que requiere una evaluación clínica más amplia.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{p{3cm}rrrr>{\raggedright\arraybackslash}X}
+    \toprule
+    Conjunto & Casos & Imágenes & Positivos & Negativos & Etiqueta \\
+    \midrule
+    Simulador QRS/ST & 100 & 100 & 20 & 80 & Presencia de los tres rasgos \\
+    Datos HUCA & 317 & 317 & 116 & 201 & Etiqueta clínica \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Conjuntos de datos utilizados en la evaluación. Cada caso aporta una imagen correspondiente a un latido de V1.}
+  \label{tab:datasets_finales}
+  \label{tab:huca_datos_finales}
+\end{table}
+
+Los registros clínicos proceden del conjunto Brugada-HUCA \cite{costacortez2026brugada}, compuesto inicialmente por 363 pacientes. Siguiendo las recomendaciones de los médicos colaboradores, se excluyeron 46 de los 363 casos iniciales cuya clasificación clínica no estaba suficientemente definida en el momento de realizar el estudio. La muestra final quedó formada por 317 pacientes. De cada registro se seleccionó la derivación V1 y se extrajo un latido de la zona central, utilizando una ventana comprendida entre 300~ms antes y 600~ms después del pico R. Los detalles del procesamiento se recogen en el apéndice~\ref{app:configuracion}.
+
+La Figura~\ref{fig:synthetic_real_comparison} muestra un ejemplo de cada conjunto para ilustrar las diferencias en la morfología y la presentación de los trazados. Las imágenes se han seleccionado de manera independiente y no corresponden a casos equivalentes, por lo que su comparación tiene únicamente una finalidad visual.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.92\textwidth]{results/fig_synthetic_real_comparison.pdf}
+  \caption{Ejemplos de latidos del simulador y del HUCA en la derivación V1, seleccionados de forma independiente para ilustrar las diferencias entre ambos conjuntos.}
+  \label{fig:synthetic_real_comparison}
+\end{figure}
+
+\subsubsection{Características de la muestra del HUCA}
+\label{sec:procedencia_huca}
+
+La muestra clínica contiene 116 pacientes etiquetados como positivos y 201 como negativos. Esta distribución presenta un desequilibrio entre clases que debe tenerse en cuenta durante la evaluación. Un clasificador que predijera siempre la clase mayoritaria alcanzaría una exactitud del 63,4~\%, pero no identificaría ningún caso positivo. Por ello, resulta necesario utilizar métricas que permitan valorar el rendimiento en ambas clases.
+
+Aunque el procesamiento permite obtener imágenes de las derivaciones V1, V2 y V3, la evaluación se limita a V1, utilizando un único latido por paciente. Esta elección se fundamenta en la relevancia de las derivaciones precordiales derechas para la identificación de patrones asociados al síndrome de Brugada, especialmente las alteraciones del segmento ST y de la onda T \cite{zeppenfeld2022}. No obstante, el análisis de una sola derivación limita la información disponible respecto a una evaluación clínica completa.
+
+\input{chapters/06_modelos}
+
+\section{Protocolo de evaluación}
+
+\subsection{Escenarios de comparación}
+\label{sec:escenarios}
+
+La evaluación comprende tres escenarios que permiten estudiar el rendimiento de los modelos con datos sintéticos y clínicos, así como su capacidad de transferencia entre ambos conjuntos.
+
+\begin{enumerate}
+  \item \textbf{Aprendizaje con el simulador.} Gemma~4 recibe demostraciones etiquetadas con los tres rasgos morfológicos y clasifica nuevos casos sintéticos. ResNet18 utiliza esas etiquetas para su entrenamiento supervisado.
+  \item \textbf{Transferencia del simulador al HUCA.} Gemma~4 recibe demostraciones del simulador y clasifica ECG clínicos. ResNet18 se entrena con datos sintéticos y se evalúa sobre registros del HUCA.
+  \item \textbf{Aprendizaje con pacientes del HUCA.} Gemma~4 utiliza demostraciones con etiquetas clínicas del hospital, mientras que ResNet18 se entrena directamente con esas mismas etiquetas.
+\end{enumerate}
+
+\subsection{Selección de ejemplos y validación}
+\label{sec:validacion_comun}
+
+Se utiliza validación cruzada dejando un paciente fuera (LOOCV). En cada pliegue se reserva un paciente para prueba y se seleccionan los ejemplos entre los restantes, evitando que aparezca en el entrenamiento, la validación o las demostraciones de Gemma~4.
+
+Se denomina \(K\) al número de demostraciones que recibe Gemma~4 o al número de casos de entrenamiento de ResNet18. Se evalúan \(K=\{2,4,8,16,32\}\) demostraciones para Gemma~4 y el mismo número de pacientes de entrenamiento para ResNet18. Cada configuración se repite con las semillas 42, 123 y 2026, que controlan la selección aleatoria de ejemplos y, en la CNN, la aleatoriedad del entrenamiento. Ambos modelos se evalúan sobre los mismos pacientes y seleccionan sus ejemplos del mismo conjunto disponible.
+
+Las variantes de adaptación de dominio también utilizan imágenes clínicas sin etiquetar, incluidas aquellas que posteriormente se evalúan. Este procedimiento transductivo se describe en la sección~\ref{sec:adaptacion_cnn} y en la Tabla~\ref{tab:config_domain_appendix}.
+
+En los experimentos con el HUCA, ResNet18 reserva además ocho pacientes etiquetados, cuatro por clase, para seleccionar el umbral y aplicar \textit{early stopping}. Estos pacientes son distintos de los utilizados para entrenamiento y prueba. Gemma~4 no requiere este conjunto adicional de validación.
+
+\clearpage
+\subsubsection{Secuencia de un pliegue clínico}
+
+Para cada paciente reservado, Gemma~4 construye una consulta con las instrucciones, las demostraciones etiquetadas y la imagen de prueba. La etiqueta de este último caso permanece oculta hasta la evaluación.
+
+ResNet18, por su parte, se inicializa con los pesos preentrenados y se ajusta utilizando los pacientes de entrenamiento del pliegue. Los casos de validación permiten seleccionar la época y el umbral antes de clasificar al paciente reservado. La Figura~\ref{fig:clinical_fold_protocol} resume ambos procedimientos.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=\textwidth]{results/clinical_fold_protocol.pdf}
+  \caption{Procedimiento de evaluación de un pliegue con los datos clínicos del HUCA.}
+  \label{fig:clinical_fold_protocol}
+\end{figure}
+
+La CNN utiliza \(K+8\) pacientes etiquetados por pliegue, frente a los \(K\) empleados como demostraciones por Gemma~4. Esta diferencia corresponde a los ocho pacientes adicionales de validación, cuyos datos no intervienen en la actualización de pesos. Considerando las selecciones estándar y balanceadas, los cinco valores de \(K\) y las tres semillas, la evaluación clínica de ResNet18 comprende 30 ejecuciones de 317 pliegues cada una.
+
+\subsubsection{Distribución de los ejemplos por clase}
+\label{sec:condiciones_vlm}
+\label{sec:origen_contexto_vlm}
+
+La proporción de ejemplos positivos y negativos puede influir en el rendimiento cuando se dispone de pocos casos. Para estudiar este efecto se comparan dos estrategias de selección. La \textbf{estándar} garantiza al menos un positivo y un negativo para \(K\geq2\) y completa el grupo de forma seudoaleatoria. La \textbf{balanceada} selecciona el mismo número de ejemplos de cada clase y, si no hay suficientes de alguna, completa el grupo con casos de la otra.
+
+\begin{samepage}
+Ambas estrategias se aplican a las demostraciones de Gemma~4 y al entrenamiento de ResNet18 con el HUCA. En la CNN, la selección estándar conserva los pacientes definidos en el plan de pliegues, mientras que la balanceada mantiene los ocho pacientes de validación y selecciona nuevamente los de entrenamiento. Gemma~4 elige sus demostraciones entre los pacientes disponibles, aplicando la distribución correspondiente.
+\par
+\end{samepage}
+
+También se evalúa Gemma~4 en condiciones \emph{zero-shot} (\(K=0\)), utilizando únicamente las instrucciones y la imagen de prueba, sin demostraciones. Esta configuración permite comparar el rendimiento sin ejemplos con el obtenido mediante las selecciones estándar y balanceada. Para \(K>0\), la procedencia de los ejemplos depende del escenario experimental.
+
+\subsection{Métricas y agregación}
+\label{sec:metricas}
+
+La exactitud balanceada (BA) se utiliza como métrica principal, ya que asigna el mismo peso a la sensibilidad y la especificidad, independientemente de la proporción de cada clase. Se calcula mediante la expresión
+\[
+  \mathrm{BA}=\frac{1}{2}\left(\frac{TP}{TP+FN}+\frac{TN}{TN+FP}\right).
+\]
+
+La sensibilidad mide la proporción de positivos correctamente identificados y la especificidad, la de negativos. Los verdaderos positivos (TP) y verdaderos negativos (TN) representan los aciertos, mientras que los falsos negativos (FN) y falsos positivos (FP) corresponden a los errores de clasificación.
+
+La métrica F1 combina precisión y sensibilidad mediante su media armónica. Para las predicciones probabilísticas se calcula también el área bajo la curva ROC (ROC-AUC), que mide la capacidad de discriminación entre clases al variar el umbral. La precisión media (\textit{average precision}) pondera la precisión en cada umbral por el incremento de sensibilidad respecto al anterior~\cite{sklearnaverageprecision}. Las matrices de confusión permiten examinar la distribución de aciertos y errores de cada modelo.
+
+En una posible aplicación de triaje, sensibilidad y especificidad deben interpretarse conjuntamente, ya que aumentar la detección de casos positivos puede incrementar las falsas alertas y la carga de revisión de los especialistas.

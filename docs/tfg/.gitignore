@@ -1,0 +1,16 @@
+.build/
+__pycache__/
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.synctex.gz
+*.xdv
+*.fls
+*.fdb_latexmk
+Fuentes_defensa_TFG.zip

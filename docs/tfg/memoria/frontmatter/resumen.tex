@@ -1,0 +1,16 @@
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+\markboth{Resumen}{Resumen}
+\begin{spacing}{1.0}
+
+La escasez de electrocardiogramas (ECG) etiquetados en enfermedades poco frecuentes dificulta el entrenamiento de modelos predictivos, lo que puede llevar a que se renuncie a abordar problemas clínicamente relevantes mediante técnicas de aprendizaje automático, como es el caso del síndrome de Brugada. Este Trabajo de Fin de Grado estudia si Gemma~4, un modelo de visión y lenguaje de pesos abiertos (\textit{open-weight}), puede clasificar imágenes de ECG para identificar posibles casos de síndrome de Brugada mediante aprendizaje en contexto. Para ello recibe unas instrucciones y varios ejemplos etiquetados en la consulta, con sus pesos fijos. Una red convolucional ResNet18 sirve como referencia supervisada para valorar cómo aprovecha cada método los casos disponibles.
+
+La evaluación se realiza sobre dos conjuntos de datos. El primero comprende 100 casos sintéticos generados mediante un simulador que reproduce latidos con distintas combinaciones de tres rasgos morfológicos. El segundo contiene registros clínicos cedidos por el Hospital Universitario Central de Asturias (HUCA), correspondientes a 317 pacientes. De cada registro clínico se selecciona un latido de la zona central de la derivación precordial V1, utilizando como referencia la etiqueta clínica del paciente. Ambos conjuntos permiten estudiar cómo influye la procedencia de los ejemplos en la clasificación.
+
+Tanto Gemma~4 como ResNet18 mejoran al recibir más ejemplos del simulador, pero muestran dificultades para generalizar a los ECG clínicos del HUCA, incluso con las estrategias de adaptación de dominio evaluadas. Cuando las demostraciones proceden del HUCA, Gemma~4 supera a ResNet18 a partir de ocho ejemplos y alcanza una exactitud balanceada de 0,761 con 32 casos repartidos por igual entre las dos clases. En la evaluación sin demostraciones, Gemma~4 no identificó casos positivos. La mejora aparece cuando los ejemplos responden a la misma tarea que el ECG que se desea clasificar.
+
+Este resultado permite plantear el aprendizaje en contexto como vía de investigación para priorizar la revisión de ECG sospechosos y facilitar la recogida de datos con los que desarrollar modelos de mayor rendimiento o explicabilidad. Además, el uso de un modelo de pesos abiertos permite realizar la inferencia en un entorno local, sin transmitir datos clínicos a servicios externos, favoreciendo la privacidad de los pacientes. Su utilidad como apoyo a la evaluación médica requeriría validación clínica.
+
+\textbf{Palabras clave:} imágenes de ECG, síndrome de Brugada, aprendizaje en contexto, modelos de visión y lenguaje, redes neuronales convolucionales, adaptación de dominio.
+
+\end{spacing}

@@ -1,0 +1,279 @@
+\usepackage[
+  a4paper,
+  top=3cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm,
+  headheight=50pt,
+  headsep=0.72cm,
+  footskip=0.7cm
+]{geometry}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{mathptmx}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Times New Roman}{
+    \setmainfont{Times New Roman}
+  }{
+    \setmainfont{TeX Gyre Termes}
+  }
+\fi
+
+\usepackage[english,spanish,es-nodecimaldot]{babel}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{xurl}
+\usepackage{csquotes}
+\usepackage{zref-totpages}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+
+\makeatletter
+\setlength{\@fptop}{0pt}
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.2em}}
+\makeatother
+
+\definecolor{Ink}{HTML}{111111}
+\definecolor{TextGray}{HTML}{3F3F3F}
+\definecolor{MidGray}{HTML}{777777}
+\definecolor{LightGray}{HTML}{D9D9D9}
+\definecolor{PaperGray}{HTML}{F7F7F7}
+
+\hypersetup{
+  breaklinks=true,
+  pdftitle={\ThesisTitle},
+  pdfauthor={\AuthorName},
+  pdfsubject={\DocumentType},
+  pdfkeywords={ECG como imagen, síndrome de Brugada, triaje clínico, pocos ejemplos, modelos multimodales, privacidad de datos sanitarios}
+}
+
+\graphicspath{{assets/}{figures/}}
+\onehalfspacing
+\setlength{\parindent}{1.45em}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{4.8pt}
+\setcounter{secnumdepth}{3}
+\renewcommand{\arraystretch}{1.08}
+\raggedbottom
+\emergencystretch=2.5em
+
+\titleformat{\chapter}[block]
+  {\normalfont\fontsize{28}{34}\selectfont\color{Ink}\raggedright}
+  {\chaptername\ \thechapter.}
+  {0.55em}
+  {}
+
+\titleformat{name=\chapter,numberless}[block]
+  {\normalfont\fontsize{28}{34}\selectfont\color{Ink}\raggedright}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\chapter}{0pt}{0pt}{1.0\baselineskip}
+
+\titleformat{\section}[block]
+  {\normalfont\fontsize{14}{17}\selectfont\color{Ink}\raggedright}
+  {\thesection.-}
+  {0.75em}
+  {\MakeUppercase}
+
+\titleformat{\subsection}[block]
+  {\normalfont\normalsize\color{Ink}\raggedright}
+  {\thesubsection.-}
+  {0.75em}
+  {}
+
+\titleformat{\subsubsection}[block]
+  {\normalfont\normalsize\color{Ink}\raggedright}
+  {\thesubsubsection.-}
+  {0.7em}
+  {}
+
+\titlespacing*{\section}{0pt}{2.0\baselineskip}{1.0\baselineskip}
+\titlespacing*{\subsection}{0pt}{1.0\baselineskip}{1.0\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{1.0\baselineskip}{1.0\baselineskip}
+
+\newcommand{\documentheader}{%
+  \begin{tabularx}{\headwidth}{@{}m{3.1cm}>{\arraybackslash}X@{}}
+    \safeheaderlogo &
+    \makebox[\linewidth][r]{%
+      \begin{tabular}[c]{@{}r@{}}
+        \footnotesize\bfseries \UniversityName{} - \SchoolName\\[-0.05em]
+        \scriptsize\itshape
+        \ifnum\value{chapter}>0\relax
+          \leftmark
+        \else
+          \MakeUppercase{\ThesisRunningTitle}
+        \fi
+      \end{tabular}%
+    }
+  \end{tabularx}%
+  \vspace{0.2em}\par\noindent{\color{MidGray}\rule{\headwidth}{0.45pt}}%
+}
+
+\renewcommand{\chaptermark}[1]{%
+  \markboth{\chaptername\ \thechapter.\ #1}{}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\documentheader}
+\fancyfoot[R]{\footnotesize Página \number\numexpr\value{abspage}+1\relax\ de \ztotpages}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[R]{\footnotesize Página \number\numexpr\value{abspage}+1\relax\ de \ztotpages}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\setlist[itemize]{
+  leftmargin=0.9cm,
+  label=\raisebox{0.18ex}{\scriptsize$\bullet$},
+  itemsep=0.35em,
+  topsep=0.5em
+}
+\setlist[enumerate]{
+  leftmargin=1.0cm,
+  itemsep=0.35em,
+  topsep=0.5em
+}
+
+\DeclareCaptionLabelSeparator{epigijon}{.- }
+\captionsetup{
+  font=normalsize,
+  labelfont=bf,
+  textfont={color=TextGray},
+  justification=raggedright,
+  singlelinecheck=false,
+  margin=0pt,
+  skip=6pt,
+  labelsep=epigijon
+}
+\captionsetup[table]{position=below}
+\captionsetup[figure]{position=below}
+
+\addto\captionsspanish{
+  \renewcommand{\figurename}{Figura}
+  \renewcommand{\tablename}{Tabla}
+  \renewcommand{\listfigurename}{Índice de figuras}
+  \renewcommand{\listtablename}{Índice de tablas}
+}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{Ink},
+  keywordstyle=\bfseries\color{Ink},
+  commentstyle=\itshape\color{TextGray},
+  stringstyle=\color{TextGray},
+  numbers=left,
+  numberstyle=\tiny\color{MidGray},
+  frame=single,
+  rulecolor=\color{LightGray},
+  breaklines=true,
+  showstringspaces=false,
+  columns=fullflexible,
+  backgroundcolor=\color{PaperGray},
+  xleftmargin=0.3cm,
+  framexleftmargin=0.2cm
+}
+
+\newcommand{\missingimagebox}[1]{
+  \fcolorbox{MidGray}{PaperGray}{
+    \parbox[c][4cm][c]{0.9\linewidth}{
+      \centering
+      \small\textbf{Imagen no disponible}\\[0.55em]
+      \footnotesize\texttt{\detokenize{#1}}
+    }
+  }
+}
+
+\newcommand{\safeincludegraphics}[2][]{
+  \IfFileExists{assets/#2}{
+    \includegraphics[#1]{#2}
+  }{
+    \IfFileExists{#2}{
+      \includegraphics[#1]{#2}
+    }{
+      \missingimagebox{#2}
+    }
+  }
+}
+
+\newcommand{\safeheaderlogo}{
+  \IfFileExists{assets/logo_epi_horizontal.pdf}{
+    \includegraphics[height=0.78cm]{logo_epi_horizontal.pdf}
+  }{
+  \IfFileExists{assets/logo_uniovi.pdf}{
+    \includegraphics[height=0.78cm]{logo_uniovi.pdf}
+  }{
+    \footnotesize\bfseries UniOvi
+  }
+  }
+}
+
+\newcommand{\safetitlelogo}[1][5.0cm]{
+  \IfFileExists{assets/logo_uniovi_portada_ingles.pdf}{
+    \includegraphics[width=#1]{logo_uniovi_portada_ingles.pdf}
+  }{
+  \IfFileExists{assets/logo_uniovi_portada.pdf}{
+    \includegraphics[width=#1]{logo_uniovi_portada.pdf}
+  }{
+  \IfFileExists{assets/logo_uniovi.pdf}{
+    \includegraphics[width=#1]{logo_uniovi.pdf}
+  }{
+    \fcolorbox{MidGray}{PaperGray}{
+      \parbox[c][2.8cm][c]{#1}{
+        \centering
+        \small\textbf{Universidad de Oviedo}\\[0.4em]
+        \footnotesize Logotipo no disponible
+      }
+    }
+  }
+  }
+  }
+}
+
+\newcommand{\resultstablenote}{
+  \par\smallskip
+  {\footnotesize\raggedright
+    \textit{Nota.} Valores medios de tres semillas, con desviación estándar indicada por \(\pm\).
+    \par
+  }
+}
+
+\newcommand{\placeholderfigure}[3][0.82\textwidth]{
+  \begin{figure}[H]
+    \centering
+    \fcolorbox{MidGray}{PaperGray}{
+      \parbox[c][5cm][c]{#1}{
+        \centering
+        \small\textbf{Figura no disponible}\\[0.7em]
+        \normalfont #3
+      }
+    }
+    \caption{#2}
+  \end{figure}
+}

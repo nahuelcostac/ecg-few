@@ -1,0 +1,48 @@
+\chapter{Introducción}
+\label{chap:introduccion}
+
+\begingroup
+\setstretch{1.18}
+\titlespacing*{\section}{0pt}{1.0\baselineskip}{0.7\baselineskip}
+
+El electrocardiograma (ECG) es una prueba diagnóstica que registra la actividad eléctrica del corazón. Su interpretación permite analizar el ritmo cardíaco y la morfología de las ondas. Para automatizar este análisis mediante aprendizaje supervisado, se necesitan registros etiquetados. En enfermedades poco frecuentes, incluso los conjuntos de datos extensos pueden contener pocos casos positivos. Esta escasez limita la variedad de ejemplos disponibles para el entrenamiento y dificulta estimar con fiabilidad la capacidad del modelo para detectar la alteración en la práctica clínica \cite{ribeiro2020,sangha2022,saleh2026brugada}.
+
+\section{Motivación y alcance}
+
+La escasez de casos positivos limita el entrenamiento de modelos predictivos y puede llevar a que se renuncie a abordar problemas clínicamente relevantes, como el síndrome de Brugada.
+
+Habitualmente, el análisis automático de ECG parte de señales digitales que conservan la información temporal y de amplitud. Este Trabajo de Fin de Grado (TFG) propone representar el ECG como imagen para estudiar si un modelo de visión y lenguaje puede interpretar la morfología del trazado de un latido. Este enfoque también resulta relevante en contextos donde los ECG se almacenan como documentos.
+
+La propuesta utiliza una técnica conocida como aprendizaje en contexto (ICL), que se fundamenta en la capacidad de los modelos de lenguaje para aprender a partir de instrucciones y unos pocos ejemplos etiquetados proporcionados en el \textit{prompt}. Los pesos del modelo se mantienen fijos. Se desea evaluar si esta capacidad permite a los modelos adaptarse, con unas pocas imágenes, a una tarea de clasificación de ECG para la que no reciben entrenamiento específico. Esto ayudaría a abordar el problema de la escasez de datos.
+
+Como referencia, se evalúa también un enfoque clásico, basado en una red neuronal convolucional (CNN) entrenada mediante aprendizaje supervisado sobre imágenes etiquetadas. Esta comparación permite estudiar el comportamiento de ambos enfoques ante diferentes cantidades de ejemplos disponibles. En ambos casos se utilizan imágenes de un único latido de la misma derivación.
+
+Para el modelo de lenguaje se emplea Gemma~4, desarrollado por Google, debido a que admite imágenes y texto. Sus pesos abiertos permiten su ejecución local, evitando la necesidad de transmitir datos clínicos a servicios externos. Para el modelo convolucional se emplea ResNet18, una arquitectura de referencia con pesos preentrenados.
+
+El síndrome de Brugada ofrece un caso de estudio en el que coinciden la escasez de positivos y el interés por detectar cambios de forma en el ECG. Es una enfermedad cardíaca hereditaria poco frecuente, asociada a alteraciones en los canales iónicos que regulan la actividad eléctrica del corazón. Estas alteraciones aumentan el riesgo de arritmias ventriculares. Su patrón puede ser intermitente, de modo que la clasificación de una imagen recoge solo una parte de lo que se valora en la revisión especializada \cite{zeppenfeld2022,wilde2023scbt}.
+
+La evaluación se divide en dos etapas. En la primera se utiliza un simulador de las ondas QRST que permite generar trazados con distintas combinaciones de rasgos morfológicos en el complejo QRS, el segmento ST y la onda T.
+
+\begin{samepage}
+En la segunda se emplean registros clínicos del Hospital Universitario Central de Asturias (HUCA) para estudiar la transferencia entre datos sintéticos y reales, así como el efecto de utilizar ejemplos procedentes del propio hospital.
+\par
+\end{samepage}
+
+\section{Objetivos}
+
+El objetivo general es determinar en qué condiciones un modelo de visión y lenguaje aprovecha un conjunto reducido de ECG etiquetados como ejemplos de referencia para adaptarse a una nueva tarea de clasificación de ECG. Para concretar este objetivo, la evaluación responde a tres preguntas.
+
+\begin{enumerate}
+  \item ¿Cómo cambia el rendimiento de Gemma~4 al aumentar el número de demostraciones?
+  \item ¿Qué rendimiento obtiene el aprendizaje en contexto frente a la CNN supervisada con los tamaños de entrenamiento evaluados?
+  \item ¿Qué se conserva al pasar de datos sintéticos a datos reales y qué cambia al emplear ejemplos reales?
+\end{enumerate}
+
+\input{chapters/12_gestion_etica}
+
+\clearpage
+\section{Estructura de la memoria}
+
+El capítulo~\ref{chap:relacionados} presenta el estado del arte, revisando los principales trabajos relacionados con el análisis automático de ECG y el aprendizaje con pocos datos. El capítulo~\ref{chap:desarrollo} describe los fundamentos clínicos y técnicos, los conjuntos de datos utilizados y la metodología experimental. El capítulo~\ref{chap:resultados} expone los resultados obtenidos en los tres escenarios de evaluación. El capítulo~\ref{chap:discusion} analiza e interpreta estos resultados, así como las limitaciones del estudio. Finalmente, el capítulo~\ref{chap:conclusiones} recoge las principales conclusiones y propone posibles líneas de trabajo futuro.
+
+\endgroup

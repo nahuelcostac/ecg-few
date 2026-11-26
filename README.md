@@ -8,7 +8,7 @@ Gemma 4, an open-weight vision-language model, receives labelled ECG examples wi
 
 This repository contains the code, presets, tests, and selected figures. Clinical records and patient-level outputs remain outside Git. These experiments require clinical validation before any use to support professional review.
 
-[Results](#results) · [Run experiments](#run-experiments) · [Code map](#code-map) · [Protocols](docs/experiments.md) · [Figure provenance](docs/results.md)
+[Results](#results) · [Run experiments](#run-experiments) · [Code map](#code-map) · [Protocols](docs/experiments.md) · [Figure provenance](docs/results.md) · [Thesis and defense files](docs/tfg/README.md)
 
 ## Experimental workflow
 

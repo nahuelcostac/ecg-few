@@ -1,0 +1,21 @@
+\chapter{Conclusiones y trabajo futuro}
+\label{chap:conclusiones}
+
+\section{Conclusiones}
+
+Este trabajo planteó el análisis de ECG como imágenes cuando se dispone de pocos datos etiquetados. Para ello se evaluó el aprendizaje en contexto y se implementó una CNN supervisada como referencia. Gemma~4 obtuvo su mejor resultado clínico con 32 demostraciones balanceadas del HUCA, alcanzando una exactitud balanceada de 0,761 frente a 0,535 de ResNet18. Estos resultados muestran que el aprendizaje en contexto permite aprovechar un número reducido de imágenes clínicas etiquetadas sin necesidad de modificar los pesos del modelo.
+
+En el simulador, ambos enfoques mejoraron al aumentar el número de ejemplos. Sin embargo, este rendimiento apenas se mantuvo al evaluar ECG reales utilizando ejemplos sintéticos. Además, Gemma~4 no identificó casos positivos sin demostraciones. En conjunto, los resultados indican que la utilidad del aprendizaje en contexto depende no solo de la cantidad de ejemplos, sino también de su procedencia y de su relación con la tarea.
+
+Aunque los resultados son prometedores para la priorización de ECG sospechosos, la sensibilidad alcanzada todavía deja sin detectar aproximadamente una cuarta parte de los casos positivos. Por ello, el modelo no puede sustituir la evaluación clínica y requiere una validación más amplia antes de considerar su aplicación al triaje.
+
+\vspace{-\baselineskip}
+\section{Trabajo futuro}
+
+La pérdida de rendimiento al pasar del simulador a los ECG reales plantea si una muestra sintética mayor facilitaría la transferencia. Generar miles de latidos con el simulador QRS/ST permitiría entrenar la CNN con más ejemplos y estudiar una variante con ajuste supervisado de Gemma~4. Esos latidos también ampliarían el conjunto del que se seleccionan las demostraciones para evaluar el aprendizaje en contexto con los pesos fijos. Las variantes se compararían sobre los mismos ECG de pacientes reservados para la prueba.
+
+Para interpretar esa comparación, sería útil ampliar la muestra clínica y complementar, con ayuda de especialistas, la etiqueta clínica de cada paciente con anotaciones morfológicas por derivación. Así se podría evaluar por separado el reconocimiento de rasgos y la clasificación clínica, y estudiar si las dificultades de transferencia se relacionan con diferencias visuales o con los criterios de etiquetado. Estas anotaciones permitirían además valorar qué aportan V2, V3 y varios latidos por registro.
+
+Con una muestra clínica más amplia se podrían comparar distintas estrategias de selección de demostraciones, variando su similitud con la imagen de prueba y el orden en que se presentan. La evaluación con registros de otros centros permitiría comprobar la capacidad de generalización ante distintas poblaciones, equipos y formatos de ECG.
+
+Finalmente, una validación clínica prospectiva permitiría estudiar si el aprendizaje en contexto puede ayudar a priorizar la revisión de ECG sospechosos y facilitar la recogida de nuevos casos etiquetados para desarrollar modelos de mayor rendimiento y explicabilidad.

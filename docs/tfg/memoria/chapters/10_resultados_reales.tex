@@ -1,0 +1,87 @@
+\section{Resultados con los datos del HUCA}
+\label{chap:comparacion_real}
+
+Los dos escenarios siguientes utilizan los mismos pacientes del HUCA para la evaluación. La diferencia está en la procedencia de los ejemplos etiquetados, que pueden obtenerse del simulador o de otros pacientes del hospital.
+
+\subsection{Transferencia desde el simulador}
+
+Con demostraciones del simulador y selección balanceada, Gemma~4 alcanza su mejor BA de \(0,514 \pm 0,008\) con \(K=16\), una sensibilidad de 0,063 y una especificidad de 0,965. Esta baja sensibilidad indica que la mayoría de los pacientes positivos del HUCA no son identificados. Con \(K=32\), la BA disminuye a 0,512, mientras que la sensibilidad aumenta ligeramente a 0,072 y la especificidad se reduce a 0,952.
+
+ResNet18, entrenada con datos del simulador, obtiene su mejor BA sobre el HUCA con \(K=4\). Aunque su rendimiento mejora al aumentar los ejemplos sintéticos, la BA sobre los registros clínicos disminuye hasta 0,498 con \(K=32\). Por tanto, la mejora obtenida con los datos generados no se mantiene al evaluar el modelo con pacientes reales. La Tabla~\ref{tab:domain_adaptation_summary} recoge los mejores resultados de la CNN y de las variantes CORAL y MMD.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.95\textwidth}{Xrrrrr}
+    \toprule
+    Configuración & \(K\) & BA & F1 & Sens. & Esp. \\
+    \midrule
+    CNN base, mejor global & 4 & \(0,551 \pm 0,034\) & 0,506 & 0,670 & 0,433 \\
+    CORAL & 16 & \(0,545 \pm 0,011\) & 0,501 & 0,670 & 0,421 \\
+    MMD & 32 & \(0,546 \pm 0,011\) & 0,502 & 0,678 & 0,413 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Principales resultados de ResNet18 sobre los datos del HUCA. Los valores de CORAL y MMD se comparan con las configuraciones base del mismo \(K\). Se presentan las medias de tres semillas y sus desviaciones estándar.}
+  \label{tab:domain_adaptation_summary}
+  \resultstablenote
+\end{table}
+
+MMD mejora la BA de 0,498 a 0,546 con \(K=32\), mientras que CORAL la aumenta de 0,520 a 0,545 con \(K=16\). Sin embargo, ninguna de estas variantes supera el mejor resultado de la CNN sin adaptación (0,551), y las mejoras siguen siendo limitadas.
+
+En conjunto, ambos enfoques presentan una exactitud balanceada próxima a 0,5, lo que evidencia las dificultades para transferir el rendimiento obtenido con los datos sintéticos a los ECG clínicos. La Figura~\ref{fig:transfer_summary} muestra los resultados de las cuatro variantes de adaptación de ResNet18 y de Gemma~4 con demostraciones del simulador.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.95\textwidth]{results/transfer_controls_synthetic_to_real_summary.pdf}
+  \caption{Rendimiento en BA y F1 al transferir desde el simulador a los ECG del HUCA. A la izquierda se comparan las variantes de adaptación de ResNet18 y a la derecha, Gemma~4 con demostraciones sintéticas.}
+  \label{fig:transfer_summary}
+\end{figure}
+
+\subsection{Aprendizaje con ejemplos clínicos}
+\label{sec:resultados_clinicos}
+
+En este escenario, los modelos utilizan ejemplos del HUCA con las mismas etiquetas clínicas que se emplean en la evaluación. Gemma~4 mejora progresivamente al aumentar el número de demostraciones, mientras que ResNet18 mantiene una exactitud balanceada próxima a 0,5, sin mostrar una mejora sostenida. La Tabla~\ref{tab:comparacion_clinica_cnn} recoge las mejores configuraciones de ambos modelos.
+
+\IfFileExists{generated/clinical_cnn_comparison_table.tex}{\input{generated/clinical_cnn_comparison_table.tex}}{}
+
+Sin demostraciones, Gemma~4 obtiene una BA de 0,499 y no identifica ningún caso positivo del HUCA. Con dos o cuatro ejemplos, ResNet18 mantiene una ligera ventaja y ambos modelos presentan resultados próximos al azar. Sin embargo, a partir de \(K=8\), Gemma~4 supera a la CNN y continúa mejorando hasta alcanzar una BA de 0,761 con 32 demostraciones balanceadas, frente a 0,535 de ResNet18 con el mismo número de ejemplos.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.98\textwidth]{results/clinical_cnn_vs_gemma_performance.pdf}
+  \caption{Evolución de la exactitud balanceada (BA) y F1 de Gemma~4 y ResNet18 con ejemplos clínicos del HUCA. Las barras representan la desviación estándar entre tres semillas.}
+  \label{fig:clinical_cnn_gemma_performance}
+\end{figure}
+
+La Figura~\ref{fig:clinical_cnn_gemma_performance} muestra esta evolución en BA y F1. La diferencia entre las mejores configuraciones es de aproximadamente 0,216 puntos de BA, que aumenta a 0,226 al comparar ambos modelos con \(K=32\).
+
+Las matrices de confusión de la Figura~\ref{fig:clinical_cnn_gemma_confusions} muestran que Gemma~4 obtiene mejores resultados en ambas clases. Con 32 demostraciones balanceadas identifica el 74,1\% de los positivos y el 78,1\% de los negativos, mientras que la mejor configuración de ResNet18 alcanza una sensibilidad del 58,0\% y una especificidad del 51,1\%.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.90\textwidth]{results/clinical_cnn_vs_gemma_confusions.pdf}
+  \caption{Matrices de confusión normalizadas por clase real para Gemma~4 con 32 demostraciones balanceadas del HUCA y ResNet18 con 16 ejemplos de entrenamiento balanceados del mismo conjunto.}
+  \label{fig:clinical_cnn_gemma_confusions}
+\end{figure}
+
+Estos resultados muestran que Gemma~4 detecta más pacientes positivos y genera menos falsos positivos que ResNet18, lo que resulta prometedor para una posible aplicación de triaje. Sin embargo, el 25,9\% de positivos no detectados sigue siendo una limitación importante, por lo que el modelo no podría utilizarse para descartar pacientes sin una evaluación clínica posterior.
+
+\subsection{Comparación entre el simulador y el HUCA}
+
+Las Figuras~\ref{fig:domain_gap_icl} y~\ref{fig:domain_gap_cnn} resumen las diferencias de rendimiento entre los escenarios experimentales. Gemma~4 alcanza una BA máxima de 0,904 con datos del simulador y de 0,761 cuando tanto las demostraciones como los casos de prueba proceden del HUCA. Sin embargo, cuando utiliza ejemplos sintéticos para clasificar ECG clínicos, su mejor resultado se reduce a 0,514.
+
+ResNet18 presenta una tendencia similar. Entrenada con datos del simulador, alcanza una BA máxima de 0,885 sobre los casos sintéticos, pero únicamente 0,551 al evaluarse con registros del HUCA. Estos resultados muestran las dificultades de transferencia entre ambos conjuntos y, en el caso de Gemma~4, la importancia de utilizar demostraciones procedentes del mismo dominio y con el mismo criterio de etiquetado que los casos de prueba.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.94\textwidth]{results/domain_gap_icl_context_ba_by_k.pdf}
+  \caption{Exactitud balanceada de Gemma~4 según el número de ejemplos y la procedencia de las demostraciones y los casos de prueba.}
+  \label{fig:domain_gap_icl}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.92\textwidth]{results/domain_gap_cnn_ba_by_k.pdf}
+  \caption{Exactitud balanceada de ResNet18 entrenada con datos del simulador y evaluada sobre imágenes sintéticas o clínicas, según el número de ejemplos.}
+  \label{fig:domain_gap_cnn}
+\end{figure}

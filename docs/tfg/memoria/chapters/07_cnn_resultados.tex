@@ -1,0 +1,83 @@
+\subsection{CNN ResNet18}
+\label{chap:cnn_enfoque}
+
+\subsubsection{Arquitectura y entrenamiento}
+\label{sec:cnn_entrenamiento}
+
+ResNet18 parte de los pesos preentrenados en ImageNet-1K que proporciona Torchvision~\cite{torchvisionresnet18}. Sus bloques convolucionales extraen características de las imágenes que la última capa utiliza para generar las predicciones. En los experimentos con el simulador, esta capa tiene tres unidades de salida, una por cada rasgo morfológico, mientras que en los del HUCA se utiliza una única unidad para la etiqueta clínica. En ambos casos se ajustan los pesos de toda la red. La Figura~\ref{fig:cnn_convolutional_pipeline} muestra el procedimiento de entrenamiento y evaluación para el simulador.
+
+\begin{figure}[H]
+  \centering
+  % Fuente editable: assets/results/cnn_convolutional_pipeline.drawio.
+  \safeincludegraphics[width=0.96\textwidth]{results/cnn_convolutional_pipeline.pdf}
+  \caption{Entrenamiento supervisado y evaluación de ResNet18 para la clasificación de los tres rasgos morfológicos del simulador.}
+  \label{fig:cnn_convolutional_pipeline}
+\end{figure}
+
+El preprocesamiento convierte las imágenes a escala de grises, las redimensiona a 224~×~224 píxeles y replica la intensidad en tres canales, como requiere ResNet18. La media y la desviación estándar se calculan exclusivamente con los datos de entrenamiento y se utilizan también para normalizar las imágenes de validación y prueba.
+
+\begin{samepage}
+La función de pérdida utilizada es la entropía cruzada binaria, aplicada a cada uno de los tres rasgos del simulador o a la única etiqueta del HUCA. Para compensar el desequilibrio entre clases, los errores de los ejemplos positivos se ponderan mediante el cociente entre negativos y positivos del conjunto de entrenamiento. En la selección balanceada del HUCA, este peso es igual a uno.
+\par
+\end{samepage}
+
+El entrenamiento utiliza el optimizador AdamW \cite{loshchilov2019}, que actualiza los pesos de la red a partir de los gradientes calculados en cada lote de imágenes. La tasa de aprendizaje, el tamaño del lote y los demás parámetros se recogen en la Tabla~\ref{tab:config_cnn_appendix}.
+
+\subsubsection{Predicción y selección del umbral}
+\label{sec:umbral_cnn}
+
+Cada salida de ResNet18 es una puntuación denominada \textit{logit}, que se transforma en una probabilidad estimada mediante la función sigmoide. En el simulador se obtiene una probabilidad para cada rasgo morfológico, mientras que en el HUCA se calcula una única probabilidad asociada a Brugada. Ambas operaciones se expresan como
+\begin{equation}
+  \begin{gathered}
+    p_j = \frac{1}{1+\exp(-z_j)},\quad j=1,2,3\\
+    \text{Simulador}
+  \end{gathered}
+  \qquad
+  \begin{gathered}
+    p_B = \frac{1}{1+\exp(-z_B)}\\
+    \text{Datos clínicos}
+  \end{gathered}
+  \label{eq:probabilidades_cnn}
+\end{equation}
+Los tres rasgos del simulador pueden coexistir, por lo que sus probabilidades no tienen que sumar uno. La clasificación binaria derivada considera positivo un caso cuando las tres probabilidades alcanzan el umbral establecido. En los registros del HUCA, la decisión se obtiene directamente a partir de \(p_B\).
+
+El umbral se selecciona buscando la mayor exactitud balanceada (BA) sobre los datos de validación. Para la clasificación conjunta del simulador se utiliza la menor de las tres probabilidades, ya que todas deben superar el mismo umbral.
+
+\begingroup
+\widowpenalty=10000
+En los experimentos con datos clínicos, la selección del umbral también interviene durante el entrenamiento. Al finalizar cada época, se evalúa la red con los ocho pacientes de validación definidos en la sección~\ref{sec:validacion_comun} y se calcula la mejor BA obtenida. Este resultado permite seleccionar los pesos sin utilizar al paciente reservado para prueba.
+
+El entrenamiento se interrumpe mediante \textit{early stopping} cuando transcurren cinco épocas sin mejora, con un máximo de veinte. Una vez recuperados los mejores pesos, se fija el umbral con los mismos pacientes de validación y se realiza la predicción del caso de prueba. Los resultados finales se obtienen agregando las predicciones de todos los pliegues.
+\par
+\endgroup
+
+El ajuste de la CNN se realiza con pocos ejemplos, por lo que puede existir riesgo de sobreajuste.
+
+\subsubsection{Adaptación de dominio}
+\label{sec:adaptacion_cnn}
+
+Se evalúan cuatro métodos de adaptación de dominio para aprovechar imágenes clínicas del HUCA sin utilizar sus etiquetas, manteniendo la clasificación de los tres rasgos morfológicos del simulador.
+
+SimCLR permite preparar el extractor de características antes del entrenamiento supervisado. A partir de dos versiones aumentadas de cada imagen clínica, aprende representaciones resistentes a variaciones de brillo, pequeños desplazamientos, ruido y desenfoque. Los pesos obtenidos se utilizan después para inicializar ResNet18, que se entrena con las etiquetas del simulador.
+
+CORAL y MMD incorporan la adaptación durante el entrenamiento supervisado, combinando imágenes etiquetadas del simulador con imágenes clínicas sin etiquetar. CORAL aproxima las covarianzas de las características de ambos conjuntos, mientras que MMD reduce las diferencias entre sus distribuciones mediante kernels de base radial a varias escalas. La contribución de ambos métodos aumenta progresivamente durante el entrenamiento.
+
+DANN utiliza también imágenes de ambos conjuntos, pero incorpora un clasificador auxiliar que intenta distinguir su procedencia. Mediante inversión de gradiente, el extractor aprende características que dificultan esta distinción mientras continúa clasificando los rasgos del simulador. El clasificador auxiliar se elimina durante la inferencia.
+
+En las cuatro variantes se utilizan imágenes clínicas de todos los pacientes, incluidos los reservados posteriormente para prueba, sin acceder a sus etiquetas. Esta configuración corresponde a una adaptación de dominio transductiva y permite estudiar si aprovechar las características visuales del HUCA mejora la transferencia desde el simulador. La Tabla~\ref{tab:config_domain_appendix} recoge los parámetros y las condiciones de uso de los datos.
+
+\subsubsection{Inspección con Grad-CAM}
+
+Grad-CAM complementa las métricas de clasificación mediante mapas que muestran las regiones de la imagen asociadas a una predicción. En este trabajo se aplica al último bloque convolucional de ResNet18, antes de la reducción de las características para su clasificación. El mapa se calcula a partir de los gradientes de la primera salida y se redimensiona al tamaño de la imagen original. En la CNN entrenada con el simulador, esta salida corresponde a RBBB.
+
+\begin{samepage}
+La Figura~\ref{fig:gradcam_sintetico_modelos} muestra el trazado original, el mapa Grad-CAM normalizado y su superposición. En el ejemplo se observa una región amplia asociada a RBBB que comprende el complejo QRS y parte del trazado posterior. Esta inspección permite identificar las zonas relacionadas con la predicción, aunque no determina por sí sola qué características clínicas ha reconocido el modelo, como se explica en la sección~\ref{sec:explicabilidad}.
+\par
+\end{samepage}
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.92\textwidth]{results/cnn_simulator_qrs_gradcam_example.pdf}
+  \caption{Inspección de la salida RBBB de ResNet18 mediante Grad-CAM. Se muestran el trazado V1, el mapa normalizado y su superposición.}
+  \label{fig:gradcam_sintetico_modelos}
+\end{figure}

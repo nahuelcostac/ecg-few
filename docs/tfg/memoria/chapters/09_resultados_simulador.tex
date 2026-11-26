@@ -1,0 +1,67 @@
+\chapter{Resultados}
+\label{chap:resultados}
+
+Los resultados se presentan siguiendo los tres escenarios experimentales. Primero se evalúa la capacidad de Gemma~4 y ResNet18 para reconocer los rasgos morfológicos del simulador. Después se estudia su rendimiento al utilizar ejemplos sintéticos para clasificar ECG clínicos del HUCA. Finalmente, se comparan ambos modelos utilizando ejemplos etiquetados del propio hospital.
+
+\section{Resultados con los datos del simulador}
+\label{chap:comparacion_simulador}
+
+La Tabla~\ref{tab:comparacion_simulador} recoge los resultados de Gemma~4 sin demostraciones y las mejores configuraciones de ambos modelos. La Figura~\ref{fig:comparacion_simulador_curvas} muestra la evolución del rendimiento según el número de ejemplos \(K\), mientras que el apéndice~\ref{app:resultados} contiene los resultados completos.
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.96\textwidth}{Xrrrrr}
+    \toprule
+    Método & \(K\) & BA & F1 & Sens. & Esp. \\
+    \midrule
+    Gemma~4 zero-shot & 0 & \(0,500 \pm 0,000\) & 0,000 & 0,000 & 1,000 \\
+    Gemma~4, selección estándar & 32 & \(0,879 \pm 0,008\) & 0,781 & 0,833 & 0,925 \\
+    Gemma~4, selección balanceada & 32 & \(0,904 \pm 0,011\) & 0,825 & 0,867 & 0,942 \\
+    CNN ResNet18 & 32 & \(0,885 \pm 0,013\) & 0,771 & 0,867 & 0,904 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Resultados de Gemma~4 en zero-shot y mejores configuraciones de ambos modelos en el simulador QRS/ST. Se presentan los valores medios de tres semillas, con la desviación estándar indicada mediante \(\pm\).}
+  \label{tab:comparacion_simulador}
+  \resultstablenote
+\end{table}
+
+Sin demostraciones, Gemma~4 clasifica todos los casos como negativos. Su rendimiento mejora al incorporar ejemplos etiquetados y alcanza valores comparables a los de ResNet18. Con \(K=32\), la selección balanceada de Gemma~4 obtiene los mejores resultados en BA (0,904) y F1 (0,825). ResNet18 también mejora al aumentar el número de ejemplos, con el mayor avance entre 8 y 16 pacientes.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.90\textwidth}
+    \centering
+    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_ba_by_k.pdf}
+    \caption{Exactitud balanceada (BA).}
+  \end{subfigure}
+  \par\medskip
+  \begin{subfigure}{0.90\textwidth}
+    \centering
+    \safeincludegraphics[width=\textwidth]{results/comparison_simulator_f1_by_k.pdf}
+    \caption{F1.}
+  \end{subfigure}
+  \caption{Evolución de la exactitud balanceada (BA) y F1 de Gemma~4 y ResNet18 según el número de ejemplos del simulador. Las barras representan la desviación estándar entre semillas.}
+  \label{fig:comparacion_simulador_curvas}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \begin{subfigure}{0.42\textwidth}
+    \centering
+    \safeincludegraphics[width=\textwidth]{results/vlm_simulator_qrs_balanced_k32_confusion_matrix.pdf}
+    \caption{Gemma~4, selección balanceada, \(K=32\).}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.42\textwidth}
+    \centering
+    \safeincludegraphics[width=\textwidth]{results/cnn_simulator_qrs_k32_confusion_matrix.pdf}
+    \caption{CNN, \(K=32\).}
+  \end{subfigure}
+  \caption{Matrices de confusión agregadas de Gemma~4 con selección balanceada y ResNet18, ambas con \(K=32\). Cada matriz reúne las predicciones de tres semillas sobre los mismos 100 casos del simulador.}
+  \label{fig:simulator_confusions}
+\end{figure}
+
+La Figura~\ref{fig:simulator_confusions} muestra las matrices de confusión de ambos modelos. Los dos identifican 52 de los 60 casos positivos acumulados entre las tres semillas, con ocho falsos negativos cada uno. Gemma~4 produce menos falsos positivos que ResNet18, lo que explica su mayor especificidad y exactitud balanceada. Aunque ambos modelos presentan la misma sensibilidad, esta métrica resulta especialmente relevante en una posible aplicación de triaje, donde omitir un caso positivo puede tener consecuencias más graves que generar una alerta innecesaria.
+
+\input{chapters/10_resultados_reales}

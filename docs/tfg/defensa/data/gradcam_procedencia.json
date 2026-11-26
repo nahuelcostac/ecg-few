@@ -1,0 +1,25 @@
+{
+  "source": "outputs/final_results_tfg/runs/cnn_simulator_qrs_loocv/resnet18/k32_seed123/fold_0011/gradcam_panel.png",
+  "sha256": "236f3865f2aca133e947223c092d4edc7bcd2e0f8b7f358c6d65d80a41639a10",
+  "panels_xyxy_px": [
+    [
+      96,
+      106,
+      482,
+      492
+    ],
+    [
+      648,
+      106,
+      1034,
+      492
+    ],
+    [
+      1200,
+      106,
+      1586,
+      492
+    ]
+  ],
+  "scope": "Latido sintético V1. Salida RBBB de ResNet18. Ejemplo cualitativo elegido por el solapamiento visible con el trazado."
+}

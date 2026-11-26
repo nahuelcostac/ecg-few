@@ -1,0 +1,261 @@
+\section{Simulador QRS/ST}
+\label{chap:simulador}
+
+Para estudiar el comportamiento de los modelos en condiciones controladas, se desarrolló un simulador de latidos cardíacos que permite modificar la amplitud, la posición y la anchura de los distintos componentes del trazado. El simulador genera señales con diferentes combinaciones de tres rasgos morfológicos: una morfología compatible con bloqueo de rama derecha (RBBB), elevación del segmento ST e inversión de la onda T. A partir de estas señales se obtienen imágenes etiquetadas que Gemma~4 utiliza como demostraciones durante la inferencia y ResNet18 emplea para su entrenamiento supervisado.
+
+La generación de datos sintéticos permite controlar tanto la morfología de los latidos como su representación visual, facilitando la comparación de ambos enfoques al aumentar el número de ejemplos disponibles. Esta evaluación constituye el punto de partida para estudiar posteriormente la transferencia a los ECG clínicos del HUCA, cuyas características son más variables y cuyas etiquetas corresponden a la clasificación clínica de los pacientes.
+
+\subsection{Representación matemática}
+
+El simulador construye cada latido mediante la suma de diez componentes gaussianos, denominados átomos, que representan distintas regiones del trazado electrocardiográfico. Cada componente se define por su amplitud \(a_i\), su posición temporal \(\mu_i\) y su anchura \(\sigma_i\), siguiendo la expresión
+
+\begin{equation}
+g_i(t) =
+a_i
+\exp
+\left(
+-\frac{(t-\mu_i)^2}{2\sigma_i^2}
+\right).
+\label{eq:gaussian_atom_sim}
+\end{equation}
+\label{eq:gaussian_atom}
+
+La señal completa se obtiene sumando las contribuciones de todos los componentes
+
+\begin{equation}
+x(t) =
+\sum_{i=1}^{M} g_i(t), \qquad M=10.
+\label{eq:sum_gaussians}
+\end{equation}
+\label{eq:gaussian_sum}
+
+La amplitud \(a_i\) determina la magnitud y el sentido de cada deflexión, mientras que \(\mu_i\) establece su posición en el tiempo y \(\sigma_i\) controla su extensión temporal. La combinación de estos parámetros permite modificar la forma de las ondas y generar diferentes morfologías sin alterar necesariamente el resto del latido.
+
+Esta representación toma como referencia el modelo de componentes gaussianos de Sayadi y colaboradores \cite{sayadi2010}, aunque en este trabajo se utiliza una suma directa para generar las señales. Los diez átomos y su función dentro del simulador se recogen en la Tabla~\ref{tab:atomos}.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{2.2cm} p{3.8cm} X}
+\toprule
+\textbf{Átomo} & \textbf{Región principal} & \textbf{Función} \\
+\midrule
+\texttt{P} & Onda P & Genera la deflexión auricular positiva anterior al QRS. \\
+\texttt{Q} & Inicio del QRS & Permite introducir una deflexión negativa inicial, aunque permanece anulada en la configuración utilizada. \\
+\texttt{R} & QRS inicial & Genera la primera deflexión positiva ventricular. \\
+\texttt{S} & QRS central & Representa la deflexión negativa posterior a R. \\
+\texttt{R\_prime} & QRS terminal & Introduce una segunda deflexión positiva para generar morfologías RSR$^\prime$. \\
+\texttt{J\_elev} & Punto J & Modifica la transición entre el QRS y el segmento ST. \\
+\texttt{ST1} & ST inicial & Modela la elevación inicial y la parte descendente de una morfología cóncava. \\
+\texttt{ST2} & ST tardío & Controla la continuidad hacia la onda T. \\
+\texttt{T1} & Onda T principal & Determina la polaridad y la amplitud principal de la onda T. \\
+\texttt{T2} & Final de la onda T & Suaviza y prolonga la repolarización. \\
+\bottomrule
+\end{tabularx}
+\caption{Componentes gaussianos utilizados para generar los latidos del simulador.}
+\label{tab:atomos}
+\end{table}
+
+La Figura~\ref{fig:gaussian_generator} muestra cómo se combinan estos componentes para construir un latido y cómo sus parámetros determinan la morfología resultante.
+
+\begin{figure}[H]
+  \centering
+  % Fuente editable: assets/results/gaussian_generator.drawio.svg.
+  \safeincludegraphics[width=\textwidth]{results/gaussian_generator.drawio.pdf}
+  \caption{Generación de un latido mediante componentes gaussianos. La amplitud, la posición y la anchura de cada átomo determinan su contribución a las regiones P, QRS, ST y T.}
+  \label{fig:gaussian_generator}
+\end{figure}
+
+\subsection{Muestreo temporal}
+
+El simulador utiliza una frecuencia de muestreo de 500~Hz y una duración de 900~ms por latido. El número de muestras se calcula mediante
+
+\begin{equation}
+N =
+\operatorname{round}
+\left(
+\frac{D}{1000}f_s
+\right),
+\end{equation}
+
+donde \(D\) representa la duración en milisegundos y \(f_s\) la frecuencia de muestreo. Con la configuración utilizada se obtienen 450 muestras, distribuidas sobre el vector temporal
+
+\begin{equation}
+t_n =
+\frac{1000n}{f_s},
+\qquad
+n \in \{0,\ldots,N-1\}.
+\end{equation}
+
+Los componentes de la repolarización se definen inicialmente para una duración de referencia de 900~ms. Cuando esta duración cambia, los centros temporales posteriores a 390~ms se ajustan según
+
+\begin{equation}
+\mu_i^{(D)} =
+390 +
+\left(
+\mu_i^{(900)}-390
+\right)
+\frac{D-390}{900-390}.
+\label{eq:time_scaling}
+\end{equation}
+
+Las anchuras de estos componentes se modifican utilizando el mismo factor de escala, con un valor mínimo que evita anchuras excesivamente pequeñas. Los componentes anteriores a 390~ms mantienen sus posiciones originales, de modo que el complejo QRS permanece fijo mientras las regiones ST y T se adaptan a la duración del latido.
+
+\subsection{Familias del simulador}
+
+El simulador organiza los latidos en cinco familias, cada una definida por una configuración de los componentes gaussianos que favorece determinadas características morfológicas. Estas familias permiten generar trazados normales, alteraciones individuales y combinaciones de varios rasgos.
+
+Para introducir variabilidad, los parámetros de cada familia se modifican ligeramente dentro de unos rangos establecidos. Las señales resultantes se comprueban mediante validadores morfológicos que determinan las etiquetas correspondientes a cada latido. Así, la familia establece la morfología que se pretende generar, mientras que las etiquetas dependen de las características presentes en la señal final.
+
+\subsubsection{Familia normal}
+
+La familia \texttt{NORMAL} genera latidos sin las alteraciones morfológicas estudiadas. Para ello, reduce la amplitud de R prima, mantiene el punto J y el segmento ST próximos a la línea base y genera ondas T positivas. Una vez construida la señal, se aplican los tres validadores morfológicos y se descarta cualquier latido que cumpla los criterios de alguna de las clases positivas. Esta comprobación evita que las variaciones aleatorias de los parámetros produzcan alteraciones no deseadas.
+
+\subsubsection{Morfología RBBB}
+
+La familia \texttt{RBBB} genera una segunda deflexión positiva en la parte terminal del complejo QRS, cuyo centro se sitúa al menos 24~ms después del correspondiente a S. Para favorecer esta morfología, la amplitud de R prima debe alcanzar al menos el 80~\% de la amplitud de R y presentar una anchura superior.
+
+Esta configuración permite reproducir de forma simplificada una morfología compatible con bloqueo de rama derecha, sin representar necesariamente todos los criterios clínicos necesarios para su diagnóstico.
+
+\subsubsection{Elevación de ST}
+
+La familia \texttt{ST\_ELEVATION} genera latidos con elevación del segmento ST mediante la asignación de amplitudes positivas a los componentes del punto J y del ST. El componente inicial del segmento se ensancha para producir una elevación progresiva y evitar que adopte la forma de un pico estrecho que pueda confundirse con una deflexión del QRS.
+
+El validador comprueba también que el trazado presente deflexiones ventriculares positivas y negativas suficientemente pronunciadas, evitando clasificar como elevación del ST señales prácticamente planas desplazadas por encima de la línea base.
+
+\subsubsection{Inversión de T}
+
+La familia \texttt{T\_WAVE\_INVERSION} genera ondas T negativas mediante la modificación de la amplitud de sus dos componentes gaussianos. Estos se sitúan después del segmento ST para mantener la separación entre ambas regiones del latido.
+
+La configuración también permite introducir una R prima moderada y una pequeña elevación del punto J, de manera que la inversión de T pueda coexistir con otros rasgos morfológicos. Para validar la señal, se comprueba que la deflexión negativa aparezca en la región correspondiente a la onda T, alcance una profundidad mínima y se mantenga durante un intervalo suficiente.
+
+\subsubsection{Familia asociada al síndrome de Brugada}
+
+La familia \texttt{BRUGADA} reproduce de forma simplificada la morfología del patrón tipo 1 del síndrome de Brugada. Para ello, combina una elevación del punto J con un segmento ST descendente y una onda T negativa. También puede presentar una alteración terminal del QRS, aunque la amplitud de R prima se mantiene por debajo de los valores habituales de la familia RBBB.
+
+Esta familia permite generar trazados que combinan varios de los rasgos estudiados y puede reservarse para evaluar la transferencia a morfologías no utilizadas durante el entrenamiento.
+
+La Tabla~\ref{tab:familias} resume las principales características de cada familia y su función dentro de la evaluación experimental.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{3.25cm} p{4.65cm} X}
+\toprule
+\textbf{Familia} & \textbf{Modificación principal} & \textbf{Interpretación experimental} \\
+\midrule
+\texttt{NORMAL} & ST próximo a la línea base, T positiva y R prima mínima & Referencia sin las alteraciones estudiadas \\
+\texttt{RBBB} & Segunda deflexión positiva tardía y ancha & Alteración terminal del complejo QRS \\
+\texttt{ST\_ELEVATION} & Elevación del punto J y del segmento ST & Elevación posterior al QRS \\
+\texttt{T\_WAVE\_INVERSION} & Deflexión negativa en la región de T & Inversión de la onda T \\
+\texttt{BRUGADA} & Punto J elevado, ST descendente y T negativa & Combinación de rasgos asociada al patrón tipo 1 \\
+\bottomrule
+\end{tabularx}
+\caption{Características morfológicas de las familias del simulador y su interpretación experimental.}
+\label{tab:familias}
+\end{table}
+
+\subsection{Rangos de parámetros}
+
+Los rangos de amplitud, posición y anchura de los componentes gaussianos se establecieron tomando como referencia las indicaciones de profesionales del HUCA, con el objetivo de generar morfologías electrocardiográficas verosímiles. Cada familia dispone de intervalos específicos para los parámetros \(a\), \(\mu\) y \(\sigma\), que permiten introducir variaciones entre latidos con características similares.
+
+Durante la generación también se aplican restricciones entre componentes para mantener la coherencia del trazado. Una vez obtenida la señal, los validadores comprueban sus características morfológicas y determinan las etiquetas correspondientes, siguiendo los mismos criterios para todas las familias.
+
+\subsection{Reglas de coherencia morfológica}
+
+La generación de los latidos sigue una serie de restricciones que mantienen el orden temporal de las ondas. El componente Q precede a R, mientras que S aparece después y presenta una mayor anchura. El punto J se sitúa a continuación del complejo QRS y sirve de referencia para colocar los dos componentes del segmento ST. Finalmente, T1 y T2 completan la región de repolarización.
+
+Cada familia incorpora además restricciones específicas para favorecer las morfologías deseadas, como la posición y amplitud de R prima o la polaridad de la onda T. Estas condiciones deben tener en cuenta las relaciones entre los distintos componentes, ya que modificar uno de ellos puede afectar a varias características de la señal. Por ejemplo, desplazar T1 puede alterar tanto la detección de inversión de T como la amplitud media de la región final del ST. Por este motivo, los cambios en las reglas requieren revisar las etiquetas generadas y las tasas de aceptación de cada familia.
+
+La Figura~\ref{fig:label_distribution} muestra la distribución de las combinaciones de etiquetas obtenidas en el conjunto de datos sintético utilizado para la evaluación.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.90\textwidth]{results/fig_label_distribution.pdf}
+  \caption{Distribución de las combinaciones de etiquetas morfológicas presentes en el conjunto de datos del simulador utilizado para la validación cruzada por paciente.}
+  \label{fig:label_distribution}
+\end{figure}
+
+\subsection{Muestreo con rechazo}
+
+La generación utiliza muestreo con rechazo. Para una familia \(c\), el procedimiento consta de los siguientes pasos.
+
+\begin{enumerate}
+\item Combinar los rangos base con los rangos específicos de \(c\).
+\item Adaptar los componentes tardíos a la duración solicitada.
+\item Muestrear los parámetros de los diez átomos.
+\item Aplicar las reglas de orden y coherencia.
+\item Sumar los átomos sobre el vector temporal.
+\item Evaluar el validador correspondiente a \(c\).
+\item Aceptar la señal si supera las reglas o volver al paso de muestreo.
+\end{enumerate}
+
+El procedimiento permite realizar hasta 400 intentos por latido. Si no se obtiene una señal válida, el simulador devuelve un error y conserva las métricas del último intento para facilitar la revisión de los parámetros.
+
+Si \(q_c\) representa la probabilidad de aceptar una propuesta de la familia \(c\), el número esperado de intentos hasta obtener una señal válida, sin considerar el límite de intentos, viene dado por
+
+\begin{equation}
+\mathbb{E}[A_c] =
+\frac{1}{q_c}.
+\end{equation}
+
+Una tasa de aceptación baja indica que una proporción elevada de las combinaciones generadas no satisface los criterios de la familia. Por ello, esta medida se utiliza para revisar los rangos de parámetros y las restricciones del simulador.
+
+\subsection{Validadores y asignación de etiquetas}
+
+Los validadores analizan distintas ventanas temporales de la señal generada para comprobar la presencia de los rasgos morfológicos estudiados. Las ventanas posteriores a 390~ms se ajustan a la duración del latido siguiendo el procedimiento de la ecuación~\ref{eq:time_scaling}. Las amplitudes se expresan en milivoltios (mV) y las duraciones en milisegundos (ms).
+
+La Tabla~\ref{tab:validadores} recoge las condiciones que debe cumplir cada señal para superar los validadores.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{p{2.25cm} X}
+\toprule
+\textbf{Validador} & \textbf{Condiciones necesarias} \\
+\midrule
+RBBB &
+Dos máximos positivos entre 240 y 470~ms, separados al menos 28~ms. El primero debe superar 0,12~mV y el segundo 0,20~mV, con un mínimo intermedio inferior a (-0,05)~mV. El segundo máximo debe aparecer después de 345~ms y presentar una anchura terminal superior a 38~ms por encima de 0,10~mV. \\
+Elevación de ST &
+Máximo del QRS superior a 0,28~mV, mínimo inferior a (-0,14)~mV y amplitudes medias de las regiones J y ST superiores a 0,09~mV. \\
+Inversión de T &
+Máximo del QRS superior a 0,22~mV, máximo de R prima superior a 0,08~mV y media del ST superior a (-0,03)~mV. El mínimo de T debe ser inferior a (-0,12)~mV, aparecer después del umbral temporal equivalente a 640~ms y mantenerse por debajo de (-0,05)~mV durante más de 45~ms. \\
+Normal &
+Máximo del QRS superior a 0,22~mV, mínimo inferior a (-0,10)~mV, media del ST entre (-0,04) y 0,05~mV, máximo de T superior a 0,12~mV y R prima inferior a 0,10~mV. Ninguno de los tres validadores de alteraciones debe activarse. \\
+Síndrome de Brugada &
+Máximo del QRS superior a 0,18~mV, mínimo inferior a (-0,16)~mV, media de J superior a 0,09~mV y media del ST superior a 0,08~mV. El ST inicial debe superar al tardío en al menos 0,03~mV y el mínimo de T debe ser inferior a (-0,08)~mV. \\
+\bottomrule
+\end{tabularx}
+\caption{Criterios morfológicos utilizados por los validadores del simulador.}
+\label{tab:validadores}
+\end{table}
+
+Estos criterios se aplican sobre la señal completa, una vez combinados todos los componentes gaussianos. Tras aceptar un latido, se calculan las tres etiquetas morfológicas utilizando los mismos validadores, independientemente de la familia que lo haya generado. Esto permite identificar combinaciones de rasgos que pueden aparecer simultáneamente, incluso cuando la configuración inicial estaba orientada a favorecer una alteración concreta.
+
+\clearpage
+\subsection{Renderizado y controles visuales}
+
+Las señales generadas se convierten en imágenes de 896~×~896 píxeles, con una resolución de 130 puntos por pulgada. La cuadrícula reproduce la escala habitual de un ECG, con divisiones menores equivalentes a 40~ms en el eje horizontal y 0,1~mV en el vertical. Las divisiones mayores representan 200~ms y 0,5~mV, respectivamente. El trazado se dibuja en negro, con un grosor de dos puntos, sobre una cuadrícula rosa.
+
+Todas las familias utilizan los mismos límites de los ejes, márgenes y dimensiones de imagen. Esta uniformidad busca reducir la influencia de diferencias visuales ajenas a la morfología del ECG, de modo que la clasificación dependa principalmente de las características del trazado. Las imágenes y sus etiquetas se relacionan mediante un manifiesto, mientras que los nombres de los archivos no contienen información sobre la clase.
+
+Las transformaciones visuales también deben respetar las características electrocardiográficas. Se excluyen los reflejos horizontales, que invertirían el orden temporal de las ondas, y los verticales, que modificarían la polaridad de las deflexiones. En cambio, pequeñas variaciones de grosor, contraste, desplazamiento o escala pueden utilizarse siempre que conserven la morfología del latido. Los recortes y las versiones sin ejes permiten estudiar la sensibilidad de los modelos a distintos elementos de la representación visual.
+
+La Figura~\ref{fig:synthetic_examples} presenta un ejemplo de cada familia, mostrando las diferencias morfológicas que el simulador permite generar.
+
+\begin{figure}[H]
+  \centering
+  \safeincludegraphics[width=0.96\textwidth]{results/fig_synthetic_examples.pdf}
+  \caption{Ejemplos de latidos generados por las cinco familias del simulador, utilizados para comprobar visualmente sus características morfológicas.}
+  \label{fig:synthetic_examples}
+\end{figure}
+
+Estos controles se complementan con el análisis mediante Grad-CAM descrito en la sección~\ref{chap:cnn_enfoque}, que permite examinar si las predicciones de ResNet18 se relacionan con las ondas del ECG o con elementos del formato de imagen, como la cuadrícula, los ejes o el fondo.
+
+\subsection{Limitaciones del simulador}
+
+El simulador genera latidos aislados con una morfología similar a la de una derivación precordial, por lo que no reproduce toda la información disponible en un ECG clínico de doce derivaciones. Tampoco representa las variaciones del ritmo cardíaco ni los cambios que pueden producirse entre distintos latidos de un mismo paciente. En particular, la familia \texttt{BRUGADA} aproxima algunos rasgos del patrón tipo 1, pero no contempla toda la diversidad de manifestaciones electrocardiográficas de esta enfermedad.
+
+Otra limitación procede de la representación matemática y visual de las señales. La suma de componentes gaussianos produce trazados suaves y relativamente uniformes, mientras que los registros clínicos pueden presentar ruido, desplazamientos de la línea base, anotaciones y superposición de trazos. Aunque las transformaciones visuales permiten introducir cierta variabilidad, las señales sintéticas siguen condicionadas por los parámetros y las relaciones morfológicas definidos durante el diseño del simulador.
+
+Por último, el muestreo con rechazo limita los ejemplos generados a las regiones del espacio de parámetros que cumplen las condiciones de los validadores. Esto puede introducir regularidades propias del simulador que faciliten la clasificación de sus imágenes, pero que no estén presentes en los ECG reales. La posterior evaluación con registros del HUCA permite estudiar si el rendimiento obtenido con datos sintéticos se mantiene en un entorno clínico y hasta qué punto las técnicas de adaptación de dominio permiten reducir las diferencias entre ambos conjuntos.

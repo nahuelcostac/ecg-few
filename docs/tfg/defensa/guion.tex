@@ -1,0 +1,357 @@
+% !TEX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\IfFontExistsTF{Georgia}{\setmainfont{Georgia}}{\setmainfont{TeX Gyre Termes}}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=23mm]{geometry}
+\usepackage{parskip,enumitem,xcolor,xurl,hyperref,fancyhdr,longtable,booktabs,needspace}
+\input{metadata}\input{metrics}
+\hypersetup{hidelinks,pdftitle={Guion de defensa del TFG},pdfauthor={\AuthorName},pdfsubject={\ThesisTitle}}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Guion de defensa del TFG}\fancyhead[R]{\small Alejandro Moris Lara}\fancyfoot[C]{\thepage}
+\setlength{\headheight}{15pt}
+\begin{document}
+\begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip
+{\large\ThesisTitle}\par\medskip\AuthorName\par Noviembre de 2026\end{center}
+\section*{Preparación y duración}
+La defensa contiene 39 diapositivas principales para un ensayo de 18 minutos y dos páginas de referencias.
+
+La apertura relaciona la escasez de positivos con la representación visual y presenta el aprendizaje en contexto antes de los objetivos. Después del estado del arte se explica el latido y se sitúan los aspectos éticos. Tras las implementaciones se presentan los tres escenarios y el protocolo por paciente. Una diapositiva de transición abre cada bloque de resultados.
+
+La referencia pública localizada para la EPI indica entre 15 y 20 minutos de forma orientativa y deja la duración al tribunal. El procedimiento del curso 2026--2027 está enlazado en SharePoint y requiere acceso institucional. Por tanto, estos tiempos son objetivos de ensayo, no una confirmación del límite de tu tribunal.
+
+Ensaya en voz alta, siguiendo el gráfico que ve el tribunal. No leas las diapositivas ni recites los decimales. Al explicar una curva, identifica primero el eje horizontal, la métrica y las series, y después señala el cambio relevante. Las barras muestran variación entre semillas, no intervalos de confianza.
+
+La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del Manual de Identidad Corporativa de UniOvi. No constituye una plantilla Beamer publicada o aprobada por la institución. Se conservan los emblemas originales, con Georgia para los títulos y el texto. Si Georgia no está instalada, el proyecto utiliza TeX Gyre Termes como alternativa.
+
+\clearpage\section*{Ruta principal: 18 minutos}
+\begin{longtable}{p{12mm}p{112mm}r}\toprule Diap. & Contenido & Acumulado\\\midrule\endhead
+1 & Análisis de ECGs con grandes modelos de lenguaje & 0:15\\
+2 & Enfermedades cardiovasculares y síndrome de Brugada & 0:45\\
+3 & Electrocardiograma en formato imagen & 1:20\\
+4 & Aprendizaje en contexto & 1:45\\
+5 & Propuesta y objetivos del TFG & 2:15\\
+6 & Estructura de la exposición & 2:30\\
+7 & Estado del arte & 3:00\\
+8 & Cómo leer un latido & 3:35\\
+9 & Síndrome de Brugada y derivación V1 & 4:05\\
+10 & Aspectos éticos y protección de datos & 4:20\\
+11 & Redes neuronales convolucionales & 4:40\\
+12 & Conjuntos de datos del simulador y del HUCA & 5:05\\
+13 & Simulador QRS/ST & 5:40\\
+14 & Familias del simulador & 6:05\\
+15 & Distribución de etiquetas en el simulador & 6:30\\
+16 & Conjunto clínico del HUCA & 6:55\\
+17 & Diseño experimental & 7:25\\
+18 & Implementación del ICL con Gemma 4 E4B & 7:50\\
+19 & Implementación de la CNN con ResNet18 & 8:20\\
+20 & Inspección de activaciones con Grad-CAM & 8:50\\
+21 & Escenarios de evaluación & 9:05\\
+22 & Protocolo de evaluación por paciente: LOOCV & 9:40\\
+23 & Simulación & 9:45\\
+24 & Resultados con ejemplos del simulador & 10:40\\
+25 & Matrices de confusión en el simulador & 11:10\\
+26 & Cambio de dominio & 11:15\\
+27 & Cambio de dominio en ICL con selección balanceada & 11:45\\
+28 & Adaptación de dominio & 12:05\\
+29 & Cambio de dominio en ICL con selección estándar & 12:25\\
+30 & CNN entrenada en el simulador y evaluada en el HUCA & 13:00\\
+31 & Métodos de adaptación de dominio en la CNN & 13:40\\
+32 & F1 de la clase positiva al cambiar de dominio & 14:10\\
+33 & Evaluación clínica & 14:15\\
+34 & Demostraciones y entrenamiento con ejemplos del HUCA & 15:25\\
+35 & Matrices de confusión en la evaluación clínica & 16:00\\
+36 & Conclusiones & 16:40\\
+37 & Interpretación y límites del estudio & 17:25\\
+38 & Continuación del trabajo & 17:50\\
+39 & Cierre y preguntas & 18:00\\
+\bottomrule\end{longtable}
+\Needspace{8\baselineskip}\section*{01. Análisis de ECGs con grandes modelos de lenguaje}
+\textbf{Tiempo orientativo: }15 segundos.
+
+Buenos días. Este TFG estudia la clasificación de imágenes de ECG con pocos ejemplos etiquetados y utiliza el síndrome de Brugada como caso de estudio.
+
+\textbf{Transición.} Empiezo por la disponibilidad de datos etiquetados.
+
+\Needspace{8\baselineskip}\section*{02. Enfermedades cardiovasculares y síndrome de Brugada}
+\textbf{Tiempo orientativo: }30 segundos.
+
+La OMS estima que en 2022 murieron 19,8 millones de personas por enfermedades cardiovasculares. Dentro de ese contexto, Brugada plantea una dificultad distinta: al haber pocos casos, cuesta reunir ECG positivos confirmados que cubran la variedad de trazados y reservar suficientes positivos para evaluar el modelo. En Brugada esto importa especialmente porque el patrón puede ser intermitente, incluso en un mismo paciente.
+
+\textbf{Transición.} Con pocas etiquetas, la forma de aprovechar cada ECG pasa a ser parte del problema.
+
+\Needspace{8\baselineskip}\section*{03. Electrocardiograma en formato imagen}
+\textbf{Tiempo orientativo: }35 segundos.
+
+El análisis automático suele empezar por la señal digital, que permite medir amplitudes e intervalos. Aquí represento la señal como imagen para comprobar si un modelo de visión y lenguaje puede reconocer diferencias en la forma del trazado cuando solo tiene unos pocos ejemplos. La foto ilustra cómo se ve un ECG en papel. En el experimento, ambos modelos reciben imágenes renderizadas de un latido de V1.
+
+\textbf{Transición.} ¿Cómo le enseñamos la tarea al modelo con tan pocos ECG?
+
+\Needspace{8\baselineskip}\section*{04. Aprendizaje en contexto}
+\textbf{Tiempo orientativo: }25 segundos.
+
+A Gemma le mostramos instrucciones, varias imágenes con sus etiquetas y, al final, el ECG que queremos clasificar. Sus pesos permanecen fijos. El esquema ilustra el mismo principio con texto. En nuestro caso, cada demostración incluye un ECG y su etiqueta.
+
+\textbf{Transición.} Con ese procedimiento podemos formular las tres preguntas del trabajo.
+
+\Needspace{8\baselineskip}\section*{05. Propuesta y objetivos del TFG}
+\textbf{Tiempo orientativo: }30 segundos.
+
+La pregunta principal es si Gemma 4 puede aprovechar pocos ECG etiquetados para clasificar un trazado nuevo. Primero estudio el efecto del número de demostraciones. Después comparo el ICL con ResNet18, que emplea los casos para entrenar. La tercera pregunta es cuánto se conserva al pasar de ejemplos sintéticos a ECG clínicos.
+
+\textbf{Transición.} La exposición sigue el recorrido que aparece en el índice.
+
+\Needspace{8\baselineskip}\section*{06. Estructura de la exposición}
+\textbf{Tiempo orientativo: }15 segundos.
+
+Primero sitúo la propuesta en el estado del arte y presento el caso de Brugada. Después explico los datos, el diseño y el protocolo. Los resultados siguen los tres escenarios de evaluación.
+
+\textbf{Transición.} El estado del arte distingue tres formas de utilizar los ECG y sus etiquetas.
+
+\Needspace{8\baselineskip}\section*{07. Estado del arte}
+\textbf{Tiempo orientativo: }30 segundos.
+
+Ribeiro estudió el análisis de señales digitales y Sangha evaluó CNN sobre imágenes de ECG. Camba y colaboradores ya aplicaron ICL a Brugada y Saleh exploró cómo entrenar con pocos casos de Brugada. Aquí comparamos Gemma y ResNet18 en tres escenarios que cambian el número y la procedencia de los ejemplos. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh y colaboradores (2026).}
+
+\textbf{Transición.} Antes de ver el caso de Brugada, vamos a localizar las partes de un latido.
+
+\Needspace{8\baselineskip}\section*{08. Cómo leer un latido}
+\textbf{Tiempo orientativo: }35 segundos.
+
+Leemos el trazado de izquierda a derecha. La P corresponde a la activación de las aurículas y el QRS, a la de los ventrículos. En el bloqueo de rama derecha, o RBBB, el ventrículo derecho se activa con retraso y puede aparecer una segunda deflexión positiva al final del QRS. En el simulador, RBBB etiqueta ese rasgo morfológico. Después del punto J miramos si el ST se eleva respecto a la línea de base y si la onda T, que corresponde a la repolarización ventricular, apunta hacia abajo.
+
+\textbf{Transición.} Veamos ahora cómo aparecen estos rasgos en V1 en el patrón de Brugada.
+
+\Needspace{8\baselineskip}\section*{09. Síndrome de Brugada y derivación V1}
+\textbf{Tiempo orientativo: }30 segundos.
+
+La figura localiza en V1 las regiones que se examinan en un trazado sospechoso: el final del QRS, el ST y la onda T. En Brugada sus cambios pueden ser intermitentes, lo que añade dificultad a la hora de reunir ejemplos representativos de una enfermedad ya poco frecuente. La etiqueta clínica se asigna al paciente y puede incorporar información del ECG completo y de otras pruebas.
+
+\textbf{Transición.} Antes de explicar cómo se procesaron esos registros, conviene situar el estudio y el uso de las imágenes.
+
+\Needspace{8\baselineskip}\section*{10. Aspectos éticos y protección de datos}
+\textbf{Tiempo orientativo: }15 segundos.
+
+El HUCA entregó los registros ya anonimizados. Los pesos abiertos de Gemma permitieron ejecutar la inferencia en un entorno privado. La posibilidad que se investiga es priorizar la revisión de ECG sospechosos bajo responsabilidad del personal sanitario.
+
+\textbf{Transición.} Ahora explico la referencia supervisada que utilizamos para comparar con el ICL.
+
+\Needspace{8\baselineskip}\section*{11. Redes neuronales convolucionales}
+\textbf{Tiempo orientativo: }20 segundos.
+
+Una convolución recorre la imagen con filtros cuyos coeficientes aprende la red. Un filtro puede resaltar, por ejemplo, los bordes del trazado. El pooling resume las activaciones y reduce su resolución espacial. La capa de clasificación usa esas características para producir una predicción. Durante el entrenamiento, el error respecto a las etiquetas guía el ajuste de los pesos.
+
+\textbf{Transición.} Veamos los conjuntos con los que comparamos los dos enfoques.
+
+\Needspace{8\baselineskip}\section*{12. Conjuntos de datos del simulador y del HUCA}
+\textbf{Tiempo orientativo: }25 segundos.
+
+Los dos conjuntos aportan imágenes de un latido de V1. El simulador genera \SimPatients{} casos y sus etiquetas describen rasgos morfológicos. El HUCA aporta \HucaPatients{} pacientes con una etiqueta clínica por persona. Los trazados que se muestran son ejemplos independientes.
+
+\textbf{Transición.} Primero describo cómo se generan los casos simulados.
+
+\Needspace{8\baselineskip}\section*{13. Simulador QRS/ST}
+\textbf{Tiempo orientativo: }35 segundos.
+
+El simulador construye cada latido sumando gaussianas. Su amplitud, posición y anchura permiten modificar regiones de las ondas. Sayadi y colaboradores utilizaron componentes gaussianos en un modelo dinámico. El simulador de este trabajo suma directamente los componentes. Las etiquetas se asignan a partir de los rasgos que aparecen en el latido generado.
+
+\textbf{Transición.} Al variar sus componentes se construyen distintas familias de trazados.
+
+\Needspace{8\baselineskip}\section*{14. Familias del simulador}
+\textbf{Tiempo orientativo: }25 segundos.
+
+Las familias incluyen un trazado de referencia y distintas combinaciones de cambios en el QRS, el ST y la onda T. Cada familia permite generar ejemplos con una morfología distinta.
+
+\textbf{Transición.} Veamos cuántas veces aparece cada rasgo en el conjunto generado.
+
+\Needspace{8\baselineskip}\section*{15. Distribución de etiquetas en el simulador}
+\textbf{Tiempo orientativo: }25 segundos.
+
+Los rasgos morfológicos pueden coexistir. La regla que exige los tres produce \SimPositive{} positivos y \SimNegative{} negativos entre los \SimPatients{} casos simulados. Este desequilibrio motiva el uso de métricas que describan el rendimiento en ambas clases y en la clase positiva.
+
+\textbf{Transición.} El segundo conjunto aporta la evaluación sobre registros clínicos.
+
+\Needspace{8\baselineskip}\section*{16. Conjunto clínico del HUCA}
+\textbf{Tiempo orientativo: }25 segundos.
+
+La campaña evaluó \HucaPatients{} pacientes, con \HucaPositive{} etiquetas positivas y \HucaNegative{} negativas. Según la memoria, se excluyeron casos que los colaboradores clínicos aconsejaron dejar fuera por dudas de clasificación. En el código, los 46 casos excluidos son los que tenían a la vez la etiqueta positiva de Brugada y el indicador de patrón basal patológico en la copia de trabajo. La copia pública de PhysioNet tiene etiquetas distintas. Los recuentos de la diapositiva corresponden a la muestra utilizada en el TFG. La evaluación emplea las etiquetas de la copia de trabajo. Algunas difieren de los metadatos de la publicación de PhysioNet.
+
+\textbf{Transición.} Con ambos conjuntos definidos, el esquema sitúa los dos enfoques.
+
+\Needspace{8\baselineskip}\section*{17. Diseño experimental}
+\textbf{Tiempo orientativo: }30 segundos.
+
+El esquema muestra dos formas de utilizar los ECG etiquetados. Empiezo por Gemma: las demostraciones forman parte de la consulta y el modelo clasifica con sus pesos fijos. En la otra rama, ResNet18 ajusta sus pesos antes de clasificar un ECG nuevo. A la derecha se resume cómo se evalúan los dos enfoques.
+
+\textbf{Transición.} Empiezo por cómo se construye la consulta de Gemma.
+
+\Needspace{8\baselineskip}\section*{18. Implementación del ICL con Gemma 4 E4B}
+\textbf{Tiempo orientativo: }25 segundos.
+
+E4B es una variante compacta de la familia Gemma 4 de Google. La consulta contiene instrucciones, demostraciones etiquetadas y la imagen que se quiere clasificar. Se prueban selecciones estándar y balanceadas por clase. El modelo devuelve etiquetas estructuradas para calcular las métricas.
+
+\textbf{Transición.} Veamos ahora cómo se implementó la referencia supervisada.
+
+\Needspace{8\baselineskip}\section*{19. Implementación de la CNN con ResNet18}
+\textbf{Tiempo orientativo: }30 segundos.
+
+La CNN utiliza ResNet18 preentrenada y ajusta la red completa. La imagen se convierte a gris, se redimensiona y se replica su intensidad en tres canales para respetar la entrada de ResNet18. El simulador requiere tres salidas morfológicas. El entrenamiento con HUCA utiliza una salida para la etiqueta clínica.
+
+\textbf{Transición.} Grad-CAM permite inspeccionar una salida de la red entrenada.
+
+\Needspace{8\baselineskip}\section*{20. Inspección de activaciones con Grad-CAM}
+\textbf{Tiempo orientativo: }30 segundos.
+
+El ejemplo muestra un latido sintético de V1 y el mapa de Grad-CAM de la salida asociada a RBBB. En la superposición se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color indica regiones relacionadas con la salida de la CNN en este ejemplo. Es una inspección cualitativa.
+
+\textbf{Transición.} Con los dos métodos definidos, podemos distinguir de dónde provienen los ejemplos y los ECG de prueba.
+
+\Needspace{8\baselineskip}\section*{21. Escenarios de evaluación}
+\textbf{Tiempo orientativo: }15 segundos.
+
+Primero se evalúan los dos enfoques dentro del simulador. Después se mantienen los ejemplos simulados y se pasa a evaluar en el HUCA, donde también se prueban estrategias de adaptación. Por último, tanto los ejemplos como la evaluación proceden del HUCA.
+
+\textbf{Transición.} El protocolo concreta cómo se reserva un paciente para la prueba.
+
+\Needspace{8\baselineskip}\section*{22. Protocolo de evaluación por paciente: LOOCV}
+\textbf{Tiempo orientativo: }35 segundos.
+
+K es el número de demostraciones para Gemma o casos de entrenamiento para ResNet18. Se evalúan cinco valores con tres semillas. Cada pliegue reserva un paciente para la prueba. La CNN clínica dispone además de ocho pacientes de validación para elegir época y umbral. La exactitud balanceada promedia sensibilidad y especificidad. F1 combina precisión y sensibilidad de la clase positiva.
+
+\textbf{Transición.} Empezamos con el escenario en el que todos los datos son simulados.
+
+\Needspace{8\baselineskip}\section*{23. Simulación}
+\textbf{Tiempo orientativo: }5 segundos.
+
+En el primer escenario, los ejemplos y los datos de prueba son simulados.
+
+\Needspace{8\baselineskip}\section*{24. Resultados con ejemplos del simulador}
+\textbf{Tiempo orientativo: }55 segundos.
+
+El eje horizontal indica el número de ejemplos. Gemma, con demostraciones balanceadas, llega a una exactitud balanceada de \SimVlmBA{}. La referencia ResNet18 llega a \SimCnnBA{}. Ambos métodos mejoran a medida que aumenta el número de ejemplos. Las barras muestran la desviación estándar entre tres semillas. F1 resume la precisión y la sensibilidad de la clase positiva.
+
+\textbf{Transición.} Las matrices permiten distinguir los errores de cada clase.
+
+\Needspace{8\baselineskip}\section*{25. Matrices de confusión en el simulador}
+\textbf{Tiempo orientativo: }30 segundos.
+
+A la izquierda se ve Gemma con 32 demostraciones balanceadas y a la derecha ResNet18 con el mismo número de ejemplos de entrenamiento. Las filas separan positivos y negativos reales. Gemma genera menos falsos positivos en esta comparación. Cada matriz reúne tres evaluaciones sobre los mismos casos.
+
+\textbf{Transición.} Ahora cambiamos los datos de prueba.
+
+\Needspace{8\baselineskip}\section*{26. Cambio de dominio}
+\textbf{Tiempo orientativo: }5 segundos.
+
+En el segundo escenario se mantienen los ejemplos simulados y se evalúa en el HUCA.
+
+\Needspace{8\baselineskip}\section*{27. Cambio de dominio en ICL con selección balanceada}
+\textbf{Tiempo orientativo: }30 segundos.
+
+En la selección balanceada se compara qué ocurre al cambiar el origen de las demostraciones de Gemma, cuyos pesos permanecen fijos. Ante consultas clínicas, los ejemplos del HUCA ayudan a clasificar otros registros del mismo conjunto. Con demostraciones del simulador, el rendimiento clínico se mantiene próximo al azar.
+
+\textbf{Transición.} Antes de ver la selección estándar y las variantes de la CNN, conviene explicar el cambio de dominio.
+
+\Needspace{8\baselineskip}\section*{28. Adaptación de dominio}
+\textbf{Tiempo orientativo: }20 segundos.
+
+La ilustración muestra qué significa entrenar con imágenes de un origen y evaluar con imágenes de otro. Aquí pasamos de latidos simulados a registros del HUCA. Cambian el aspecto del trazado y la etiqueta evaluada: primero se describen rasgos de un latido y después se clasifica al paciente. En la CNN se probó incorporar imágenes del HUCA sin sus etiquetas para reducir la diferencia visual.
+
+\textbf{Transición.} La selección estándar permite ver si el patrón del ICL se mantiene con otro reparto de ejemplos.
+
+\Needspace{8\baselineskip}\section*{29. Cambio de dominio en ICL con selección estándar}
+\textbf{Tiempo orientativo: }20 segundos.
+
+La selección estándar reproduce el mismo patrón general. Las consultas clínicas se benefician de ejemplos del HUCA, mientras que las demostraciones simuladas aportan poco al clasificar los registros clínicos.
+
+\textbf{Transición.} Veamos qué ocurre para ResNet18 al entrenar con el simulador y probar sobre el HUCA.
+
+\Needspace{8\baselineskip}\section*{30. CNN entrenada en el simulador y evaluada en el HUCA}
+\textbf{Tiempo orientativo: }35 segundos.
+
+Aquí se entrena la CNN con datos del simulador y se cambia el conjunto de prueba. La línea continua representa la evaluación simulada y la discontinua, la clínica. Con treinta y dos ejemplos la exactitud balanceada clínica queda en \TransferCnnLastBA{}. El cambio de dominio afecta tanto al aspecto del trazado como a las etiquetas.
+
+\textbf{Transición.} Las variantes de adaptación intentan reducir esa pérdida de rendimiento.
+
+\Needspace{8\baselineskip}\section*{31. Métodos de adaptación de dominio en la CNN}
+\textbf{Tiempo orientativo: }40 segundos.
+
+Gemma con demostraciones sintéticas aparece en el panel derecho. En la izquierda, la comparación muestra las cuatro variantes de adaptación de la CNN. Usan imágenes clínicas sin sus etiquetas, incluidas las que se evalúan después. CORAL y MMD mejoran algunos puntos frente a ResNet18 con el mismo K. La mejor exactitud balanceada global sigue correspondiendo a la referencia sin adaptación.
+
+\textbf{Transición.} F1 permite comprobar qué sucede con la detección de positivos.
+
+\Needspace{8\baselineskip}\section*{32. F1 de la clase positiva al cambiar de dominio}
+\textbf{Tiempo orientativo: }30 segundos.
+
+El panel de F1 permite examinar la detección de positivos al cambiar de dominio. El rendimiento sigue siendo bajo en la clasificación clínica, tanto con las variantes de adaptación como con las demostraciones simuladas de Gemma. Esto ayuda a interpretar una especificidad alta cuando se predice casi siempre la clase negativa.
+
+\textbf{Transición.} En el último escenario los ejemplos proceden del propio HUCA.
+
+\Needspace{8\baselineskip}\section*{33. Evaluación clínica}
+\textbf{Tiempo orientativo: }5 segundos.
+
+En el tercer escenario, tanto los ejemplos como la prueba proceden del HUCA.
+
+\Needspace{8\baselineskip}\section*{34. Demostraciones y entrenamiento con ejemplos del HUCA}
+\textbf{Tiempo orientativo: }70 segundos.
+
+En el tercer escenario, Gemma recibe demostraciones del HUCA y ResNet18 se entrena con imágenes del mismo conjunto. El paciente de prueba queda reservado en ambos casos. A la izquierda vemos la exactitud balanceada. A la derecha se muestra F1 para la clase positiva. F1 baja cuando el modelo deja casos positivos sin detectar o cuando da demasiadas falsas alarmas. Sin demostraciones, Gemma no resulta capaz de identificar positivos en la evaluación realizada. Con dos o cuatro ejemplos, la mejor CNN conserva una ligera ventaja. Desde ocho ejemplos, Gemma con selección balanceada obtiene mejores resultados. Con treinta y dos alcanza una exactitud balanceada de \RealVlmBA{}, frente a \RealCnnLastBA{} de la CNN balanceada, y un F1 de \RealVlmFone{}. La comparación se refiere a esta muestra y a las configuraciones evaluadas.
+
+\textbf{Transición.} Las matrices detallan los aciertos y errores por clase.
+
+\Needspace{8\baselineskip}\section*{35. Matrices de confusión en la evaluación clínica}
+\textbf{Tiempo orientativo: }35 segundos.
+
+Las matrices muestran las mejores configuraciones balanceadas de cada método. A la izquierda, Gemma utiliza treinta y dos demostraciones. A la derecha, ResNet18 utiliza dieciséis ejemplos de entrenamiento. Gemma obtiene una sensibilidad de \RealVlmSens{} y una especificidad de \RealVlmSpec{}. Esto deja sin identificar alrededor de una cuarta parte de los positivos. Las matrices se normalizan por clase real y agregan tres evaluaciones de los mismos pacientes.
+
+\textbf{Transición.} Con estos tres escenarios ya podemos responder a las preguntas planteadas al principio.
+
+\Needspace{8\baselineskip}\section*{36. Conclusiones}
+\textbf{Tiempo orientativo: }40 segundos.
+
+Con ejemplos del HUCA, Gemma supera a ResNet18 desde ocho demostraciones. Con 32 y selección balanceada, la exactitud balanceada es \RealVlmBA{} para Gemma y \RealCnnLastBA{} para ResNet18. El simulador demuestra que ambos aprovechan más ejemplos en una tarea controlada. Al usar ejemplos sintéticos sobre el HUCA el rendimiento cae, lo que pone de relieve la importancia de la procedencia de las demostraciones.
+
+\textbf{Transición.} ¿Por qué pueden ser tan distintos ambos resultados clínicos?
+
+\Needspace{8\baselineskip}\section*{37. Interpretación y límites del estudio}
+\textbf{Tiempo orientativo: }45 segundos.
+
+Una explicación compatible con los resultados es que los ejemplos del HUCA muestran a Gemma cómo se aplica la etiqueta clínica sobre trazados reales. ResNet18 parte de ImageNet y debe ajustar sus pesos con pocas imágenes. Además, dispone de ocho pacientes de validación por pliegue. El resultado podría depender del preentrenamiento, del modelo o del protocolo y el experimento no aísla esos factores. Los pesos abiertos permitieron procesar las imágenes en un entorno privado. El estudio utiliza datos de un centro, un latido V1 por paciente y etiquetas distintas entre simulador y HUCA. Aún quedan positivos por detectar y el apoyo al triaje necesita validación clínica.
+
+\textbf{Transición.} Estos límites orientan las siguientes evaluaciones.
+
+\Needspace{8\baselineskip}\section*{38. Continuación del trabajo}
+\textbf{Tiempo orientativo: }25 segundos.
+
+La continuación empieza por revisar las etiquetas con especialistas y ampliar la recogida de casos etiquetados. Se estudiarían otros rasgos morfológicos del ECG y se probarían otros métodos de adaptación de dominio. Por último, se evaluaría si el sistema ayuda a priorizar ECG sospechosos en el HUCA y después en otros centros sanitarios.
+
+\textbf{Transición.} Con esto termino la exposición.
+
+\Needspace{8\baselineskip}\section*{39. Cierre y preguntas}
+\textbf{Tiempo orientativo: }10 segundos.
+
+Gracias por su atención. Quedo a disposición del tribunal para las preguntas.
+
+\clearpage\section*{Referencias y preguntas previsibles}
+\Needspace{7\baselineskip}\subsection*{Referencias clínicas y estado del arte}
+Las referencias de contexto respaldan la motivación clínica y la procedencia de los datos y trazados. Los antecedentes corresponden al análisis de señales, el análisis de imágenes, el cambio de dominio y el aprendizaje con pocos ejemplos. Los créditos y las licencias de las imágenes publicadas se detallan en el proyecto LaTeX. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh et al. (2026).} El crédito de TarmacView figura junto a la ilustración de adaptación.
+
+\Needspace{7\baselineskip}\subsection*{Referencias de métodos y métricas}
+Estas fuentes identifican los métodos que aparecen en el desarrollo o los resultados, junto a la ficha del modelo y la definición de F1. Los valores experimentales proceden de los agregados canónicos del proyecto.
+
+\section*{Preguntas que conviene preparar}
+\begin{description}[style=nextline]
+\item[¿La comparación utiliza el mismo presupuesto de etiquetas?] El valor de K es común, pero la CNN con HUCA dispone además de ocho pacientes de validación. Se debe declarar esta diferencia al explicar el protocolo.
+\item[¿Por qué el simulador no transfiere bien?] Cambian tanto la apariencia de las imágenes como el significado de la etiqueta. El experimento no separa ambos efectos.
+\item[¿La ventaja de Gemma demuestra significación estadística?] No. Las barras representan la desviación entre tres semillas y no sustituyen un contraste estadístico ni una validación externa.
+\item[¿Podría usarse ya para descartar pacientes?] La mejor configuración todavía omite positivos. La utilidad como apoyo a la priorización necesita evaluación clínica, externa y prospectiva.
+\item[¿Qué demuestra Grad-CAM?] Muestra regiones asociadas a una salida. No demuestra por sí solo un mecanismo causal ni que la CNN reconozca un criterio clínico.
+\item[¿Qué ocurre sin demostraciones?] Con estas instrucciones, Gemma no identifica positivos. Es un resultado de la configuración evaluada y no una afirmación universal sobre todos los modelos o prompts.
+\end{description}
+\clearpage\section*{Fuentes para la preparación}
+\begin{itemize}
+\item Manual de Identidad Corporativa de UniOvi, apartado 6.1, páginas 57--58. \url{https://www.uniovi.es/conocenos/uniovi/identidad}
+\item Página de TFG de la EPI. \url{https://epigijon.uniovi.es/estudiantes/tfg}
+\item Copia pública de las directrices de entrega y defensa de la EPI, utilizada únicamente como orientación temporal. \url{https://expydoc.com/doc/6397600/directrices-para-los-estudiantes}
+\item MIT Communication Lab, Slide Design. \url{https://mitcommlab.mit.edu/aeroastro/commkit/slide-design/}
+\item Beamer User Guide, capítulo 5. \url{https://ctan.org/pkg/beamer}
+\end{itemize}
+\end{document}

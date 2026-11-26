@@ -1,0 +1,509 @@
+[
+  {
+    "id": "p01",
+    "title": "Análisis de ECGs con grandes modelos de lenguaje",
+    "seconds": 15,
+    "figures": [],
+    "latex": "\\centering\n\\vspace*{5mm}\n\\includegraphics[height=33mm]{assets/logo_uniovi_portada.pdf}\\par\n\\vspace{6mm}\n{\\fontsize{32}{40}\\selectfont\\ThesisTitle\\par}\n\\vspace{7mm}\n{\\fontsize{19}{25}\\selectfont\\DegreeName\\par}\n\\vspace{6mm}\n{\\fontsize{21}{27}\\selectfont\\AuthorName\\par}\n{\\fontsize{17}{23}\\selectfont Tutor: \\SupervisorName\\par}\n\\vfill\n\\includegraphics[height=9mm]{assets/logo_epi_horizontal.pdf}\\hfill\n{\\fontsize{17}{22}\\selectfont\\SubmissionDate}\\par",
+    "notes": "Buenos días. Este TFG estudia la clasificación de imágenes de ECG con pocos ejemplos etiquetados y utiliza el síndrome de Brugada como caso de estudio.",
+    "transition": "Empiezo por la disponibilidad de datos etiquetados.",
+    "section": "main",
+    "block": "Introducción"
+  },
+  {
+    "id": "problema",
+    "title": "Enfermedades cardiovasculares y síndrome de Brugada",
+    "figures": [],
+    "latex": "\\vspace{7mm}\n\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.56\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth,height=103mm,keepaspectratio]{assets/referencias_visuales/electrodos.jpg}\\par\n\\credit{\\href{https://www.pexels.com/photo/medical-instruments-on-electrocardiogram-printout-35044386/}{Fotografía de Marta Branco, Pexels.}}\n\\end{column}\n\\begin{column}{.39\\textwidth}\n{\\color{UOGreen}\\fontsize{42}{49}\\selectfont 19,8 millones\\par}\n\\vspace{2mm}\n{\\fontsize{19}{25}\\selectfont de muertes cardiovasculares\\\\en el mundo en 2022.\\par}\n\\credit{\\href{https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)}{Estimación de la OMS.}}\n\\vspace{8mm}\n{\\color{UOGreen}\\fontsize{23}{30}\\selectfont Síndrome de Brugada\\par}\n{\\fontsize{19}{25}\\selectfont Pocos positivos para\\\\entrenar y evaluar.\\par}\n\\end{column}\n\\end{columns}",
+    "seconds": 30,
+    "notes": "La OMS estima que en 2022 murieron 19,8 millones de personas por enfermedades cardiovasculares. Dentro de ese contexto, Brugada plantea una dificultad distinta: al haber pocos casos, cuesta reunir ECG positivos confirmados que cubran la variedad de trazados y reservar suficientes positivos para evaluar el modelo. En Brugada esto importa especialmente porque el patrón puede ser intermitente, incluso en un mismo paciente.",
+    "transition": "Con pocas etiquetas, la forma de aprovechar cada ECG pasa a ser parte del problema.",
+    "section": "main",
+    "block": "Introducción"
+  },
+  {
+    "id": "p02",
+    "title": "Electrocardiograma en formato imagen",
+    "seconds": 35,
+    "figures": [],
+    "latex": "\\begin{tikzpicture}[remember picture,overlay,x=1mm,y=-1mm]\n\\begin{scope}[shift={(current page.north west)}]\n\\node[anchor=north west,inner sep=0pt] at (0,0)\n  {\\includegraphics[viewport=0 86 1000 445,clip,width=\\paperwidth]{assets/referencias_visuales/electrocardiograma_papel_adjunto.png}};\n\\node[anchor=north west,inner sep=0pt,text=UOInk] at (16,120)\n  {\\fontsize{40}{47}\\selectfont Electrocardiograma en formato imagen};\n\\node[anchor=north west,inner sep=0pt,text=UOGreen] at (16,145)\n  {\\fontsize{21}{28}\\selectfont ¿Puede un modelo interpretar el trazado con pocos ejemplos?};\n\\node[anchor=south east,inner sep=0pt,text=UOGray] at (302,172)\n  {\\fontsize{11}{14}\\selectfont\\insertframenumber};\n\\end{scope}\n\\end{tikzpicture}",
+    "notes": "El análisis automático suele empezar por la señal digital, que permite medir amplitudes e intervalos. Aquí represento la señal como imagen para comprobar si un modelo de visión y lenguaje puede reconocer diferencias en la forma del trazado cuando solo tiene unos pocos ejemplos. La foto ilustra cómo se ve un ECG en papel. En el experimento, ambos modelos reciben imágenes renderizadas de un latido de V1.",
+    "transition": "¿Cómo le enseñamos la tarea al modelo con tan pocos ECG?",
+    "section": "main",
+    "block": "Introducción"
+  },
+  {
+    "id": "a03",
+    "title": "Aprendizaje en contexto",
+    "seconds": 25,
+    "figures": [
+      "icl_general_dong2024.pdf"
+    ],
+    "latex": "\\fullfigure[94mm]{icl_general_dong2024.pdf}\n\\takeaway{Instrucciones y ejemplos etiquetados orientan la respuesta a una consulta nueva, sin actualizar los pesos.}\n\\credit{Esquema de ICL en una tarea de texto, adaptado de Dong y colaboradores (2024).}",
+    "notes": "A Gemma le mostramos instrucciones, varias imágenes con sus etiquetas y, al final, el ECG que queremos clasificar. Sus pesos permanecen fijos. El esquema ilustra el mismo principio con texto. En nuestro caso, cada demostración incluye un ECG y su etiqueta.",
+    "transition": "Con ese procedimiento podemos formular las tres preguntas del trabajo.",
+    "section": "main",
+    "block": "Introducción"
+  },
+  {
+    "id": "objetivos",
+    "title": "Propuesta y objetivos del TFG",
+    "seconds": 30,
+    "figures": [],
+    "section": "main",
+    "block": "Introducción",
+    "latex": "\\vspace{5mm}\n{\\fontsize{20}{27}\\selectfont\\color{UOGreen} Apoyar el triaje de ECG sospechosos.\\par}\n\\vspace{8mm}\n{\\fontsize{25}{34}\\selectfont\n{\\color{UOGreen}01}\\quad Efecto del número de demostraciones\\par\\vspace{10mm}\n{\\color{UOGreen}02}\\quad Comparación del ICL con una CNN supervisada\\par\\vspace{10mm}\n{\\color{UOGreen}03}\\quad Transferencia de datos sintéticos a datos clínicos\\par}",
+    "notes": "La pregunta principal es si Gemma 4 puede aprovechar pocos ECG etiquetados para clasificar un trazado nuevo. Primero estudio el efecto del número de demostraciones. Después comparo el ICL con ResNet18, que emplea los casos para entrenar. La tercera pregunta es cuánto se conserva al pasar de ejemplos sintéticos a ECG clínicos.",
+    "transition": "La exposición sigue el recorrido que aparece en el índice."
+  },
+  {
+    "id": "indice",
+    "title": "Estructura de la exposición",
+    "seconds": 15,
+    "figures": [],
+    "section": "main",
+    "block": "Introducción",
+    "latex": "\\vspace{8mm}\n{\\fontsize{25}{34}\\selectfont\n\\hyperlink{antecedentes}{1. Estado del arte y fundamentos}\\par\\vspace{7mm}\n\\hyperlink{p05}{2. Datos, simulación e implementación}\\par\\vspace{7mm}\n\\hyperlink{escenarios}{3. Escenarios y protocolo de evaluación}\\par\\vspace{7mm}\n\\hyperlink{escenario_simulador}{4. Resultados en los tres escenarios}\\par\\vspace{7mm}\n\\hyperlink{p16}{5. Conclusiones, discusión y continuación}\\par}",
+    "notes": "Primero sitúo la propuesta en el estado del arte y presento el caso de Brugada. Después explico los datos, el diseño y el protocolo. Los resultados siguen los tres escenarios de evaluación.",
+    "transition": "El estado del arte distingue tres formas de utilizar los ECG y sus etiquetas."
+  },
+  {
+    "id": "antecedentes",
+    "title": "Estado del arte",
+    "seconds": 30,
+    "figures": [],
+    "section": "main",
+    "block": "Introducción",
+    "latex": "\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.49\\textwidth}\n\\centering\n\\includegraphics[trim=0 735bp 0 0,clip,width=\\linewidth,height=110mm,keepaspectratio]{assets/referencias_visuales/sangha.pdf}\\par\n\\end{column}\n\\begin{column}{.46\\textwidth}\n{\\color{UOGreen}\\fontsize{24}{30}\\selectfont ECG como señal\\par}\n{\\fontsize{19}{26}\\selectfont Ribeiro et al. (2020)\\par}\n\\vspace{6mm}\n{\\color{UOGreen}\\fontsize{24}{30}\\selectfont ECG como imagen\\par}\n{\\fontsize{19}{26}\\selectfont Sangha et al. (2022)\\par}\n\\vspace{6mm}\n{\\color{UOGreen}\\fontsize{24}{30}\\selectfont Aprendizaje en contexto\\par}\n{\\fontsize{19}{26}\\selectfont Camba et al. (2026): Brugada y otros ECG.\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Ribeiro estudió el análisis de señales digitales y Sangha evaluó CNN sobre imágenes de ECG. Camba y colaboradores ya aplicaron ICL a Brugada y Saleh exploró cómo entrenar con pocos casos de Brugada. Aquí comparamos Gemma y ResNet18 en tres escenarios que cambian el número y la procedencia de los ejemplos. \\href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh y colaboradores (2026).}",
+    "transition": "Antes de ver el caso de Brugada, vamos a localizar las partes de un latido."
+  },
+  {
+    "section": "main",
+    "figures": [
+      "fig_morfologia_ecg.pdf"
+    ],
+    "id": "latido",
+    "title": "Cómo leer un latido",
+    "block": "Fundamentos clínicos",
+    "seconds": 35,
+    "latex": "\\centering\n\\includegraphics[trim=3bp 4bp 2bp 25bp,clip,width=226mm]{assets/fig_morfologia_ecg.pdf}\\par\n\\vspace{4mm}\n\\begin{columns}[T,onlytextwidth]\n\\begin{column}{.34\\textwidth}\n{\\color{UOGreen}\\fontsize{20}{26}\\selectfont Complejo QRS\\par}\n{\\fontsize{16}{22}\\selectfont Activación ventricular. El RBBB es un bloqueo de rama derecha que cambia la parte final del QRS.\\par}\n\\end{column}\n\\begin{column}{.30\\textwidth}\n{\\color{UOGreen}\\fontsize{20}{26}\\selectfont Segmento ST\\par}\n{\\fontsize{16}{22}\\selectfont Empieza en el punto J. Se observa si está elevado respecto a la línea de base.\\par}\n\\end{column}\n\\begin{column}{.28\\textwidth}\n{\\color{UOGreen}\\fontsize{20}{26}\\selectfont Onda T\\par}\n{\\fontsize{16}{22}\\selectfont Repolarización ventricular. Se observa si la onda está invertida.\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Leemos el trazado de izquierda a derecha. La P corresponde a la activación de las aurículas y el QRS, a la de los ventrículos. En el bloqueo de rama derecha, o RBBB, el ventrículo derecho se activa con retraso y puede aparecer una segunda deflexión positiva al final del QRS. En el simulador, RBBB etiqueta ese rasgo morfológico. Después del punto J miramos si el ST se eleva respecto a la línea de base y si la onda T, que corresponde a la repolarización ventricular, apunta hacia abajo.",
+    "transition": "Veamos ahora cómo aparecen estos rasgos en V1 en el patrón de Brugada."
+  },
+  {
+    "id": "p03",
+    "title": "Síndrome de Brugada y derivación V1",
+    "seconds": 30,
+    "figures": [
+      "fig_brugada_pattern.pdf",
+      "brugada_patterns_orphanet.pdf"
+    ],
+    "latex": "\\vspace{3mm}\n\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.63\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth]{assets/fig_brugada_pattern.pdf}\\par\n\\credit{Comparación esquemática. Figura 3.4 de la memoria.}\n\\vspace{5mm}\n{\\fontsize{18}{24}\\selectfont QRS terminal \\enspace\\textperiodcentered\\enspace Elevación del ST \\enspace\\textperiodcentered\\enspace Onda T negativa\\par}\n\\end{column}\n\\begin{column}{.35\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth,height=101mm,keepaspectratio]{assets/brugada_patterns_orphanet.pdf}\\par\n\\credit{Napolitano y Priori (2006), CC BY 2.0.}\n\\end{column}\n\\end{columns}",
+    "notes": "La figura localiza en V1 las regiones que se examinan en un trazado sospechoso: el final del QRS, el ST y la onda T. En Brugada sus cambios pueden ser intermitentes, lo que añade dificultad a la hora de reunir ejemplos representativos de una enfermedad ya poco frecuente. La etiqueta clínica se asigna al paciente y puede incorporar información del ECG completo y de otras pruebas.",
+    "transition": "Antes de explicar cómo se procesaron esos registros, conviene situar el estudio y el uso de las imágenes.",
+    "section": "main",
+    "block": "Fundamentos clínicos"
+  },
+  {
+    "id": "a15",
+    "title": "Aspectos éticos y protección de datos",
+    "seconds": 15,
+    "figures": [],
+    "section": "main",
+    "block": "Fundamentos clínicos",
+    "latex": "\\vspace{14mm}\n\\begin{columns}[t,onlytextwidth]\n\\begin{column}{.46\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1pt}}\\par\\vspace{5mm}\n{\\fontsize{26}{33}\\selectfont Protección de los datos\\par}\n\\vspace{6mm}\n{\\fontsize{20}{28}\\selectfont Modelos de pesos abiertos para procesar los ECG sin enviarlos a servicios externos.\\par}\n\\end{column}\n\\begin{column}{.46\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1pt}}\\par\\vspace{5mm}\n{\\fontsize{26}{33}\\selectfont Responsabilidad clínica\\par}\n\\vspace{6mm}\n{\\fontsize{20}{28}\\selectfont Apoyo al triaje ante sospecha de síndrome de Brugada.\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "El HUCA entregó los registros ya anonimizados. Los pesos abiertos de Gemma permitieron ejecutar la inferencia en un entorno privado. La posibilidad que se investiga es priorizar la revisión de ECG sospechosos bajo responsabilidad del personal sanitario.",
+    "transition": "Ahora explico la referencia supervisada que utilizamos para comparar con el ICL."
+  },
+  {
+    "id": "cnn_concepto",
+    "title": "Redes neuronales convolucionales",
+    "figures": [],
+    "latex": "\\centering\n\\includegraphics[trim=0 55bp 60bp 65bp,clip,width=267mm,height=86mm,keepaspectratio]{assets/referencias_visuales/lenet.pdf}\\par\n\\vspace{4mm}\n\\begin{columns}[t,onlytextwidth]\n\\begin{column}{.31\\textwidth}\\centering\n{\\color{UOGreen}\\fontsize{23}{30}\\selectfont Convolución\\par}\n{\\fontsize{17}{23}\\selectfont Aplica filtros a la imagen\\par}\n\\end{column}\n\\begin{column}{.31\\textwidth}\\centering\n{\\color{UOGreen}\\fontsize{23}{30}\\selectfont \\textit{Pooling}\\par}\n{\\fontsize{17}{23}\\selectfont Reduce la resolución espacial\\par}\n\\end{column}\n\\begin{column}{.31\\textwidth}\\centering\n{\\color{UOGreen}\\fontsize{23}{30}\\selectfont Clasificación\\par}\n{\\fontsize{17}{23}\\selectfont Predice la clase\\par}\n\\end{column}\n\\end{columns}\n\\vspace{3mm}\n\\credit{\\href{https://commons.wikimedia.org/wiki/File:LeNet-5_architecture.svg}{Arquitectura LeNet-5, Zhang y colaboradores. Dive into Deep Learning (CC BY-SA 4.0).}}",
+    "seconds": 20,
+    "notes": "Una convolución recorre la imagen con filtros cuyos coeficientes aprende la red. Un filtro puede resaltar, por ejemplo, los bordes del trazado. El pooling resume las activaciones y reduce su resolución espacial. La capa de clasificación usa esas características para producir una predicción. Durante el entrenamiento, el error respecto a las etiquetas guía el ajuste de los pesos.",
+    "transition": "Veamos los conjuntos con los que comparamos los dos enfoques.",
+    "section": "main",
+    "block": "Fundamentos metodológicos"
+  },
+  {
+    "id": "p05",
+    "title": "Conjuntos de datos del simulador y del HUCA",
+    "seconds": 25,
+    "figures": [
+      "fig_synthetic_real_comparison.pdf"
+    ],
+    "latex": "\\centering\n\\includegraphics[width=262mm,height=111mm,keepaspectratio]{assets/fig_synthetic_real_comparison.pdf}\\par\n\\vspace{3mm}\n\\begin{minipage}{262mm}\\centering\n\\makebox[.49\\linewidth]{\\fontsize{22}{30}\\selectfont\\SimPatients{} casos, \\SimPositive{} positivos}%\n\\makebox[.49\\linewidth]{\\fontsize{22}{30}\\selectfont\\HucaPatients{} pacientes, \\HucaPositive{} positivos}\n\\end{minipage}",
+    "notes": "Los dos conjuntos aportan imágenes de un latido de V1. El simulador genera \\SimPatients{} casos y sus etiquetas describen rasgos morfológicos. El HUCA aporta \\HucaPatients{} pacientes con una etiqueta clínica por persona. Los trazados que se muestran son ejemplos independientes.",
+    "transition": "Primero describo cómo se generan los casos simulados.",
+    "section": "main",
+    "block": "Datos y simulación"
+  },
+  {
+    "id": "p06",
+    "title": "Simulador QRS/ST",
+    "seconds": 35,
+    "figures": [
+      "gaussian_generator.drawio.pdf"
+    ],
+    "latex": "\\fullfigure[109mm]{gaussian_generator.drawio.pdf}\n\\takeaway{El latido se construye como suma de gaussianas.}",
+    "notes": "El simulador construye cada latido sumando gaussianas. Su amplitud, posición y anchura permiten modificar regiones de las ondas. Sayadi y colaboradores utilizaron componentes gaussianos en un modelo dinámico. El simulador de este trabajo suma directamente los componentes. Las etiquetas se asignan a partir de los rasgos que aparecen en el latido generado.",
+    "transition": "Al variar sus componentes se construyen distintas familias de trazados.",
+    "section": "main",
+    "block": "Datos y simulación"
+  },
+  {
+    "id": "a04",
+    "title": "Familias del simulador",
+    "seconds": 25,
+    "figures": [
+      "fig_synthetic_examples.pdf"
+    ],
+    "latex": "\\fullfigure[123mm]{fig_synthetic_examples.pdf}",
+    "notes": "Las familias incluyen un trazado de referencia y distintas combinaciones de cambios en el QRS, el ST y la onda T. Cada familia permite generar ejemplos con una morfología distinta.",
+    "transition": "Veamos cuántas veces aparece cada rasgo en el conjunto generado.",
+    "section": "main",
+    "block": "Datos y simulación"
+  },
+  {
+    "id": "a05",
+    "title": "Distribución de etiquetas en el simulador",
+    "seconds": 25,
+    "figures": [
+      "fig_label_distribution.pdf"
+    ],
+    "latex": "\\fullfigure[123mm]{fig_label_distribution.pdf}",
+    "notes": "Los rasgos morfológicos pueden coexistir. La regla que exige los tres produce \\SimPositive{} positivos y \\SimNegative{} negativos entre los \\SimPatients{} casos simulados. Este desequilibrio motiva el uso de métricas que describan el rendimiento en ambas clases y en la clase positiva.",
+    "transition": "El segundo conjunto aporta la evaluación sobre registros clínicos.",
+    "section": "main",
+    "block": "Datos y simulación"
+  },
+  {
+    "id": "huca",
+    "title": "Conjunto clínico del HUCA",
+    "block": "Datos y simulación",
+    "seconds": 25,
+    "section": "main",
+    "figures": [],
+    "latex": "\\begin{columns}[c,onlytextwidth]\n\\begin{column}{.55\\textwidth}\n\\centering\n\\includegraphics[width=\\linewidth,height=100mm,keepaspectratio]{assets/referencias_visuales/huca.jpg}\\par\n\\credit{\\href{https://commons.wikimedia.org/wiki/File:HUCA.jpg}{Hospital Universitario Central de Asturias. LMLM, Wikimedia Commons (CC BY-SA 4.0).}}\n\\end{column}\n\\begin{column}{.41\\textwidth}\n{\\color{UOGreen}\\fontsize{45}{52}\\selectfont\\HucaPatients{}}\\enspace{\\fontsize{23}{30}\\selectfont pacientes}\\par\n\\vspace{4mm}\n{\\fontsize{19}{26}\\selectfont\\HucaPositive{} con etiqueta positiva\\par\n\\HucaNegative{} con etiqueta negativa\\par}\n\\vspace{8mm}\n{\\color{UOGreen}\\fontsize{23}{30}\\selectfont Selección de casos\\par}\n{\\fontsize{19}{26}\\selectfont Se excluyeron 46 casos dudosos.\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "La campaña evaluó \\HucaPatients{} pacientes, con \\HucaPositive{} etiquetas positivas y \\HucaNegative{} negativas. Según la memoria, se excluyeron casos que los colaboradores clínicos aconsejaron dejar fuera por dudas de clasificación. En el código, los 46 casos excluidos son los que tenían a la vez la etiqueta positiva de Brugada y el indicador de patrón basal patológico en la copia de trabajo. La copia pública de PhysioNet tiene etiquetas distintas. Los recuentos de la diapositiva corresponden a la muestra utilizada en el TFG. La evaluación emplea las etiquetas de la copia de trabajo. Algunas difieren de los metadatos de la publicación de PhysioNet.",
+    "transition": "Con ambos conjuntos definidos, el esquema sitúa los dos enfoques."
+  },
+  {
+    "id": "p04",
+    "title": "Diseño experimental",
+    "seconds": 30,
+    "figures": [
+      "fig_pipeline_experimental.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{fig_pipeline_experimental.pdf}",
+    "notes": "El esquema muestra dos formas de utilizar los ECG etiquetados. Empiezo por Gemma: las demostraciones forman parte de la consulta y el modelo clasifica con sus pesos fijos. En la otra rama, ResNet18 ajusta sus pesos antes de clasificar un ECG nuevo. A la derecha se resume cómo se evalúan los dos enfoques.",
+    "transition": "Empiezo por cómo se construye la consulta de Gemma.",
+    "section": "main",
+    "block": "Diseño experimental"
+  },
+  {
+    "id": "p08",
+    "title": "Implementación del ICL con Gemma 4 E4B",
+    "seconds": 25,
+    "figures": [
+      "vlm_icl_context_window.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{vlm_icl_context_window.pdf}",
+    "notes": "E4B es una variante compacta de la familia Gemma 4 de Google. La consulta contiene instrucciones, demostraciones etiquetadas y la imagen que se quiere clasificar. Se prueban selecciones estándar y balanceadas por clase. El modelo devuelve etiquetas estructuradas para calcular las métricas.",
+    "transition": "Veamos ahora cómo se implementó la referencia supervisada.",
+    "section": "main",
+    "block": "Implementación"
+  },
+  {
+    "id": "p07",
+    "title": "Implementación de la CNN con ResNet18",
+    "seconds": 30,
+    "figures": [
+      "cnn_convolutional_pipeline.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{cnn_convolutional_pipeline.pdf}",
+    "notes": "La CNN utiliza ResNet18 preentrenada y ajusta la red completa. La imagen se convierte a gris, se redimensiona y se replica su intensidad en tres canales para respetar la entrada de ResNet18. El simulador requiere tres salidas morfológicas. El entrenamiento con HUCA utiliza una salida para la etiqueta clínica.",
+    "transition": "Grad-CAM permite inspeccionar una salida de la red entrenada.",
+    "section": "main",
+    "block": "Implementación"
+  },
+  {
+    "id": "a06",
+    "title": "Inspección de activaciones con Grad-CAM",
+    "seconds": 30,
+    "figures": [
+      "cnn_simulator_qrs_gradcam_example.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{cnn_simulator_qrs_gradcam_example.pdf}",
+    "notes": "El ejemplo muestra un latido sintético de V1 y el mapa de Grad-CAM de la salida asociada a RBBB. En la superposición se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color indica regiones relacionadas con la salida de la CNN en este ejemplo. Es una inspección cualitativa.",
+    "transition": "Con los dos métodos definidos, podemos distinguir de dónde provienen los ejemplos y los ECG de prueba.",
+    "section": "main",
+    "block": "Implementación"
+  },
+  {
+    "id": "escenarios",
+    "title": "Escenarios de evaluación",
+    "block": "Diseño experimental",
+    "seconds": 15,
+    "figures": [],
+    "section": "main",
+    "latex": "\\vspace{11mm}\\centering\n{\\fontsize{22}{30}\\selectfont\n\\setlength{\\tabcolsep}{6mm}\n\\renewcommand{\\arraystretch}{1.55}\n\\begin{tabular}{@{}p{102mm}p{74mm}p{63mm}@{}}\n\\toprule\n\\scenarioheading\n\\midrule\n\\hyperlink{escenario_simulador}{\\textcolor{UOGray}{01}\\enspace Simulación} & Simulador & Simulador\\\\\n\\hyperlink{escenario_transferencia}{\\textcolor{UOGray}{02}\\enspace Cambio de dominio} & Simulador & HUCA\\\\\n\\hyperlink{escenario_clinico}{\\textcolor{UOGray}{03}\\enspace Evaluación clínica} & HUCA & HUCA\\\\\n\\bottomrule\n\\end{tabular}\\par}",
+    "notes": "Primero se evalúan los dos enfoques dentro del simulador. Después se mantienen los ejemplos simulados y se pasa a evaluar en el HUCA, donde también se prueban estrategias de adaptación. Por último, tanto los ejemplos como la evaluación proceden del HUCA.",
+    "transition": "El protocolo concreta cómo se reserva un paciente para la prueba."
+  },
+  {
+    "id": "p09",
+    "title": "Protocolo de evaluación por paciente: LOOCV",
+    "seconds": 35,
+    "figures": [
+      "clinical_fold_protocol.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{clinical_fold_protocol.pdf}",
+    "notes": "K es el número de demostraciones para Gemma o casos de entrenamiento para ResNet18. Se evalúan cinco valores con tres semillas. Cada pliegue reserva un paciente para la prueba. La CNN clínica dispone además de ocho pacientes de validación para elegir época y umbral. La exactitud balanceada promedia sensibilidad y especificidad. F1 combina precisión y sensibilidad de la clase positiva.",
+    "transition": "Empezamos con el escenario en el que todos los datos son simulados.",
+    "section": "main",
+    "block": "Diseño experimental"
+  },
+  {
+    "section": "main",
+    "figures": [],
+    "id": "escenario_simulador",
+    "title": "Simulación",
+    "block": "Resultados",
+    "plain": true,
+    "seconds": 5,
+    "latex": "\\scenariofocus{Simulación}{Simulador}{Simulador}",
+    "notes": "En el primer escenario, los ejemplos y los datos de prueba son simulados.",
+    "transition": ""
+  },
+  {
+    "id": "p10",
+    "title": "Resultados con ejemplos del simulador",
+    "seconds": 55,
+    "figures": [
+      "comparison_simulator_ba_by_k.pdf",
+      "comparison_simulator_f1_by_k.pdf"
+    ],
+    "latex": "\\vspace{6mm}\n\\twopictures{comparison_simulator_ba_by_k.pdf}{comparison_simulator_f1_by_k.pdf}",
+    "notes": "El eje horizontal indica el número de ejemplos. Gemma, con demostraciones balanceadas, llega a una exactitud balanceada de \\SimVlmBA{}. La referencia ResNet18 llega a \\SimCnnBA{}. Ambos métodos mejoran a medida que aumenta el número de ejemplos. Las barras muestran la desviación estándar entre tres semillas. F1 resume la precisión y la sensibilidad de la clase positiva.",
+    "transition": "Las matrices permiten distinguir los errores de cada clase.",
+    "section": "main",
+    "block": "Resultados 1/3 \\enspace Simulador \\(\\rightarrow\\) Simulador"
+  },
+  {
+    "id": "a07",
+    "title": "Matrices de confusión en el simulador",
+    "seconds": 30,
+    "figures": [
+      "cnn_simulator_qrs_k32_confusion_matrix.pdf",
+      "vlm_simulator_qrs_balanced_k32_confusion_matrix.pdf"
+    ],
+    "latex": "\\vspace{6mm}\n\\twopictures{vlm_simulator_qrs_balanced_k32_confusion_matrix.pdf}{cnn_simulator_qrs_k32_confusion_matrix.pdf}",
+    "notes": "A la izquierda se ve Gemma con 32 demostraciones balanceadas y a la derecha ResNet18 con el mismo número de ejemplos de entrenamiento. Las filas separan positivos y negativos reales. Gemma genera menos falsos positivos en esta comparación. Cada matriz reúne tres evaluaciones sobre los mismos casos.",
+    "transition": "Ahora cambiamos los datos de prueba.",
+    "section": "main",
+    "block": "Resultados 1/3 \\enspace Simulador \\(\\rightarrow\\) Simulador"
+  },
+  {
+    "section": "main",
+    "figures": [],
+    "id": "escenario_transferencia",
+    "title": "Cambio de dominio",
+    "block": "Resultados",
+    "plain": true,
+    "seconds": 5,
+    "latex": "\\scenariofocus{Cambio de dominio}{Simulador}{HUCA}",
+    "notes": "En el segundo escenario se mantienen los ejemplos simulados y se evalúa en el HUCA.",
+    "transition": ""
+  },
+  {
+    "id": "p12",
+    "title": "Cambio de dominio en ICL con selección balanceada",
+    "seconds": 30,
+    "figures": [
+      "domain_gap_icl_context_ba_by_k.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{context_balanced.pdf}",
+    "notes": "En la selección balanceada se compara qué ocurre al cambiar el origen de las demostraciones de Gemma, cuyos pesos permanecen fijos. Ante consultas clínicas, los ejemplos del HUCA ayudan a clasificar otros registros del mismo conjunto. Con demostraciones del simulador, el rendimiento clínico se mantiene próximo al azar.",
+    "transition": "Antes de ver la selección estándar y las variantes de la CNN, conviene explicar el cambio de dominio.",
+    "section": "main",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "antecedente_dominio",
+    "title": "Adaptación de dominio",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+    "seconds": 20,
+    "figures": [],
+    "section": "main",
+    "latex": "\\centering\n\\includegraphics[width=260mm,height=104mm,keepaspectratio]{assets/referencias_visuales/tarmac_domain.png}\\par\n\\vspace{2mm}\n{\\fontsize{18}{24}\\selectfont Simulador \\(\\rightarrow\\) HUCA\\par}\n\\credit{\\href{https://www.tarmacview.com/es/glossary/domain-adaptation/}{Fuente de la ilustración: TarmacView, glosario de adaptación de dominio.}}",
+    "notes": "La ilustración muestra qué significa entrenar con imágenes de un origen y evaluar con imágenes de otro. Aquí pasamos de latidos simulados a registros del HUCA. Cambian el aspecto del trazado y la etiqueta evaluada: primero se describen rasgos de un latido y después se clasifica al paciente. En la CNN se probó incorporar imágenes del HUCA sin sus etiquetas para reducir la diferencia visual.",
+    "transition": "La selección estándar permite ver si el patrón del ICL se mantiene con otro reparto de ejemplos."
+  },
+  {
+    "id": "a11",
+    "title": "Cambio de dominio en ICL con selección estándar",
+    "seconds": 20,
+    "figures": [
+      "domain_gap_icl_context_ba_by_k.pdf"
+    ],
+    "latex": "\\centering\n\\definecolor{ICLSynthetic}{HTML}{2E7D32}\n\\definecolor{ICLClinical}{HTML}{75B978}\n\\definecolor{ICLTransfer}{HTML}{666666}\n{\\fontsize{14}{19}\\selectfont\n\\begin{tikzpicture}[baseline=-.5ex]\\draw[ICLSynthetic,line width=1.15pt] (0,0)--(.65,0);\\fill[ICLSynthetic] (.325,0) circle[radius=1.3pt];\\end{tikzpicture}\\enspace Simulador \\quad\n\\begin{tikzpicture}[baseline=-.5ex]\\draw[ICLClinical,dashed,line width=1.15pt] (0,0)--(.65,0);\\fill[ICLClinical] (.325,0) circle[radius=1.3pt];\\end{tikzpicture}\\enspace HUCA, contexto HUCA \\quad\n\\begin{tikzpicture}[baseline=-.5ex]\\draw[ICLTransfer,dotted,line width=1.15pt] (0,0)--(.65,0);\\fill[ICLTransfer] (.325,0) circle[radius=1.3pt];\\end{tikzpicture}\\enspace HUCA, contexto del simulador\\par}\n\\vspace{3mm}\n\\includegraphics[width=245mm]{assets/context_standard.pdf}\\par\n\\includegraphics[width=245mm]{assets/context_xaxis.pdf}\\par",
+    "notes": "La selección estándar reproduce el mismo patrón general. Las consultas clínicas se benefician de ejemplos del HUCA, mientras que las demostraciones simuladas aportan poco al clasificar los registros clínicos.",
+    "transition": "Veamos qué ocurre para ResNet18 al entrenar con el simulador y probar sobre el HUCA.",
+    "section": "main",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "p11",
+    "title": "CNN entrenada en el simulador y evaluada en el HUCA",
+    "seconds": 35,
+    "figures": [
+      "domain_gap_cnn_ba_by_k.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{domain_gap_cnn_ba_by_k.pdf}",
+    "notes": "Aquí se entrena la CNN con datos del simulador y se cambia el conjunto de prueba. La línea continua representa la evaluación simulada y la discontinua, la clínica. Con treinta y dos ejemplos la exactitud balanceada clínica queda en \\TransferCnnLastBA{}. El cambio de dominio afecta tanto al aspecto del trazado como a las etiquetas.",
+    "transition": "Las variantes de adaptación intentan reducir esa pérdida de rendimiento.",
+    "section": "main",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "a09",
+    "title": "Métodos de adaptación de dominio en la CNN",
+    "seconds": 40,
+    "figures": [
+      "transfer_controls_synthetic_to_real_summary.pdf"
+    ],
+    "latex": "\\centering\n\\includegraphics[width=257mm]{assets/transfer_ba.pdf}\\par\n\\includegraphics[width=257mm]{assets/transfer_legend.pdf}\\par",
+    "notes": "Gemma con demostraciones sintéticas aparece en el panel derecho. En la izquierda, la comparación muestra las cuatro variantes de adaptación de la CNN. Usan imágenes clínicas sin sus etiquetas, incluidas las que se evalúan después. CORAL y MMD mejoran algunos puntos frente a ResNet18 con el mismo K. La mejor exactitud balanceada global sigue correspondiendo a la referencia sin adaptación.",
+    "transition": "F1 permite comprobar qué sucede con la detección de positivos.",
+    "section": "main",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "a10",
+    "title": "F1 de la clase positiva al cambiar de dominio",
+    "seconds": 30,
+    "figures": [
+      "transfer_controls_synthetic_to_real_summary.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{transfer_f1.pdf}",
+    "notes": "El panel de F1 permite examinar la detección de positivos al cambiar de dominio. El rendimiento sigue siendo bajo en la clasificación clínica, tanto con las variantes de adaptación como con las demostraciones simuladas de Gemma. Esto ayuda a interpretar una especificidad alta cuando se predice casi siempre la clase negativa.",
+    "transition": "En el último escenario los ejemplos proceden del propio HUCA.",
+    "section": "main",
+    "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "section": "main",
+    "figures": [],
+    "id": "escenario_clinico",
+    "title": "Evaluación clínica",
+    "block": "Resultados",
+    "plain": true,
+    "seconds": 5,
+    "latex": "\\scenariofocus{Evaluación clínica}{HUCA}{HUCA}",
+    "notes": "En el tercer escenario, tanto los ejemplos como la prueba proceden del HUCA.",
+    "transition": ""
+  },
+  {
+    "id": "p13",
+    "title": "Demostraciones y entrenamiento con ejemplos del HUCA",
+    "seconds": 70,
+    "figures": [
+      "clinical_cnn_vs_gemma_performance.pdf"
+    ],
+    "latex": "\\centering\n\\includegraphics[width=178mm]{assets/clinical_legend.pdf}\\par\n\\begin{columns}[T,onlytextwidth]\n\\begin{column}{.49\\textwidth}\n\\centering\n{\\fontsize{19}{26}\\selectfont Exactitud balanceada\\par}\n\\includegraphics[width=\\linewidth,trim=0 0 0 15bp,clip]{assets/clinical_ba.pdf}\\par\n\\vspace{-1mm}\n\\includegraphics[width=\\linewidth,trim=0 0 0 3bp,clip]{assets/clinical_xaxis.pdf}\\par\n\\end{column}\n\\begin{column}{.49\\textwidth}\n\\centering\n{\\fontsize{19}{26}\\selectfont F1 de la clase positiva\\par}\n\\includegraphics[width=\\linewidth,trim=0 0 0 15bp,clip]{assets/clinical_f1.pdf}\\par\n\\end{column}\n\\end{columns}\n\\takeaway{Con \\(K=32\\), la exactitud balanceada es \\RealVlmBA{} para Gemma y \\RealCnnLastBA{} para la CNN en selección balanceada.}",
+    "notes": "En el tercer escenario, Gemma recibe demostraciones del HUCA y ResNet18 se entrena con imágenes del mismo conjunto. El paciente de prueba queda reservado en ambos casos. A la izquierda vemos la exactitud balanceada. A la derecha se muestra F1 para la clase positiva. F1 baja cuando el modelo deja casos positivos sin detectar o cuando da demasiadas falsas alarmas. Sin demostraciones, Gemma no resulta capaz de identificar positivos en la evaluación realizada. Con dos o cuatro ejemplos, la mejor CNN conserva una ligera ventaja. Desde ocho ejemplos, Gemma con selección balanceada obtiene mejores resultados. Con treinta y dos alcanza una exactitud balanceada de \\RealVlmBA{}, frente a \\RealCnnLastBA{} de la CNN balanceada, y un F1 de \\RealVlmFone{}. La comparación se refiere a esta muestra y a las configuraciones evaluadas.",
+    "transition": "Las matrices detallan los aciertos y errores por clase.",
+    "section": "main",
+    "block": "Resultados 3/3 \\enspace HUCA \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "p14",
+    "title": "Matrices de confusión en la evaluación clínica",
+    "seconds": 35,
+    "figures": [
+      "clinical_cnn_vs_gemma_confusions.pdf"
+    ],
+    "latex": "\\vspace{3mm}\\fullfigure[123mm]{clinical_cnn_vs_gemma_confusions.pdf}",
+    "notes": "Las matrices muestran las mejores configuraciones balanceadas de cada método. A la izquierda, Gemma utiliza treinta y dos demostraciones. A la derecha, ResNet18 utiliza dieciséis ejemplos de entrenamiento. Gemma obtiene una sensibilidad de \\RealVlmSens{} y una especificidad de \\RealVlmSpec{}. Esto deja sin identificar alrededor de una cuarta parte de los positivos. Las matrices se normalizan por clase real y agregan tres evaluaciones de los mismos pacientes.",
+    "transition": "Con estos tres escenarios ya podemos responder a las preguntas planteadas al principio.",
+    "section": "main",
+    "block": "Resultados 3/3 \\enspace HUCA \\(\\rightarrow\\) HUCA"
+  },
+  {
+    "id": "p16",
+    "title": "Conclusiones",
+    "seconds": 40,
+    "figures": [],
+    "latex": "\\vspace{8mm}\n\\begin{columns}[t,onlytextwidth]\n\n\\begin{column}{.31\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1.15pt}}\\par\\vspace{4mm}\n{\\fontsize{22}{29}\\selectfont Comparación en el HUCA\\par}\n\\vspace{9mm}\n\\begin{minipage}[t]{.48\\linewidth}\n{\\color{UOGreen}\\fontsize{35}{43}\\selectfont\\strut\\RealVlmBA{}\\par}\n{\\fontsize{17}{22}\\selectfont Gemma\\par}\n\\end{minipage}\\hfill\n\\begin{minipage}[t]{.48\\linewidth}\n{\\color{UOGreen}\\fontsize{35}{43}\\selectfont\\strut\\RealCnnLastBA{}\\par}\n{\\fontsize{17}{22}\\selectfont CNN\\par}\n\\end{minipage}\\par\\vspace{3mm}\n{\\fontsize{18}{26}\\selectfont Exactitud balanceada con 32 ejemplos del HUCA y selección balanceada.\\par}\n\\end{column}\n\\begin{column}{.31\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1.15pt}}\\par\\vspace{4mm}\n{\\fontsize{22}{29}\\selectfont Número de ejemplos\\par}\n\\vspace{9mm}\n{\\color{UOGreen}\\fontsize{32}{43}\\selectfont Mejora en ambos\\par}\n\\vspace{3mm}\n{\\fontsize{18}{26}\\selectfont En el simulador, ambos métodos mejoran al disponer de más ejemplos etiquetados.\\par}\n\\end{column}\n\\begin{column}{.31\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1.15pt}}\\par\\vspace{4mm}\n{\\fontsize{22}{29}\\selectfont Transferencia al HUCA\\par}\n\\vspace{9mm}\n{\\color{UOGreen}\\fontsize{35}{43}\\selectfont\\TransferCnnLastBA{}\\par}\n\\vspace{3mm}\n{\\fontsize{18}{26}\\selectfont Exactitud balanceada en el HUCA de la CNN entrenada con 32 ejemplos simulados.\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Con ejemplos del HUCA, Gemma supera a ResNet18 desde ocho demostraciones. Con 32 y selección balanceada, la exactitud balanceada es \\RealVlmBA{} para Gemma y \\RealCnnLastBA{} para ResNet18. El simulador demuestra que ambos aprovechan más ejemplos en una tarea controlada. Al usar ejemplos sintéticos sobre el HUCA el rendimiento cae, lo que pone de relieve la importancia de la procedencia de las demostraciones.",
+    "transition": "¿Por qué pueden ser tan distintos ambos resultados clínicos?",
+    "section": "main",
+    "block": "Conclusiones y discusión"
+  },
+  {
+    "id": "p15",
+    "title": "Interpretación y límites del estudio",
+    "seconds": 45,
+    "figures": [],
+    "latex": "\\vspace{8mm}\n{\\fontsize{24}{32}\\selectfont\\color{UOGreen} Qué aportan las demostraciones del HUCA\\par}\n{\\fontsize{17}{24}\\selectfont Gemma recibe ejemplos de la etiqueta clínica. ResNet18 ajusta sus pesos con pocos casos.\\par}\n\\vspace{6mm}\n{\\fontsize{19}{25}\\selectfont\\color{UOGreen} Pesos abiertos\\par}\n{\\fontsize{17}{24}\\selectfont Procesamiento en un entorno privado.\\par}\n\\vspace{9mm}\n\\begin{columns}[T,onlytextwidth]\n\\begin{column}{.28\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1pt}}\\par\n{\\fontsize{18}{24}\\selectfont Un solo centro\\par}\n\\end{column}\n\\begin{column}{.28\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1pt}}\\par\n{\\fontsize{18}{24}\\selectfont Un latido de V1\\par}\n\\end{column}\n\\begin{column}{.36\\textwidth}\n{\\color{UOGreen}\\rule{\\linewidth}{1pt}}\\par\n{\\fontsize{18}{24}\\selectfont Etiquetas distintas\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Una explicación compatible con los resultados es que los ejemplos del HUCA muestran a Gemma cómo se aplica la etiqueta clínica sobre trazados reales. ResNet18 parte de ImageNet y debe ajustar sus pesos con pocas imágenes. Además, dispone de ocho pacientes de validación por pliegue. El resultado podría depender del preentrenamiento, del modelo o del protocolo y el experimento no aísla esos factores. Los pesos abiertos permitieron procesar las imágenes en un entorno privado. El estudio utiliza datos de un centro, un latido V1 por paciente y etiquetas distintas entre simulador y HUCA. Aún quedan positivos por detectar y el apoyo al triaje necesita validación clínica.",
+    "transition": "Estos límites orientan las siguientes evaluaciones.",
+    "section": "main",
+    "block": "Conclusiones y discusión"
+  },
+  {
+    "id": "futuro",
+    "title": "Continuación del trabajo",
+    "figures": [],
+    "latex": "\\vspace{12mm}\n{\\fontsize{23}{31}\\selectfont\n\\begin{tabular}{@{}p{17mm}l@{}}\n\\textcolor{UOGreen}{01} & Revisar las etiquetas y ampliar su recogida\\\\[7mm]\n\\textcolor{UOGreen}{02} & Explorar otros rasgos morfológicos del ECG\\\\[7mm]\n\\textcolor{UOGreen}{03} & Explorar otros métodos de adaptación de dominio\\\\[7mm]\n\\textcolor{UOGreen}{04} & Validar el apoyo al triaje en el HUCA y después en otros centros\n\\end{tabular}}",
+    "seconds": 25,
+    "notes": "La continuación empieza por revisar las etiquetas con especialistas y ampliar la recogida de casos etiquetados. Se estudiarían otros rasgos morfológicos del ECG y se probarían otros métodos de adaptación de dominio. Por último, se evaluaría si el sistema ayuda a priorizar ECG sospechosos en el HUCA y después en otros centros sanitarios.",
+    "transition": "Con esto termino la exposición.",
+    "section": "main",
+    "block": "Conclusiones y discusión"
+  },
+  {
+    "id": "cierre",
+    "title": "Cierre y preguntas",
+    "block": "",
+    "seconds": 10,
+    "section": "main",
+    "figures": [],
+    "latex": "\\centering\n\\vspace*{5mm}\n\\includegraphics[height=33mm]{assets/logo_uniovi_portada.pdf}\\par\n\\vspace{6mm}\n{\\fontsize{32}{40}\\selectfont Gracias por su atención\\par}\n\\vspace{7mm}\n{\\fontsize{19}{25}\\selectfont Preguntas\\par}\n\\vspace{6mm}\n{\\fontsize{21}{27}\\selectfont\\AuthorName\\par}\n{\\fontsize{17}{23}\\selectfont \\hyperlink{a13}{Referencias}\\par}\n\\vfill\n\\includegraphics[height=9mm]{assets/logo_epi_horizontal.pdf}\\hfill\n{\\fontsize{17}{22}\\selectfont\\SubmissionDate}\\par",
+    "notes": "Gracias por su atención. Quedo a disposición del tribunal para las preguntas.",
+    "transition": ""
+  },
+  {
+    "id": "a13",
+    "title": "Referencias clínicas y estado del arte",
+    "seconds": 0,
+    "figures": [],
+    "latex": "\\vspace{5mm}\n\\begin{columns}[T,onlytextwidth]\n\\begin{column}{.48\\textwidth}\n{\\fontsize{22}{29}\\selectfont\\color{UOGreen} Contexto clínico y datos\\par}\n\\vspace{4mm}\n{\\fontsize{16}{22}\\selectfont\\raggedright\n\\href{https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)}{OMS. Mortalidad cardiovascular mundial.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1093/eurheartj/ehac262}{Zeppenfeld et al. (2022). Guías ESC y Brugada.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1161/CIRCULATIONAHA.106.180200}{Kligfield et al. (2007). ECG de doce derivaciones.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1161/CIRCULATIONAHA.108.191095}{Surawicz et al. (2009). Bloqueos de rama.}\\par\\vspace{2mm}\n\\href{https://physionet.org/content/brugada-huca/1.0.0/}{Costa Cortez y García Iglesias (2026). Brugada-HUCA.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1038/s41597-020-0495-6}{Wagner et al. (2020). Conjunto PTB-XL.}\\par\\vspace{2mm}\n\\href{https://commons.wikimedia.org/wiki/File:Brugada_syndrome_type1_example4_(CardioNetworks_ECGpedia).png}{ECGpedia} y \\href{https://doi.org/10.1186/1750-1172-1-35}{Napolitano y Priori (2006). Ejemplos de patrones de Brugada.}\\par}\n\\end{column}\n\\begin{column}{.48\\textwidth}\n{\\fontsize{22}{29}\\selectfont\\color{UOGreen} Antecedentes\\par}\n\\vspace{4mm}\n{\\fontsize{16}{22}\\selectfont\\raggedright\n\\href{https://pmc.ncbi.nlm.nih.gov/articles/PMC7145824/}{Ribeiro et al. (2020). Clasificación de señales de ECG.}\\par\\vspace{2mm}\n\\href{https://pmc.ncbi.nlm.nih.gov/articles/PMC8948243/}{Sangha et al. (2022). Clasificación de imágenes de ECG.}\\par\\vspace{2mm}\n\\href{https://pmc.ncbi.nlm.nih.gov/articles/PMC10462630/}{Gliner et al. (2023). Adaptación a fotos de ECG.}\\par\\vspace{2mm}\n\\href{https://portalinvestigacion.uniovi.es/documentos/697e9dda4f95b66d0e7b373a?lang=en}{Camba et al. (2026). ICL para imágenes de ECG.}\\par\\vspace{2mm}\n\\href{https://pubmed.ncbi.nlm.nih.gov/42330857/}{Costa et al. (2026). VLM y ECG con pocos ejemplos.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh et al. (2026). Clasificación de Brugada con pocos datos.}\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Las referencias de contexto respaldan la motivación clínica y la procedencia de los datos y trazados. Los antecedentes corresponden al análisis de señales, el análisis de imágenes, el cambio de dominio y el aprendizaje con pocos ejemplos. Los créditos y las licencias de las imágenes publicadas se detallan en el proyecto LaTeX. \\href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh et al. (2026).} El crédito de TarmacView figura junto a la ilustración de adaptación.",
+    "transition": "",
+    "section": "appendix",
+    "block": "Referencias",
+    "appendix_order": 11,
+    "links": {
+      "a14": "Métodos y métricas"
+    }
+  },
+  {
+    "id": "a14",
+    "title": "Referencias de métodos y métricas",
+    "seconds": 0,
+    "figures": [],
+    "latex": "\\vspace{5mm}\n\\begin{columns}[T,onlytextwidth]\n\\begin{column}{.48\\textwidth}\n{\\fontsize{22}{29}\\selectfont\\color{UOGreen} Simulador y modelos\\par}\n\\vspace{4mm}\n{\\fontsize{16}{22}\\selectfont\\raggedright\n\\href{https://pmc.ncbi.nlm.nih.gov/articles/PMC3148951/}{Sayadi et al. (2010). Generación de ECG con gaussianas.}\\par\\vspace{2mm}\n\\href{https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html}{He et al. (2016). Redes residuales.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1109/ICCV.2017.74}{Selvaraju et al. (2017). Grad-CAM.}\\par\\vspace{2mm}\n\\href{https://aclanthology.org/2024.emnlp-main.64/}{Dong et al. (2024). Aprendizaje en contexto.}\\par\\vspace{2mm}\n\\href{https://ai.google.dev/gemma/docs/core/model_card_4}{Google DeepMind. Ficha de Gemma 4.}\\par}\n\\end{column}\n\\begin{column}{.48\\textwidth}\n{\\fontsize{22}{29}\\selectfont\\color{UOGreen} Adaptación y evaluación\\par}\n\\vspace{4mm}\n{\\fontsize{16}{22}\\selectfont\\raggedright\n\\href{https://proceedings.mlr.press/v119/chen20j.html}{Chen et al. (2020). SimCLR y aprendizaje contrastivo.}\\par\\vspace{2mm}\n\\href{https://arxiv.org/abs/1607.01719}{Sun y Saenko (2016). Deep CORAL.}\\par\\vspace{2mm}\n\\href{https://proceedings.mlr.press/v37/long15.html}{Long et al. (2015). Adaptación mediante MMD.}\\par\\vspace{2mm}\n\\href{https://jmlr.org/papers/v17/15-239.html}{Ganin et al. (2016). Adaptación adversarial (DANN).}\\par\\vspace{2mm}\n\\href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{Scikit-learn. Definición de F1 para la clase positiva.}\\par\\vspace{2mm}\n\\href{https://doi.org/10.1038/s41746-026-02551-3}{Liu et al. (2026). Comparación de modelos en ECGBench.}\\par}\n\\end{column}\n\\end{columns}",
+    "notes": "Estas fuentes identifican los métodos que aparecen en el desarrollo o los resultados, junto a la ficha del modelo y la definición de F1. Los valores experimentales proceden de los agregados canónicos del proyecto.",
+    "transition": "",
+    "section": "appendix",
+    "block": "Referencias",
+    "appendix_order": 12,
+    "links": {
+      "a13": "Clínica y antecedentes"
+    }
+  }
+]

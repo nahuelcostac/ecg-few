@@ -1,0 +1,160 @@
+\chapter{Configuración experimental}
+\label{app:configuracion}
+
+Estas tablas reúnen la configuración completa utilizada en los experimentos del capítulo~\ref{chap:desarrollo}.
+
+\section{Conjunto generado por el simulador QRS/ST}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.94\textwidth}{p{4.4cm}X}
+    \toprule
+    Propiedad & Valor \\
+    \midrule
+    Fuente & Simulador QRS/ST descrito en el apartado~\ref{chap:simulador} \\
+    Pacientes & 100 \\
+    Imágenes únicas & 100 \\
+    Predicciones agregadas & 300, correspondientes a tres semillas \\
+    Familias fuente & Cinco familias morfológicas descritas en el apartado~\ref{chap:simulador} \\
+    Pacientes por familia & 20 \\
+    Derivaciones renderizadas & V1 \\
+    Frecuencia de muestreo & 500 Hz \\
+    Duración del latido & 900 ms \\
+    Resolución de guardado & 130 ppp \\
+    Positivos derivados & 20 \\
+    Negativos o incompletos & 80 \\
+    Valores de \(K\) & \(K=\{2,4,8,16,32\}\) \\
+    Semillas & 42, 123 y 2026 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Configuración del conjunto generado por el simulador.}
+  \label{tab:config_sintetico_final}
+\end{table}
+
+La regla de etiqueta se define en la sección~\ref{sec:datos_tareas} y el umbral de la CNN, en la sección~\ref{sec:umbral_cnn}.
+
+\clearpage
+\section{Muestra del HUCA}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.94\textwidth}{p{4.4cm}X}
+    \toprule
+    Propiedad & Valor \\
+    \midrule
+    Fuente & Registros de Brugada-HUCA, con etiquetas de la copia de trabajo \\
+    Pacientes brutos & 363 \\
+    Pacientes excluidos & 46 casos de clasificación dudosa, por recomendación de los médicos colaboradores \\
+    Pacientes incluidos & 317 \\
+    Imágenes únicas incluidas & 317 \\
+    Predicciones agregadas & 951, correspondientes a tres semillas \\
+    Etiqueta positiva & 116 \\
+    Etiqueta negativa & 201 \\
+    Derivaciones & V1 \\
+    Ventana & 300 ms antes de R y 600 ms después de R \\
+    Frecuencia de origen & 100 Hz \\
+    Resolución de guardado & 130 ppp \\
+    Separación & Leave-one-out por paciente \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Configuración de la muestra procesada del HUCA.}
+  \label{tab:config_huca_final}
+\end{table}
+
+La selección y la preparación de los pacientes se describen en la sección~\ref{sec:datos_tareas}.
+
+\clearpage
+\section{Configuración de las CNN}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{p{3.5cm}XX}
+    \toprule
+    Propiedad & CNN entrenada con el simulador & CNN entrenada con el HUCA \\
+    \midrule
+    Arquitectura & \multicolumn{2}{l}{ResNet18} \\
+    Pesos iniciales & \multicolumn{2}{l}{Preentrenados con ImageNet} \\
+    Entrada & \multicolumn{2}{l}{Una imagen V1, RGB, 224 por 224 píxeles} \\
+    Salida & RBBB, elevación ST e inversión T & Una salida logística para la etiqueta clínica \\
+    Etiquetas & Validadores del simulador & Presencia o ausencia de Brugada \\
+    Pérdida & BCE multietiqueta & BCE de una salida \\
+    Ponderación positiva & \multicolumn{2}{l}{Automática con el entrenamiento de cada pliegue} \\
+    Optimizador & \multicolumn{2}{l}{AdamW} \\
+    Tasa de aprendizaje & \multicolumn{2}{l}{\(3\times10^{-4}\)} \\
+    Lote & \multicolumn{2}{l}{32 imágenes} \\
+    Épocas máximas & 20 & 20, con \textit{early stopping} \\
+    Paciencia & No corresponde & 5 épocas sin mejora de BA \\
+    \textit{Weight decay} & No registrado & \(10^{-4}\) \\
+    Entrenamiento & \(K\) pacientes del simulador & \(K\) pacientes del HUCA \\
+    Valores de \(K\) & \multicolumn{2}{l}{\(2,4,8,16,32\)} \\
+    Balance de clases & No corresponde & Estándar y balanceada \\
+    Semillas & \multicolumn{2}{l}{42, 123 y 2026} \\
+    Validación & Por pliegue & 8 pacientes, 4 por clase \\
+    Umbral & \multicolumn{2}{l}{Máxima BA por paciente en validación} \\
+    Métrica principal & \multicolumn{2}{l}{Exactitud balanceada por paciente} \\
+    Paneles Grad-CAM & 12 (simulador) y 6 (HUCA) & No corresponde \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Configuración completa de las dos CNN.}
+  \label{tab:config_cnn_appendix}
+  \label{tab:config_cnn_clinical_appendix}
+  \label{tab:modelo_cnn_final}
+  \label{tab:modelo_cnn_clinica}
+\end{table}
+
+\clearpage
+\section{Configuración de adaptación de dominio}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.94\textwidth}{p{4.4cm}X}
+    \toprule
+    Propiedad & Valor \\
+    \midrule
+    Origen etiquetado & Conjunto del simulador QRS/ST \\
+    Destino no etiquetado & Conjunto del HUCA \\
+    Métodos & SSL, CORAL, MMD y DANN \cite{chen2020simclr,sun2016deepcoral,long2015dan,ganin2016} \\
+    Valores de \(K\) & \(K=16\) y \(K=32\) \\
+    Semillas & 42, 123 y 2026 \\
+    Peso de adaptación & 0,1 \\
+    Escalas MMD & 0,5, 1,0, 2,0 y 4,0 \\
+    SSL & SimCLR durante 3 épocas \\
+    Uso de imágenes del HUCA & Compartidas entre pliegues durante la adaptación, sin utilizar sus etiquetas para entrenar \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Configuración de los experimentos de adaptación de dominio.}
+  \label{tab:config_domain_appendix}
+  \label{tab:cnn_domain_methods}
+\end{table}
+
+\section{Configuración de Gemma~4}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabularx}{0.94\textwidth}{p{4.4cm}X}
+    \toprule
+    Elemento & Valor \\
+    \midrule
+    Modelo informado & \texttt{google/gemma-4-E4B-it} \\
+    Servicio & vLLM en un clúster privado de computación con dos GPU NVIDIA A100 y 96~GB de VRAM en total \\
+    Temperatura & 0 \\
+    Respuesta & JSON estructurado \\
+    Entrada & Imagen ECG y demostraciones imagen-etiqueta \\
+    Valores de \(K\) & \(K=\{0,2,4,8,16,32\}\) \\
+    Selección de demostraciones & Sin ejemplos, estándar y balanceada \\
+    Contextos sobre el conjunto del HUCA & Demostraciones de la propia muestra o del simulador \\
+    Salida morfológica & RBBB, elevación del ST e inversión de T \\
+    Salida clínica & Etiqueta positiva o negativa de Brugada \\
+    Métrica principal & Exactitud balanceada por paciente \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Configuración de Gemma~4 con aprendizaje en contexto.}
+  \label{tab:config_vlm_appendix}
+\end{table}
+
+La construcción del mensaje se describe en la sección~\ref{chap:vlm} y los prompts se conservan en el apéndice~\ref{app:prompts}.

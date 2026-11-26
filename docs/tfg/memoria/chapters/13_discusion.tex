@@ -1,0 +1,25 @@
+\chapter{Discusión}
+\label{chap:discusion}
+
+Con 32 demostraciones balanceadas del HUCA, Gemma~4 alcanzó una exactitud balanceada de 0,761, frente a 0,535 de ResNet18 con el mismo número de ejemplos de entrenamiento. La diferencia comienza a observarse con ocho ejemplos y aumenta con \(K\) en las condiciones evaluadas. Para interpretar estos resultados, se analiza la influencia de las demostraciones clínicas y las dificultades de transferir el rendimiento obtenido con datos sintéticos a los ECG reales.
+
+\section{Transferencia a ECG clínicos}
+
+En el simulador, ambos modelos utilizan imágenes con un formato uniforme y etiquetas definidas a partir de los rasgos morfológicos del trazado. Su mejora al aumentar \(K\) demuestra que pueden aprovechar estas características para clasificar nuevos ejemplos sintéticos. Sin embargo, los ECG del HUCA presentan una mayor variabilidad visual y utilizan etiquetas clínicas asignadas a los pacientes, en lugar de etiquetas correspondientes a los tres rasgos individuales. El bajo rendimiento de Gemma~4 con demostraciones sintéticas y la pérdida de rendimiento de ResNet18 muestran las dificultades de transferir los resultados del simulador a la tarea clínica.
+
+CORAL y MMD mejoraron algunas configuraciones de la CNN respecto a sus referencias con el mismo \(K\), pero las cuatro variantes de adaptación permanecieron cerca de una exactitud balanceada de 0,5. El mejor resultado global correspondió a ResNet18 sin adaptación. En estos experimentos, las imágenes del HUCA permitieron incorporar información sobre el dominio clínico, mientras que las etiquetas utilizadas para el entrenamiento siguieron procediendo del simulador. Por tanto, los resultados reflejan tanto las diferencias visuales entre los conjuntos como las existentes en sus criterios de etiquetado. Para estudiar ambos efectos por separado sería necesario disponer de anotaciones morfológicas comparables en los datos sintéticos y clínicos.
+
+\section{Qué aportan las demostraciones del HUCA}
+
+Las demostraciones clínicas presentan dos características que no reúnen los ejemplos sintéticos. Por un lado, contienen la variabilidad morfológica de los ECG reales y, por otro, utilizan las mismas etiquetas clínicas que los casos de prueba. Los resultados sugieren que estas parejas de imagen y etiqueta ayudan a Gemma~4 a aprovechar las representaciones visuales adquiridas durante su preentrenamiento para resolver la tarea. Sin embargo, esta mejora no aparece con dos o cuatro ejemplos y, sin demostraciones, el modelo tampoco consigue identificar casos positivos. Estos resultados muestran la importancia de proporcionar ejemplos relevantes para la tarea, aunque no permiten determinar qué características de las demostraciones explican la mejora observada.
+
+ResNet18 también parte de pesos preentrenados, en este caso con ImageNet. Para adaptarla a la clasificación del HUCA, se ajustan todas sus capas utilizando un número reducido de imágenes etiquetadas. Los ocho pacientes adicionales de validación permiten seleccionar la época y el umbral, mientras que el entrenamiento depende de los \(K\) ejemplos disponibles. Esta cantidad limitada de datos aumenta el riesgo de sobreajuste y podría contribuir a su menor rendimiento. No obstante, los resultados corresponden a las configuraciones evaluadas y no descartan que otras arquitecturas, estrategias de entrenamiento o métodos de preentrenamiento obtengan mejores resultados.
+
+\section{Aportaciones y limitaciones}
+\label{sec:limitaciones}
+
+El trabajo compara el aprendizaje en contexto con el entrenamiento supervisado utilizando pocos ejemplos etiquetados, tanto en datos sintéticos como en registros clínicos. La evaluación por paciente permite estudiar ambos enfoques sin utilizar las etiquetas de los casos de prueba. Además, el uso de Gemma~4 como modelo de pesos abiertos permitió realizar la inferencia localmente, manteniendo los datos clínicos en un entorno privado.
+
+La principal limitación es que los datos clínicos proceden de un único centro y solo se analiza un latido de V1 por paciente. Esto deja fuera información de otras derivaciones y posibles variaciones del patrón entre latidos. Las imágenes de estos latidos se generaron directamente a partir de las señales numéricas, por lo que el rendimiento con fotografías de ECG en papel queda por evaluar. También existen diferencias entre las etiquetas morfológicas del simulador y las etiquetas clínicas del HUCA, que dificultan interpretar los resultados de transferencia. Por otra parte, la variabilidad entre tres semillas no permite estimar cómo responderían los modelos en pacientes de otros hospitales.
+
+En su mejor configuración, Gemma~4 deja sin detectar aproximadamente uno de cada cuatro casos positivos. Aunque los resultados muestran potencial para priorizar la revisión de ECG, esta sensibilidad todavía limita su posible aplicación al triaje. Antes de considerar su uso clínico sería necesario evaluarlo con registros de otros centros y estudiar las consecuencias de los falsos negativos.

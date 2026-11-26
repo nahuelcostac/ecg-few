@@ -1,0 +1,7 @@
+label,count,group
+Normal,20,normal
+RBBB,7,partial
+Inversión de T,14,partial
+RBBB + elevación del ST,33,partial
+RBBB + inversión de T,6,partial
+RBBB + elevación del ST + inversión de T,20,target

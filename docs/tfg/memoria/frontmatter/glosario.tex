@@ -1,0 +1,74 @@
+\chapter*{Glosario de siglas}
+\addcontentsline{toc}{chapter}{Glosario de siglas}
+\markboth{Glosario de siglas}{Glosario de siglas}
+
+
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.20cm}>{\raggedright\arraybackslash}p{4.10cm}>{\raggedright\arraybackslash}p{7.95cm}@{}}
+\caption{Siglas y abreviaturas utilizadas en la memoria.}
+\label{tab:glosario_siglas}\\
+\toprule
+Sigla & Significado & Uso en este trabajo \\
+\midrule
+\endfirsthead
+\toprule
+Sigla & Significado & Uso en este trabajo \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Acc. & Exactitud & Proporción global de predicciones correctas. Se informa como métrica complementaria en los apéndices. \\
+aVR, aVL, aVF & Derivaciones aumentadas de miembros & Derivaciones del electrocardiograma convencional citadas al describir el registro de doce derivaciones. \\
+BA & Exactitud balanceada & Métrica principal. Promedia sensibilidad y especificidad para no favorecer a la clase mayoritaria. \\
+BCE & Entropía cruzada binaria & Función de pérdida para clasificación binaria o multietiqueta. \\
+CC BY & Creative Commons Attribution & Licencia de reutilización asociada a una de las imágenes clínicas citadas. \\
+CC BY-SA & Creative Commons Attribution ShareAlike & Licencia de reutilización con atribución y obligación de compartir bajo condiciones equivalentes. \\
+CNN & Red neuronal convolucional & Modelo supervisado que ajusta pesos a partir de ejemplos etiquetados. En la memoria se concreta en ResNet18. \\
+CODE & Clinical Outcomes in Digital Electrocardiology & Estudio de la red de telemedicina de Minas Gerais, cuyos ECG se utilizaron en trabajos de clasificación a partir de señales e imágenes. \\
+CORAL & Correlation Alignment & Método de adaptación de dominio incluido como resultado complementario. \\
+DANN & Domain-Adversarial Neural Network & Método de adaptación de dominio incluido como resultado complementario. \\
+ECG & Electrocardiograma & Registro de la actividad eléctrica del corazón, representado como señal digital o como trazado. \\
+ECG-FM & Modelo fundacional para ECG & Modelo preentrenado con señales digitales y adaptado a distintas tareas con etiquetas clínicas. \\
+Esp. & Especificidad & Proporción de casos negativos identificados correctamente. \\
+F1 & Medida F1 & Media armónica entre precisión y sensibilidad. \\
+FN & Falso negativo & Caso positivo clasificado como negativo. \\
+FP & Falso positivo & Caso negativo clasificado como positivo. \\
+GPU & Unidad de procesamiento gráfico & Dispositivo empleado para ejecutar la inferencia de Gemma~4. \\
+Grad-CAM & Mapa de activación de clase basado en gradientes & Técnica utilizada para identificar regiones de la imagen asociadas a una predicción de ResNet18. \\
+HUCA & Hospital Universitario Central de Asturias & Origen de la muestra de ECG clínicos utilizada en la evaluación. \\
+ICL & Aprendizaje en contexto & Uso de ejemplos etiquetados dentro del prompt sin modificar los pesos del modelo. \\
+INCARTDB & Base de arritmias INCART de San Petersburgo & Conjunto de ECG de doce derivaciones con anotaciones por latido. \\
+JSON & JavaScript Object Notation & Formato estructurado exigido en las respuestas del modelo multimodal. \\
+\(K\) & Número de ejemplos & Tamaño del conjunto usado en cada pliegue. En la CNN indica pacientes de entrenamiento y en el VLM indica demostraciones de contexto. \\
+LOOCV & Validación cruzada dejando un caso fuera & En cada pliegue se reserva un paciente para la prueba. \\
+MIMIC-IV-ECG & Subconjunto de ECG diagnósticos de MIMIC-IV & Base de señales vinculadas a información clínica para las tareas de predicción estudiadas en la bibliografía. \\
+MIT-BIH & Base de arritmias del MIT y del Beth Israel Hospital & Conjunto de registros anotados utilizado en estudios de clasificación de latidos. \\
+MMD & Maximum Mean Discrepancy & Medida usada como método complementario de adaptación de dominio. \\
+PDF & Portable Document Format & Formato de la memoria compilada. \\
+PR & Segmento o intervalo PR & El segmento va del final de P al inicio del QRS. El intervalo incluye la onda P. \\
+Prec. & Precisión & Proporción de predicciones positivas que corresponden a positivos reales. \\
+PTB-XL & Base de ECG de la Physikalisch-Technische Bundesanstalt & Conjunto abierto de ECG de doce derivaciones con anotaciones por registro. \\
+QRS & Complejo QRS & Región asociada a la despolarización ventricular. \\
+QRS/ST & Complejo QRS y segmento ST & Nombre abreviado del simulador utilizado en la memoria. \\
+QT & Intervalo QT & Del inicio del QRS al final de T. Da nombre a la base utilizada para estudiar la delimitación de componentes del ECG. \\
+RBBB & Bloqueo de rama derecha & Etiqueta morfológica compatible empleada en el simulador. \\
+ResNet18 & Residual Network 18 & Arquitectura de la CNN evaluada. \\
+RGB & Red, green, blue & Representación de imagen con tres canales de color. \\
+ROC-AUC & Área bajo la curva ROC & Resume la capacidad de discriminación. La curva ROC (\textit{receiver operating characteristic}) relaciona sensibilidad y tasa de falsos positivos. \\
+RSR$^\prime$ & Morfología RSR prima & Patrón visual con segunda deflexión positiva terminal en el complejo QRS. \\
+SCN5A & Gen de la subunidad alfa del canal de sodio cardíaco & Algunas de sus variantes se asocian con el síndrome de Brugada. \\
+Sens. & Sensibilidad & Proporción de positivos identificados correctamente. \\
+SimCLR & Simple Framework for Contrastive Learning of Visual Representations & Método autosupervisado citado en la configuración complementaria. \\
+SSL & Aprendizaje autosupervisado & Estrategia complementaria de adaptación de dominio incluida en resultados completos. \\
+ST & Segmento ST & Región posterior al QRS cuya elevación participa en la formulación morfológica del estudio. \\
+TFG & Trabajo de Fin de Grado & Trabajo académico en el que se enmarca el estudio. \\
+TN & Verdadero negativo & Caso negativo clasificado correctamente como negativo. \\
+TP & Verdadero positivo o segmento TP & En las métricas, caso positivo clasificado correctamente. En el ECG, segmento entre el final de T y la onda P siguiente. \\
+TWI & Inversión de onda T & Deflexión tardía negativa utilizada como rasgo visible en el simulador. \\
+V1--V6 & Derivaciones precordiales & Derivaciones torácicas del electrocardiograma. En los experimentos se usa exclusivamente V1. \\
+VLM & Modelo de visión y lenguaje & Modelo multimodal que recibe imágenes y texto en un mismo prompt. \\
+VRAM & Memoria de vídeo & Memoria disponible en las GPU del clúster que ejecuta Gemma~4. \\
+XAI & Inteligencia artificial explicable & Métodos para examinar qué información se relaciona con las decisiones de un modelo. \\
+\end{longtable}
+}

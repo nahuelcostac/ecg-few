@@ -27,7 +27,7 @@ Never delete source ZIP files or SHA-256 records. An authorized replacement camp
 
 ## Software maintenance
 
-- Publish only the experiment package, configs, tests, launchers, and supporting Markdown, diagrams, and selected result images. Keep `thesis/`, `output/`, `.github/`, `scripts/thesis/`, legacy Python launchers, datasets, and full result trees local and ignored. Never delete local thesis files, source ZIPs, or hash records when changing Git tracking.
+- Publish the experiment package, configs, tests, launchers, and supporting Markdown, diagrams, and selected result images. The user-authorized publication in `docs/tfg/` also includes the revised thesis, defense deliverables, LaTeX sources, required assets, and build helpers. Keep the original working trees in `thesis/`, `output/`, `.github/`, `scripts/thesis/`, legacy Python launchers, datasets, and full result trees local and ignored. Never delete local thesis files, source ZIPs, or hash records when changing Git tracking.
 - Keep software documentation, public messages, and new code in English.
 - Put reusable code in `src/ecg_few/`; keep script entry points small.
 - Preserve patient-level separation and existing experimental semantics during refactors.

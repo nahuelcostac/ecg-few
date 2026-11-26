@@ -1,0 +1,537 @@
+{
+  "scientific_figures": [
+    {
+      "file": "assets/brugada_patterns_orphanet.pdf",
+      "sha256": "8a40d830adc3615b44f3d65f2be90b241f089089b7141fab94dc4a9e8d5d4fb3",
+      "slides": [
+        "p03"
+      ],
+      "pages_18min": [
+        9
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/clinical_cnn_vs_gemma_confusions.pdf",
+      "sha256": "afff10b2348b94cdc2b12755d92656d708525303c2571acb98bfbbb9d4b2acc2",
+      "slides": [
+        "p14"
+      ],
+      "pages_18min": [
+        35
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/clinical_cnn_vs_gemma_performance.pdf",
+      "sha256": "ccc6250c49ffffc96cba236d6339470275e978bada77c795fc4313b437ba43e4",
+      "slides": [
+        "p13"
+      ],
+      "pages_18min": [
+        34
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/clinical_fold_protocol.pdf",
+      "sha256": "ca62af6f4ae8849342776c7649bf57774a5107d70ee63842c3587d397739cf07",
+      "slides": [
+        "p09"
+      ],
+      "pages_18min": [
+        22
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/cnn_convolutional_pipeline.pdf",
+      "sha256": "3d7363f2ca80683d12b945f9ede4890be9a548ff5ad25f248ff5b29e49b83557",
+      "slides": [
+        "p07"
+      ],
+      "pages_18min": [
+        19
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
+      "sha256": "60ba146358b9ce3a155cf982df47c60d954ad1e9a17143b2e97127b30fd4ff31",
+      "slides": [
+        "a06"
+      ],
+      "pages_18min": [
+        20
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/cnn_simulator_qrs_k32_confusion_matrix.pdf",
+      "sha256": "484f251cdb3e5f4cb8f9a0af1aedb29384526ff5d4e50a37e7a373820a7d1e2e",
+      "slides": [
+        "a07"
+      ],
+      "pages_18min": [
+        25
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/comparison_simulator_ba_by_k.pdf",
+      "sha256": "3e96a85c81a8de2b12d183323a88e2eea593fd80964b25d3375c543bc4a4f0f2",
+      "slides": [
+        "p10"
+      ],
+      "pages_18min": [
+        24
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/comparison_simulator_f1_by_k.pdf",
+      "sha256": "39ee61f7938092d3be942a4b142f1d93a328952496a05b0aaefe41bbff05bad1",
+      "slides": [
+        "p10"
+      ],
+      "pages_18min": [
+        24
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/domain_gap_cnn_ba_by_k.pdf",
+      "sha256": "8d6aa36f36be5ba1e3508b5ca99cb9abc26560970c6d2d7154b6c9b2c0a07846",
+      "slides": [
+        "p11"
+      ],
+      "pages_18min": [
+        30
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/domain_gap_icl_context_ba_by_k.pdf",
+      "sha256": "c3c45553d5e1c8135b0bb4cc68b5714b726d3cc825b07d7c60061c5b376c1c3e",
+      "slides": [
+        "p12",
+        "a11"
+      ],
+      "pages_18min": [
+        27,
+        29
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_brugada_pattern.pdf",
+      "sha256": "c1e3f56ed4061c1314f95f18372fefc8b592f1551bdd39516546cab8d607d45e",
+      "slides": [
+        "p03"
+      ],
+      "pages_18min": [
+        9
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_label_distribution.pdf",
+      "sha256": "ce87b3047875ba91524e0e674c1831bf30f82516f096b38fe952a15f3ed909de",
+      "slides": [
+        "a05"
+      ],
+      "pages_18min": [
+        15
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_morfologia_ecg.pdf",
+      "sha256": "729fb769d29f49b095616e81ef72f03a3e1ae85a5887c87d8341f63aeb379cdd",
+      "slides": [
+        "latido"
+      ],
+      "pages_18min": [
+        8
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_pipeline_experimental.pdf",
+      "sha256": "5a7c665506c3906625b31caf849bc5bb31a601aaa2e40301bc5954400257208d",
+      "slides": [
+        "p04"
+      ],
+      "pages_18min": [
+        17
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_synthetic_examples.pdf",
+      "sha256": "b85d90923aa2cc7d7ab99b0a415888b25225546607d779069423c171e902f23b",
+      "slides": [
+        "a04"
+      ],
+      "pages_18min": [
+        14
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/fig_synthetic_real_comparison.pdf",
+      "sha256": "580ed19a2ec7cbc6f2ae9120921517174ed58e634c945637b7515fbc2851c368",
+      "slides": [
+        "p05"
+      ],
+      "pages_18min": [
+        12
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/gaussian_generator.drawio.pdf",
+      "sha256": "80f440f737952c9d12cbc6a03269c1ffa5a1e2517966f55b5955d4ca43e42e70",
+      "slides": [
+        "p06"
+      ],
+      "pages_18min": [
+        13
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/icl_general_dong2024.pdf",
+      "sha256": "10ce298fed7560155a39a6521ab06658bbce7002ba47355913f68a24672587be",
+      "slides": [
+        "a03"
+      ],
+      "pages_18min": [
+        4
+      ],
+      "format": "PDF with raster elements"
+    },
+    {
+      "file": "assets/transfer_controls_synthetic_to_real_summary.pdf",
+      "sha256": "4d15b5228c461ff85e0becf214279558b6bd5f606b1fed75286841c1e979cdd9",
+      "slides": [
+        "a09",
+        "a10"
+      ],
+      "pages_18min": [
+        31,
+        32
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/vlm_icl_context_window.pdf",
+      "sha256": "57b0aa2ef8ecf3d19801b62928e96acaaa441786b64b46e3632d13e8a61fc7c7",
+      "slides": [
+        "p08"
+      ],
+      "pages_18min": [
+        18
+      ],
+      "format": "vector PDF"
+    },
+    {
+      "file": "assets/vlm_simulator_qrs_balanced_k32_confusion_matrix.pdf",
+      "sha256": "fabb21a7d352471f754cf4ac99d8b9addbedcf8735fdc4e4681cea5bb0b50d5e",
+      "slides": [
+        "a07"
+      ],
+      "pages_18min": [
+        25
+      ],
+      "format": "vector PDF"
+    }
+  ],
+  "unique_count": 22,
+  "main_slide_count": {
+    "18min": 39
+  },
+  "routes": {
+    "18min": [
+      "p01",
+      "problema",
+      "p02",
+      "a03",
+      "objetivos",
+      "indice",
+      "antecedentes",
+      "latido",
+      "p03",
+      "a15",
+      "cnn_concepto",
+      "p05",
+      "p06",
+      "a04",
+      "a05",
+      "huca",
+      "p04",
+      "p08",
+      "p07",
+      "a06",
+      "escenarios",
+      "p09",
+      "escenario_simulador",
+      "p10",
+      "a07",
+      "escenario_transferencia",
+      "p12",
+      "antecedente_dominio",
+      "a11",
+      "p11",
+      "a09",
+      "a10",
+      "escenario_clinico",
+      "p13",
+      "p14",
+      "p16",
+      "p15",
+      "futuro",
+      "cierre",
+      "a13",
+      "a14"
+    ]
+  },
+  "narrative_order": [
+    {
+      "slide": "p01",
+      "title": "Análisis de ECGs con grandes modelos de lenguaje",
+      "block": "Introducción",
+      "seconds": 15
+    },
+    {
+      "slide": "problema",
+      "title": "Enfermedades cardiovasculares y síndrome de Brugada",
+      "block": "Introducción",
+      "seconds": 30
+    },
+    {
+      "slide": "p02",
+      "title": "Electrocardiograma en formato imagen",
+      "block": "Introducción",
+      "seconds": 35
+    },
+    {
+      "slide": "a03",
+      "title": "Aprendizaje en contexto",
+      "block": "Introducción",
+      "seconds": 25
+    },
+    {
+      "slide": "objetivos",
+      "title": "Propuesta y objetivos del TFG",
+      "block": "Introducción",
+      "seconds": 30
+    },
+    {
+      "slide": "indice",
+      "title": "Estructura de la exposición",
+      "block": "Introducción",
+      "seconds": 15
+    },
+    {
+      "slide": "antecedentes",
+      "title": "Estado del arte",
+      "block": "Introducción",
+      "seconds": 30
+    },
+    {
+      "slide": "latido",
+      "title": "Cómo leer un latido",
+      "block": "Fundamentos clínicos",
+      "seconds": 35
+    },
+    {
+      "slide": "p03",
+      "title": "Síndrome de Brugada y derivación V1",
+      "block": "Fundamentos clínicos",
+      "seconds": 30
+    },
+    {
+      "slide": "a15",
+      "title": "Aspectos éticos y protección de datos",
+      "block": "Fundamentos clínicos",
+      "seconds": 15
+    },
+    {
+      "slide": "cnn_concepto",
+      "title": "Redes neuronales convolucionales",
+      "block": "Fundamentos metodológicos",
+      "seconds": 20
+    },
+    {
+      "slide": "p05",
+      "title": "Conjuntos de datos del simulador y del HUCA",
+      "block": "Datos y simulación",
+      "seconds": 25
+    },
+    {
+      "slide": "p06",
+      "title": "Simulador QRS/ST",
+      "block": "Datos y simulación",
+      "seconds": 35
+    },
+    {
+      "slide": "a04",
+      "title": "Familias del simulador",
+      "block": "Datos y simulación",
+      "seconds": 25
+    },
+    {
+      "slide": "a05",
+      "title": "Distribución de etiquetas en el simulador",
+      "block": "Datos y simulación",
+      "seconds": 25
+    },
+    {
+      "slide": "huca",
+      "title": "Conjunto clínico del HUCA",
+      "block": "Datos y simulación",
+      "seconds": 25
+    },
+    {
+      "slide": "p04",
+      "title": "Diseño experimental",
+      "block": "Diseño experimental",
+      "seconds": 30
+    },
+    {
+      "slide": "p08",
+      "title": "Implementación del ICL con Gemma 4 E4B",
+      "block": "Implementación",
+      "seconds": 25
+    },
+    {
+      "slide": "p07",
+      "title": "Implementación de la CNN con ResNet18",
+      "block": "Implementación",
+      "seconds": 30
+    },
+    {
+      "slide": "a06",
+      "title": "Inspección de activaciones con Grad-CAM",
+      "block": "Implementación",
+      "seconds": 30
+    },
+    {
+      "slide": "escenarios",
+      "title": "Escenarios de evaluación",
+      "block": "Diseño experimental",
+      "seconds": 15
+    },
+    {
+      "slide": "p09",
+      "title": "Protocolo de evaluación por paciente: LOOCV",
+      "block": "Diseño experimental",
+      "seconds": 35
+    },
+    {
+      "slide": "escenario_simulador",
+      "title": "Simulación",
+      "block": "Resultados",
+      "seconds": 5
+    },
+    {
+      "slide": "p10",
+      "title": "Resultados con ejemplos del simulador",
+      "block": "Resultados 1/3 \\enspace Simulador \\(\\rightarrow\\) Simulador",
+      "seconds": 55
+    },
+    {
+      "slide": "a07",
+      "title": "Matrices de confusión en el simulador",
+      "block": "Resultados 1/3 \\enspace Simulador \\(\\rightarrow\\) Simulador",
+      "seconds": 30
+    },
+    {
+      "slide": "escenario_transferencia",
+      "title": "Cambio de dominio",
+      "block": "Resultados",
+      "seconds": 5
+    },
+    {
+      "slide": "p12",
+      "title": "Cambio de dominio en ICL con selección balanceada",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 30
+    },
+    {
+      "slide": "antecedente_dominio",
+      "title": "Adaptación de dominio",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 20
+    },
+    {
+      "slide": "a11",
+      "title": "Cambio de dominio en ICL con selección estándar",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 20
+    },
+    {
+      "slide": "p11",
+      "title": "CNN entrenada en el simulador y evaluada en el HUCA",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 35
+    },
+    {
+      "slide": "a09",
+      "title": "Métodos de adaptación de dominio en la CNN",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 40
+    },
+    {
+      "slide": "a10",
+      "title": "F1 de la clase positiva al cambiar de dominio",
+      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
+      "seconds": 30
+    },
+    {
+      "slide": "escenario_clinico",
+      "title": "Evaluación clínica",
+      "block": "Resultados",
+      "seconds": 5
+    },
+    {
+      "slide": "p13",
+      "title": "Demostraciones y entrenamiento con ejemplos del HUCA",
+      "block": "Resultados 3/3 \\enspace HUCA \\(\\rightarrow\\) HUCA",
+      "seconds": 70
+    },
+    {
+      "slide": "p14",
+      "title": "Matrices de confusión en la evaluación clínica",
+      "block": "Resultados 3/3 \\enspace HUCA \\(\\rightarrow\\) HUCA",
+      "seconds": 35
+    },
+    {
+      "slide": "p16",
+      "title": "Conclusiones",
+      "block": "Conclusiones y discusión",
+      "seconds": 40
+    },
+    {
+      "slide": "p15",
+      "title": "Interpretación y límites del estudio",
+      "block": "Conclusiones y discusión",
+      "seconds": 45
+    },
+    {
+      "slide": "futuro",
+      "title": "Continuación del trabajo",
+      "block": "Conclusiones y discusión",
+      "seconds": 25
+    },
+    {
+      "slide": "cierre",
+      "title": "Cierre y preguntas",
+      "block": "",
+      "seconds": 10
+    }
+  ],
+  "numeric_provenance": "data/numeric_provenance.json",
+  "institutional_design": "Adaptation of UniOvi corporate identity manual, section 6.1, to 16:9; not an officially published Beamer theme"
+}
