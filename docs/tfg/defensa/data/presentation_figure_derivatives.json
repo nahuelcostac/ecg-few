@@ -36,9 +36,9 @@
   "gradcam": {
     "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
     "provenance": "data/gradcam_procedencia.json",
-    "method": "The selected canonical raw panel crops at 386 by 386 pixels, embedded without resampling, with vector titles. The recorded heatmap and spatial registration are preserved.",
-    "sha256": "3eff583abfa6a8af94ad6167eb20847c96f4921be118591c6a84676b0b539e29",
-    "displayed_on_slide": false
+    "method": "Same selected canonical synthetic V1 case and recorded heatmap. Original 896 by 896 grayscale tracing replaces the 224-pixel model-display underlay. The heatmap is embedded from its native canonical crop and overlaid in the same normalized full-image coordinates. Three-panel format and vector titles are preserved.",
+    "sha256": "6213eb9cdb98fe53fb46e8a558d281b94d7935fcb18031481ea32a1d003491aa",
+    "displayed_on_slide": true
   },
   "pipeline_palette": {
     "file": "assets/fig_pipeline_experimental.pdf",
@@ -47,34 +47,5 @@
     "stroke": "#93C47D",
     "scope": "Embedded CNN and VLM/ICL test-sample headers now match HUCA and evaluation. Text and token colors are retained for contrast.",
     "sha256": "07d60a0b0b6d8d08b1e28e6674541ee5ca95982832a01004b74fcea688468ad9"
-  },
-  "gradcam_illustration": {
-    "file": "assets/referencias_visuales/gradcam_ecg_sundaramoorthy2026.png",
-    "authors": "Sureshkumar Sundaramoorthy and Govardhan Karunanidhi",
-    "year": 2026,
-    "title": "Explainable hybrid deep learning framework with Grad-CAM for heartbeat-level arrhythmia classification",
-    "article": "https://doi.org/10.3389/fphys.2026.1848316",
-    "figure": 15,
-    "source_image": "https://www.frontiersin.org/files/Articles/1848316/xml-images/fphys-17-1848316-g015.webp",
-    "source_sha256": "287221254d50397b93cdad7a4d27e1465b5108838e4bcc8143445f6f15255045",
-    "license": "CC BY 4.0",
-    "license_url": "https://creativecommons.org/licenses/by/4.0/",
-    "source_dimensions_px": [
-      1772,
-      1175
-    ],
-    "crop_xyxy_px": [
-      0,
-      0,
-      1772,
-      375
-    ],
-    "resampling": false,
-    "scope": "Published method illustration from another study, not an experimental result from this thesis. Original scales and trace-map registration retained.",
-    "sha256": "8656a0262bd6ee29963768f662cf58c7bdcbd3fa2f2954c4af05c9d3134426e7",
-    "display_pdf": {
-      "file": "assets/gradcam_ecg_published_example.pdf",
-      "sha256": "39ab2e6d98dd7f95c81bdb4ec7e7ee36b4c3c8892e00266e03d97b25e3630eaa"
-    }
   }
 }

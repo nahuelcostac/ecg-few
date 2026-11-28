@@ -56,6 +56,17 @@
       "format": "vector PDF"
     },
     {
+      "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
+      "sha256": "6213eb9cdb98fe53fb46e8a558d281b94d7935fcb18031481ea32a1d003491aa",
+      "slides": [
+        "a06"
+      ],
+      "pages_18min": [
+        19
+      ],
+      "format": "PDF with raster elements"
+    },
+    {
       "file": "assets/cnn_simulator_qrs_k32_confusion_matrix.pdf",
       "sha256": "484f251cdb3e5f4cb8f9a0af1aedb29384526ff5d4e50a37e7a373820a7d1e2e",
       "slides": [
@@ -175,17 +186,6 @@
         13
       ],
       "format": "vector PDF"
-    },
-    {
-      "file": "assets/gradcam_ecg_published_example.pdf",
-      "sha256": "39ab2e6d98dd7f95c81bdb4ec7e7ee36b4c3c8892e00266e03d97b25e3630eaa",
-      "slides": [
-        "a06"
-      ],
-      "pages_18min": [
-        19
-      ],
-      "format": "PDF with raster elements"
     },
     {
       "file": "assets/icl_general_dong2024.pdf",
@@ -394,7 +394,7 @@
     },
     {
       "slide": "a06",
-      "title": "Superposición de Grad-CAM sobre ECG",
+      "title": "Inspección de activaciones con Grad-CAM",
       "block": "Implementación",
       "seconds": 30
     },

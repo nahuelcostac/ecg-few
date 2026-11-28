@@ -372,7 +372,7 @@ def inventory(data: list[dict], full: list[str]) -> None:
                 "slides": occurrences,
                 "pages_18min": [full.index(s) + 1 for s in occurrences],
                 "format": "PDF with raster elements"
-                if p.name in {"icl_general_dong2024.pdf", "gradcam_ecg_published_example.pdf"}
+                if p.name in {"icl_general_dong2024.pdf", "cnn_simulator_qrs_gradcam_example.pdf"}
                 else "vector PDF",
             }
         )

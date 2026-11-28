@@ -23,12 +23,35 @@
   ],
   "scope": "Latido sintético V1. Salida RBBB de ResNet18. Ejemplo cualitativo elegido por el solapamiento visible con el trazado.",
   "presentation_update": {
-    "panels_native_resolution_px": [
-      386,
-      386
+    "tracing_source": "data/simulator_qrs/images/NORMAL/SIM00012_V1.png",
+    "tracing_sha256": "dd234c89015403a5eb944462a7cf6c7ffd9993303f26c61974a3967a61e27cd5",
+    "tracing_native_resolution_px": [
+      896,
+      896
     ],
-    "resampling": false,
+    "tracing_conversion": "Original high-resolution plot converted to grayscale, as in the evaluated model input. No signal or axis changes.",
+    "model_input_resolution_px": [
+      224,
+      224
+    ],
+    "heatmap_source": "outputs/final_results_tfg/runs/cnn_simulator_qrs_loocv/resnet18/k32_seed123/fold_0011/gradcam_panel.png",
+    "heatmap_crop_xyxy_px": [
+      649,
+      107,
+      1031,
+      488
+    ],
+    "heatmap_native_resolution_px": [
+      382,
+      381
+    ],
+    "heatmap_recomputed": false,
+    "heatmap_resampling_before_pdf_embedding": false,
+    "overlay_alpha": 0.45098039215686275,
+    "canonical_overlay_alpha": 0.45,
+    "registration": "The original complete square tracing and the canonical complete heatmap use the same normalized full-image rectangle, matching the original Grad-CAM display coordinates.",
     "pdf_titles": "vector text",
-    "note": "The selected canonical heatmap and its spatial registration are preserved at native resolution."
+    "layout": "Same three equal square panels: tracing, heatmap, overlay. Same panel positions and vector titles as the previous own-case figure.",
+    "note": "The original tracing improves line and axis legibility. The measured heatmap remains spatially smooth at its recorded resolution. No model inference, training or heatmap calculation was rerun."
   }
 }

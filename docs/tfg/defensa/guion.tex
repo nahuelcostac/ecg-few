@@ -43,7 +43,7 @@ La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del M
 16 & Diseño experimental & 7:00\\
 17 & Implementación del ICL con Gemma 4 E4B & 7:25\\
 18 & Implementación de la CNN con ResNet18 & 7:55\\
-19 & Superposición de Grad-CAM sobre ECG & 8:25\\
+19 & Inspección de activaciones con Grad-CAM & 8:25\\
 20 & Escenarios de evaluación & 8:40\\
 21 & Protocolo de evaluación por paciente: LOOCV & 9:15\\
 22 & Métricas de evaluación & 10:00\\
@@ -190,10 +190,10 @@ La CNN utiliza ResNet18 preentrenada y ajusta la red completa. La imagen se conv
 
 \textbf{Transición.} Grad-CAM permite inspeccionar una salida de la red entrenada.
 
-\Needspace{8\baselineskip}\section*{19. Superposición de Grad-CAM sobre ECG}
+\Needspace{8\baselineskip}\section*{19. Inspección de activaciones con Grad-CAM}
 \textbf{Tiempo orientativo: }30 segundos.
 
-Esta figura publicada ilustra la superposición de Grad-CAM sobre una señal de ECG. Los colores cálidos corresponden a valores mayores del mapa dentro de cada ejemplo, según su escala. La activación indica una contribución relativa a la salida del modelo y no demuestra por sí sola una interpretación clínica correcta. Es una ilustración bibliográfica de un clasificador de arritmias sobre señales, no un resultado de la CNN de este TFG ni un ejemplo de Brugada. En nuestro estudio, Grad-CAM se aplicó a imágenes de un latido central de V1. Fuente: \href{https://doi.org/10.3389/fphys.2026.1848316}{Sundaramoorthy y Karunanidhi (2026)}, figura 15, recortada a la fila superior, CC BY 4.0.
+El ejemplo muestra el mismo latido sintético de V1 y el mapa de Grad-CAM conservado para la salida asociada a RBBB. La primera imagen es el trazado, la segunda es el mapa y la tercera superpone ambos. Se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color señala regiones relacionadas con la salida de la CNN en este caso. Es una inspección cualitativa y no demuestra por sí sola una interpretación clínica correcta.
 
 \textbf{Transición.} Con los dos métodos definidos, podemos distinguir de dónde provienen los ejemplos y los ECG de prueba.
 
