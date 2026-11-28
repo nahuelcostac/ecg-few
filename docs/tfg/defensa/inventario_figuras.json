@@ -18,7 +18,7 @@
         "p14"
       ],
       "pages_18min": [
-        35
+        36
       ],
       "format": "vector PDF"
     },
@@ -29,7 +29,7 @@
         "p13"
       ],
       "pages_18min": [
-        34
+        35
       ],
       "format": "vector PDF"
     },
@@ -73,7 +73,7 @@
         "a07"
       ],
       "pages_18min": [
-        25
+        26
       ],
       "format": "vector PDF"
     },
@@ -84,7 +84,7 @@
         "p10"
       ],
       "pages_18min": [
-        24
+        25
       ],
       "format": "vector PDF"
     },
@@ -95,7 +95,7 @@
         "p10"
       ],
       "pages_18min": [
-        24
+        25
       ],
       "format": "vector PDF"
     },
@@ -106,7 +106,7 @@
         "p11"
       ],
       "pages_18min": [
-        30
+        31
       ],
       "format": "vector PDF"
     },
@@ -118,8 +118,8 @@
         "a11"
       ],
       "pages_18min": [
-        27,
-        29
+        28,
+        30
       ],
       "format": "vector PDF"
     },
@@ -219,8 +219,8 @@
         "a10"
       ],
       "pages_18min": [
-        31,
-        32
+        32,
+        33
       ],
       "format": "vector PDF"
     },
@@ -242,14 +242,14 @@
         "a07"
       ],
       "pages_18min": [
-        25
+        26
       ],
       "format": "vector PDF"
     }
   ],
   "unique_count": 22,
   "main_slide_count": {
-    "18min": 39
+    "18min": 40
   },
   "routes": {
     "18min": [
@@ -275,6 +275,7 @@
       "a06",
       "escenarios",
       "p09",
+      "metricas",
       "escenario_simulador",
       "p10",
       "a07",
@@ -429,6 +430,12 @@
       "title": "Protocolo de evaluación por paciente: LOOCV",
       "block": "Diseño experimental",
       "seconds": 35
+    },
+    {
+      "slide": "metricas",
+      "title": "Métricas de evaluación y triaje",
+      "block": "Diseño experimental",
+      "seconds": 45
     },
     {
       "slide": "escenario_simulador",

@@ -48,12 +48,12 @@ def main() -> None:
     inventory = json.loads((HERE / "inventario_figuras.json").read_text(encoding="utf-8"))
     slides = json.loads((HERE / "slides.json").read_text(encoding="utf-8"))
     expected_main = (
-        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 a05 huca p04 p08 p07 a06 escenarios p09 escenario_simulador p10 a07 escenario_transferencia p12 antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
+        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 a05 huca p04 p08 p07 a06 escenarios p09 metricas escenario_simulador p10 a07 escenario_transferencia p12 antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
     ).split()
     main_slides = [slide for slide in slides if slide["section"] == "main"]
     assert [slide["id"] for slide in main_slides] == expected_main
-    assert len(slides) == len({slide["id"] for slide in slides}) == 42
-    assert sum(slide["seconds"] for slide in main_slides) == 1080
+    assert len(slides) == len({slide["id"] for slide in slides}) == 43
+    assert sum(slide["seconds"] for slide in main_slides) == 1125
     assert len(inventory["scientific_figures"]) == 22
     assert all(not slide["figures"] for slide in slides if slide["section"] != "main")
     route = inventory["routes"]["18min"]
@@ -107,6 +107,11 @@ def main() -> None:
     budget_text = " ".join(texts[route.index("presupuesto")].split())
     assert all(value in budget_text for value in ("Presupuesto aproximado", "9.713", "8,34", "2,83", "20 h", "10 h"))
     assert "no son gasto facturado" in budget_text
+    assert all(label in budget_text for label in ("Personal", "Cómputo", "Materiales y servicios"))
+    assert route[route.index("p09") + 1] == "metricas"
+    metrics_text = " ".join(texts[route.index("metricas")].split())
+    assert all(label in metrics_text for label in ("Exactitud balanceada", "F1 de la clase positiva", "Sensibilidad", "Especificidad", "Precisión", "Triaje"))
+    assert "BA y F1 no incorporan el coste clínico de cada error" in metrics_text
     clinical_text = texts[route.index("p13")]
     assert "0,761" in clinical_text and "0,535" in clinical_text
     assert "F1 de la clase positiva" in clinical_text

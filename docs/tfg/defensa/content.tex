@@ -355,7 +355,61 @@
 \begin{frame}[t]\hypertarget{p09}{}
 \frametitle{Protocolo de evaluación por paciente: LOOCV}
 \vspace{3mm}\fullfigure[123mm]{clinical_fold_protocol.pdf}
-\note{K es el número de demostraciones para Gemma o casos de entrenamiento para ResNet18. Se evalúan cinco valores con tres semillas. Cada pliegue reserva un paciente para la prueba. La CNN clínica dispone además de ocho pacientes de validación para elegir época y umbral. La exactitud balanceada promedia sensibilidad y especificidad. F1 combina precisión y sensibilidad de la clase positiva.}
+\note{K es el número de demostraciones para Gemma o casos de entrenamiento para ResNet18. Se evalúan cinco valores con tres semillas. Cada pliegue reserva un paciente para la prueba. La CNN clínica dispone además de ocho pacientes de validación para elegir época y umbral.}
+\end{frame}}
+
+\expandafter\newcommand\csname Slidemetricas\endcsname{%
+\renewcommand{\defenseblock}{Diseño experimental}
+\renewcommand{\defensenav}{Defensa del TFG}
+\begin{frame}[t]\hypertarget{metricas}{}
+\frametitle{Métricas de evaluación y triaje}
+\vspace{2mm}
+{\fontsize{19}{25}\selectfont Con clases desbalanceadas, acertar los negativos no basta.\par}
+\vspace{2mm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\textwidth}
+{\fontsize{23}{30}\selectfont\color{UOGreen} Exactitud balanceada (BA)\par}
+\vspace{2mm}
+{\fontsize{22}{29}\selectfont $\mathrm{BA}=\dfrac{\text{sensibilidad}+\text{especificidad}}{2}$\par}
+\vspace{2mm}
+{\fontsize{17}{23}\selectfont Da el mismo peso a las dos clases.\par}
+\vspace{2mm}
+{\fontsize{17}{24}\selectfont
+\textcolor{UOGreen}{Sensibilidad} $=\dfrac{\mathrm{VP}}{\mathrm{VP}+\mathrm{FN}}$\quad Positivos detectados.\par
+\vspace{2mm}
+\textcolor{UOGreen}{Especificidad} $=\dfrac{\mathrm{VN}}{\mathrm{VN}+\mathrm{FP}}$\quad Negativos descartados.\par}
+\end{column}
+\begin{column}{.47\textwidth}
+{\fontsize{23}{30}\selectfont\color{UOGreen} F1 de la clase positiva\par}
+\vspace{2mm}
+{\fontsize{22}{29}\selectfont $\mathrm{F1}=\dfrac{2\,\text{precisión}\cdot\text{sensibilidad}}{\text{precisión}+\text{sensibilidad}}$\par}
+\vspace{2mm}
+{\fontsize{17}{23}\selectfont Combina precisión y sensibilidad.\par}
+\vspace{2mm}
+{\fontsize{17}{24}\selectfont
+\textcolor{UOGreen}{Precisión} $=\dfrac{\mathrm{VP}}{\mathrm{VP}+\mathrm{FP}}$\par
+\vspace{2mm}
+De los casos señalados, cuántos son positivos.\par
+\vspace{2mm}
+F1 no utiliza los verdaderos negativos.\par}
+\end{column}
+\end{columns}
+\vspace{2mm}
+{\color{UOLine}\hrule height0.5pt}
+\vspace{2mm}
+{\fontsize{18}{24}\selectfont\color{UOGreen} Triaje: reducir FN para no dejar casos sospechosos sin priorizar;\\controlar FP para limitar revisiones innecesarias.\par}
+\vspace{2mm}
+{\fontsize{13}{18}\selectfont BA y F1 no incorporan el coste clínico de cada error; hay que revisar sensibilidad y especificidad.\par}
+\credit{VP/VN: verdaderos positivos/negativos; FP/FN: falsos positivos/negativos. \href{https://scikit-learn.org/stable/modules/model_evaluation.html}{Definiciones: scikit-learn.}}
+\note{La exactitud global puede parecer alta si predominan los negativos y el modelo casi siempre predice esa clase. La exactitud balanceada promedia sensibilidad y especificidad, por lo que cada clase pesa lo mismo aunque sus tamaños difieran. La sensibilidad es la proporción de positivos de referencia que se detectan; un falso negativo es un positivo de referencia que el modelo clasifica como negativo. La especificidad es la proporción de negativos de referencia que se descartan; un falso positivo es un negativo que se señala como positivo.
+
+F1 se calcula para la clase positiva y es la media armónica de precisión y sensibilidad. La precisión indica cuántos de los casos señalados son positivos según la referencia. F1 disminuye cuando se acumulan falsos positivos o falsos negativos, pero no incluye los verdaderos negativos y no asigna por sí sola un mayor coste clínico a omitir un caso. Tampoco la exactitud balanceada expresa la utilidad clínica de los errores: da el mismo peso a la sensibilidad y la especificidad, no un coste asistencial acordado.
+
+Como posible apoyo al triaje, interesa reducir los falsos negativos para no dejar casos sospechosos sin priorizar, controlando a la vez los falsos positivos porque aumentan las revisiones. La importancia relativa de los errores depende del uso y debe acordarse con especialistas y validarse. Una BA o una F1 altas no bastan para afirmar que el sistema puede descartar pacientes. Por eso se presentan también sensibilidad, especificidad y matrices de confusión. Esta explicación no modifica umbrales ni el protocolo experimental.
+
+En la evaluación del HUCA, positivo se refiere a la etiqueta clínica empleada. En el simulador, la clase derivada procede de las reglas morfológicas QRS/ST. Son objetivos de anotación distintos y no se convierten en diagnósticos clínicos intercambiables. Las fórmulas son las mismas para cada tarea binaria, pero se interpretan respecto a su propia referencia.
+
+Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.}
 \end{frame}}
 
 \expandafter\newcommand\csname Slideescenario_simulador\endcsname{%
@@ -619,30 +673,60 @@
 \renewcommand{\defensenav}{\hyperlink{a13}{Referencias}\quad \hyperlink{conclusion}{Volver al cierre}}
 \begin{frame}[t]\hypertarget{presupuesto}{}
 \frametitle{Presupuesto aproximado}
-\vspace{2mm}
-{\fontsize{17}{23}\selectfont Valoración del trabajo y los recursos; importes y dedicaciones supuestos.\par}
-\vspace{4mm}
-{\fontsize{17}{22}\selectfont
-\renewcommand{\arraystretch}{1.08}
-\begin{tabular}{@{}p{137mm}p{98mm}r@{}}
-\textcolor{UOGreen}{Concepto} & \textcolor{UOGreen}{Estimación} & \textcolor{UOGreen}{Coste}\\
-\midrule
-Investigación y desarrollo & 300 h $\times$ 20 €/h & 6.000 €\\
-Tutoría docente e investigadora & 40 h $\times$ 50 €/h & 2.000 €\\
-Asesoramiento clínico y revisión & 10 h $\times$ 60 €/h & 600 €\\
-Cómputo VLM (Gemma, inferencia) & 20 h $\times$ 2 €/h & 40 €\\
-Cómputo CNN (incl. adaptación) & 10 h $\times$ 1 €/h & 10 €\\
-Equipo amortizado y almacenamiento & 150 € + 30 € & 180 €\\
-Margen para imprevistos & 10\% de 8.830 € & 883 €\\
-\midrule
-\textbf{Total estimado} & \textbf{Aproximadamente 9.700 €} & \textbf{9.713 €}\\
+\vspace{3mm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.54\textwidth}
+{\fontsize{22}{28}\selectfont\color{UOGreen} Personal\par}
+\vspace{3mm}
+{\fontsize{16}{22}\selectfont
+\renewcommand{\arraystretch}{.95}
+\begin{tabular}{@{}p{75mm}p{49mm}r@{}}
+Concepto & Dedicación & Coste\\\midrule
+Investigación y desarrollo & 300 h $\times$ 20 €/h & 6.000 €\\[2mm]
+Tutoría docente & 40 h $\times$ 50 €/h & 2.000 €\\[2mm]
+Asesoramiento clínico & 10 h $\times$ 60 €/h & 600 €\\\midrule
+\textbf{Subtotal personal} & & \textbf{8.600 €}\\
 \end{tabular}\par}
-\vspace{4mm}
-{\fontsize{16}{22}\selectfont\color{UOGreen} Tiempos registrados: Gemma 8,34 h de consultas; CNN 2,83 h de entrenamiento.\par}
-\vspace{2mm}
-{\fontsize{13}{18}\selectfont\color{UOGray} Las reservas de 20 h y 10 h incluyen un margen operativo supuesto; no son gasto facturado.\\
-Software libre: 0 €. Datos ya cedidos; sin nueva adquisición ni validación prospectiva. Sin impuestos indirectos.\par}
-\credit{Estructura: N. Costa Cortez, TFG (2019), §6.2, p. 72. Tiempos: registros de la campaña final.}
+\end{column}
+\begin{column}{.42\textwidth}
+{\fontsize{22}{28}\selectfont\color{UOGreen} Cómputo\par}
+\vspace{3mm}
+{\fontsize{16}{22}\selectfont
+\renewcommand{\arraystretch}{.85}
+\begin{tabular}{@{}p{44mm}p{48mm}r@{}}
+VLM (Gemma) & 20 h $\times$ 2 €/h & 40 €\\
+CNN & 10 h $\times$ 1 €/h & 10 €\\\midrule
+\textbf{Subtotal} & & \textbf{50 €}\\
+\end{tabular}\par}
+\vspace{3mm}
+{\fontsize{22}{28}\selectfont\color{UOGreen} Materiales y servicios\par}
+\vspace{3mm}
+{\fontsize{16}{22}\selectfont
+\renewcommand{\arraystretch}{.85}
+\begin{tabular}{@{}p{95mm}r@{}}
+Equipo amortizado & 150 €\\
+Almacenamiento y copias & 30 €\\
+Software libre & 0 €\\\midrule
+\textbf{Subtotal} & \textbf{180 €}\\
+\end{tabular}\par}
+\end{column}
+\end{columns}
+\vspace{3mm}
+{\color{UOLine}\hrule height0.5pt}
+\vspace{3mm}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{.55\textwidth}
+{\fontsize{17}{23}\selectfont Base: 8.830 €\quad +\quad Imprevistos (10\%): 883 €\par}
+\end{column}
+\begin{column}{.41\textwidth}
+{\fontsize{17}{23}\selectfont\color{UOGreen} Total estimado\par}
+{\fontsize{29}{35}\selectfont 9.713 €\enspace {\fontsize{15}{21}\selectfont $\approx$ 9.700 €}\par}
+\end{column}
+\end{columns}
+\vspace{3mm}
+{\fontsize{14}{20}\selectfont\color{UOGreen} Tiempos registrados: Gemma 8,34 h de consultas; CNN 2,83 h de entrenamiento.\par}
+\vspace{1mm}
+{\fontsize{12}{17}\selectfont\color{UOGray} Dedicaciones y tarifas supuestas. Reservas de 20 h y 10 h con margen; no son gasto facturado. Datos ya cedidos; sin nueva adquisición,\\validación prospectiva ni impuestos indirectos. Estructura: Costa Cortez, TFG (2019), §6.2, p. 72.\par}
 \note{Este presupuesto es una valoración aproximada del coste de realizar el trabajo, no una relación de pagos reales. Sigue la separación entre personal, materiales y total de la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, Preprocesado y tratamiento inteligente de electrocardiogramas intracardíacos. No se reutilizan sus precios históricos. Se suponen trescientas horas de investigación y desarrollo a veinte euros por hora, cuarenta horas de tutoría docente e investigadora a cincuenta euros y diez horas de asesoramiento clínico y revisión de datos a sesenta euros. Son costes institucionales hipotéticos con cargas incluidas, no salarios oficiales ni dedicaciones verificadas. El desarrollo comprende la revisión bibliográfica, el simulador, el código, la operación de los experimentos, el análisis, la memoria y la defensa.
 
 Los tres agregados canónicos de Gemma contienen 24.222 consultas. La suma del número de entradas por la latencia media de cada ejecución es 8,34 horas. Es tiempo acumulado de respuesta del servicio, con sobrecarga de red y servicio: no identifica horas efectivas de GPU ni permite reconstruir una factura por tokens. Para las CNN se suman 2,83 horas registradas de entrenamiento, incluyendo el preentrenamiento SimCLR. Se cuentan una sola vez los entrenamientos compartidos que aparecen repetidos en las predicciones de los pacientes. No se dispone de una medición completa de los trabajos, incluidos carga, inferencia y Grad-CAM.

@@ -281,7 +281,7 @@ def guide(data: list[dict], full: list[str], annex: list[str]) -> None:
 \begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip
 {\large\ThesisTitle}\par\medskip\AuthorName\par Noviembre de 2026\end{center}
 \section*{Preparación y duración}
-La defensa contiene @FULLCOUNT@ diapositivas principales para un ensayo de 18 minutos, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
+La defensa contiene @FULLCOUNT@ diapositivas principales para un ensayo de @DURATION@, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
 
 La apertura relaciona la escasez de positivos con la representación visual y presenta el aprendizaje en contexto antes de los objetivos. Después del estado del arte se explica el latido y se sitúan los aspectos éticos. Tras las implementaciones se presentan los tres escenarios y el protocolo por paciente. Una diapositiva de transición abre cada bloque de resultados.
 
@@ -291,11 +291,13 @@ Ensaya en voz alta, siguiendo el gráfico que ve el tribunal. No leas las diapos
 
 La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del Manual de Identidad Corporativa de UniOvi. No constituye una plantilla Beamer publicada o aprobada por la institución. Se conservan los emblemas originales, con Georgia para los títulos y el texto. Si Georgia no está instalada, el proyecto utiliza TeX Gyre Termes como alternativa.
 
-\clearpage\section*{Ruta principal: 18 minutos}
+\clearpage\section*{Ruta principal: @DURATION@}
 \begin{longtable}{p{12mm}p{112mm}r}\toprule Diap. & Contenido & Acumulado\\\midrule\endhead
 """
     lookup = {s["id"]: s for s in data}
-    lines = [header.replace("@FULLCOUNT@", str(len(full)))]
+    seconds = sum(lookup[ident]["seconds"] for ident in full)
+    duration = f"{seconds // 60} minutos y {seconds % 60} segundos"
+    lines = [header.replace("@FULLCOUNT@", str(len(full))).replace("@DURATION@", duration)]
     elapsed = 0
     for i, ident in enumerate(full, 1):
         slide = lookup[ident]
