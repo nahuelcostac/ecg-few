@@ -162,20 +162,7 @@
     ],
     "latex": "\\fullfigure[123mm]{fig_synthetic_examples.pdf}",
     "notes": "Las familias incluyen un trazado de referencia y distintas combinaciones de cambios en el QRS, el ST y la onda T. Cada familia permite generar ejemplos con una morfología distinta.",
-    "transition": "Veamos cuántas veces aparece cada rasgo en el conjunto generado.",
-    "section": "main",
-    "block": "Datos y simulación"
-  },
-  {
-    "id": "a05",
-    "title": "Distribución de etiquetas en el simulador",
-    "seconds": 25,
-    "figures": [
-      "fig_label_distribution.pdf"
-    ],
-    "latex": "\\fullfigure[123mm]{fig_label_distribution.pdf}",
-    "notes": "Los rasgos morfológicos pueden coexistir. La regla que exige los tres produce \\SimPositive{} positivos y \\SimNegative{} negativos entre los \\SimPatients{} casos simulados. Este desequilibrio motiva el uso de métricas que describan el rendimiento en ambas clases y en la clase positiva.",
-    "transition": "El segundo conjunto aporta la evaluación sobre registros clínicos.",
+    "transition": "El segundo conjunto aporta la evaluación sobre registros clínicos del HUCA.",
     "section": "main",
     "block": "Datos y simulación"
   },

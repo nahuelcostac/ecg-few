@@ -18,7 +18,7 @@
         "p14"
       ],
       "pages_18min": [
-        36
+        35
       ],
       "format": "vector PDF"
     },
@@ -29,7 +29,7 @@
         "p13"
       ],
       "pages_18min": [
-        35
+        34
       ],
       "format": "vector PDF"
     },
@@ -40,7 +40,7 @@
         "p09"
       ],
       "pages_18min": [
-        22
+        21
       ],
       "format": "vector PDF"
     },
@@ -51,7 +51,7 @@
         "p07"
       ],
       "pages_18min": [
-        19
+        18
       ],
       "format": "vector PDF"
     },
@@ -62,7 +62,7 @@
         "a06"
       ],
       "pages_18min": [
-        20
+        19
       ],
       "format": "vector PDF"
     },
@@ -73,7 +73,7 @@
         "a07"
       ],
       "pages_18min": [
-        26
+        25
       ],
       "format": "vector PDF"
     },
@@ -84,7 +84,7 @@
         "p10"
       ],
       "pages_18min": [
-        25
+        24
       ],
       "format": "vector PDF"
     },
@@ -95,7 +95,7 @@
         "p10"
       ],
       "pages_18min": [
-        25
+        24
       ],
       "format": "vector PDF"
     },
@@ -106,7 +106,7 @@
         "p11"
       ],
       "pages_18min": [
-        31
+        30
       ],
       "format": "vector PDF"
     },
@@ -118,8 +118,8 @@
         "a11"
       ],
       "pages_18min": [
-        28,
-        30
+        27,
+        29
       ],
       "format": "vector PDF"
     },
@@ -131,17 +131,6 @@
       ],
       "pages_18min": [
         9
-      ],
-      "format": "vector PDF"
-    },
-    {
-      "file": "assets/fig_label_distribution.pdf",
-      "sha256": "ce87b3047875ba91524e0e674c1831bf30f82516f096b38fe952a15f3ed909de",
-      "slides": [
-        "a05"
-      ],
-      "pages_18min": [
-        15
       ],
       "format": "vector PDF"
     },
@@ -158,12 +147,12 @@
     },
     {
       "file": "assets/fig_pipeline_experimental.pdf",
-      "sha256": "5a7c665506c3906625b31caf849bc5bb31a601aaa2e40301bc5954400257208d",
+      "sha256": "571f9ef802a2b8841f76c15c1d8fd1a6dc78573957ca8085c3a5af44aa25c70d",
       "slides": [
         "p04"
       ],
       "pages_18min": [
-        17
+        16
       ],
       "format": "vector PDF"
     },
@@ -219,8 +208,8 @@
         "a10"
       ],
       "pages_18min": [
-        32,
-        33
+        31,
+        32
       ],
       "format": "vector PDF"
     },
@@ -231,7 +220,7 @@
         "p08"
       ],
       "pages_18min": [
-        18
+        17
       ],
       "format": "vector PDF"
     },
@@ -242,14 +231,14 @@
         "a07"
       ],
       "pages_18min": [
-        26
+        25
       ],
       "format": "vector PDF"
     }
   ],
-  "unique_count": 22,
+  "unique_count": 21,
   "main_slide_count": {
-    "18min": 40
+    "18min": 39
   },
   "routes": {
     "18min": [
@@ -267,7 +256,6 @@
       "p05",
       "p06",
       "a04",
-      "a05",
       "huca",
       "p04",
       "p08",
@@ -380,12 +368,6 @@
     {
       "slide": "a04",
       "title": "Familias del simulador",
-      "block": "Datos y simulación",
-      "seconds": 25
-    },
-    {
-      "slide": "a05",
-      "title": "Distribución de etiquetas en el simulador",
       "block": "Datos y simulación",
       "seconds": 25
     },

@@ -5,11 +5,11 @@ This folder publishes the revised Spanish thesis **Análisis de ECGs con grandes
 | Deliverable | File | Source |
 | --- | --- | --- |
 | Revised thesis, 81 pages | [Thesis PDF](memoria/TFG_Alejandro_Moris_Lara_FINAL.pdf) | [memoria/main.tex](memoria/main.tex) |
-| Defense, 43 slides | [Defense PDF](defensa/Defensa_TFG.pdf) | [defensa/main.tex](defensa/main.tex) |
+| Defense, 42 slides | [Defense PDF](defensa/Defensa_TFG.pdf) | [defensa/main.tex](defensa/main.tex) |
 | PowerPoint with speaker notes | [Defense PPTX](defensa/Defensa_TFG.pptx) | Same Beamer sources and [export script](defensa/export_powerpoint.mjs) |
 | Speaker guide | [Guide PDF](defensa/Guion_defensa.pdf) | [defensa/guion.tex](defensa/guion.tex) |
 
-The PowerPoint represents the PDF pages as images. Edit the Beamer sources to change slide text and figures. The deck contains 40 presentation slides, one approximate-budget support slide after the thank-you page, and two reference pages. A metrics slide immediately after LOOCV uses a conceptual confusion matrix to explain balanced accuracy, positive-class F1, sensitivity, specificity and precision in relation to class imbalance and triage errors; formulas and sources are preserved in the speaker notes. The rehearsal timings sum to 18 minutes and 45 seconds; the route retains its historical `18min` identifier. The budget is divided into personnel, compute, and materials subtables, with a separate total. Recorded times remain visible, while detailed assumptions are kept in the notes and [budget provenance](defensa/BUDGET.md).
+The PowerPoint represents the PDF pages as images. Edit the Beamer sources to change slide text and figures. The deck contains 39 presentation slides, one approximate-budget support slide after the thank-you page, and two reference pages. A metrics slide immediately after LOOCV uses a conceptual confusion matrix to explain balanced accuracy, positive-class F1, sensitivity, specificity and precision in relation to class imbalance and triage errors; formulas and sources are preserved in the speaker notes. The rehearsal timings sum to 18 minutes and 20 seconds; the route retains its historical `18min` identifier. The budget is divided into personnel, compute, and materials subtables, with a separate total. Recorded times remain visible, while detailed assumptions are kept in the notes and [budget provenance](defensa/BUDGET.md).
 
 ## Compile the sources
 
@@ -49,7 +49,7 @@ This requires Node.js, Poppler (`pdftoppm`), and `@oai/artifact-tool`. `PDFTOPPM
 
 The initial deliverables and source snapshot were copied from the local `thesis/revision_nahuel/memoria/` and `thesis/revision_nahuel/defensa/` working trees. The selected thesis is the 81-page revised PDF, as explicitly requested. On 28 November 2026, the defense and guide were rebuilt and the PowerPoint re-exported to add the approximate-budget support slide, subsequently organized into subtables, and a metrics explanation after LOOCV. The thesis is preserved. [SHA256SUMS](SHA256SUMS) records the current deliverable hashes. Recompilation uses the included source snapshot and local fonts and packages, and may differ from the supplied documents.
 
-Both main documents were compiled with Tectonic 0.17.0 before initial publication. The current thesis and defense contain 81 and 43 pages respectively. Scientific results and the two reference pages retain their content.
+Both main documents were compiled with Tectonic 0.17.0 before initial publication. The current thesis and defense contain 81 and 42 pages respectively. The label-distribution slide has been removed from the defense. The experimental-design diagram places VLM/ICL above CNN, with its editable Draw.io source retained; the PDF uses vector outlines for the figure text. Other results and the two reference pages retain their content.
 
 The sources include chapters, appendices, front matter, generated tables, bibliography text, themes, and figure assets. Local review mappings, alternative proposals, temporary builds, and duplicate thesis PDFs are excluded.
 

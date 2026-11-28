@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -48,13 +49,21 @@ def main() -> None:
     inventory = json.loads((HERE / "inventario_figuras.json").read_text(encoding="utf-8"))
     slides = json.loads((HERE / "slides.json").read_text(encoding="utf-8"))
     expected_main = (
-        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 a05 huca p04 p08 p07 a06 escenarios p09 metricas escenario_simulador p10 a07 escenario_transferencia p12 antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
+        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 huca p04 p08 p07 a06 escenarios p09 metricas escenario_simulador p10 a07 escenario_transferencia p12 antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
     ).split()
     main_slides = [slide for slide in slides if slide["section"] == "main"]
     assert [slide["id"] for slide in main_slides] == expected_main
-    assert len(slides) == len({slide["id"] for slide in slides}) == 43
-    assert sum(slide["seconds"] for slide in main_slides) == 1125
-    assert len(inventory["scientific_figures"]) == 22
+    assert len(slides) == len({slide["id"] for slide in slides}) == 42
+    assert sum(slide["seconds"] for slide in main_slides) == 1100
+    assert len(inventory["scientific_figures"]) == 21
+    assert all(slide["id"] != "a05" for slide in slides)
+    diagram = ET.parse(HERE / "assets/fig_pipeline_experimental.drawio")
+    labels = {
+        cell.get("value"): float(cell.find("mxGeometry").get("y"))
+        for cell in diagram.findall(".//mxCell")
+        if cell.get("value") in {"<b>B: VLM/ICL</b>", "<b>C: CNN</b>"}
+    }
+    assert labels["<b>B: VLM/ICL</b>"] < labels["<b>C: CNN</b>"]
     assert all(not slide["figures"] for slide in slides if slide["section"] != "main")
     route = inventory["routes"]["18min"]
     assert route == [slide["id"] for slide in slides]

@@ -90,6 +90,13 @@ Except for the experimental pipeline, CNN, and VLM diagram exports described bel
 - Public edits: headings shortened to "A: Entrada" and "D: Evaluación"; green fills and borders normalized inside the embedded vector panels.
 - SHA-256: `36221ae52ca886ea8048c8e46dcf8dada339d18d39dd5115fc44ee23166702ea`.
 
+### `docs/tfg/defensa/assets/fig_pipeline_experimental.drawio` and `.pdf`
+
+- Defense-specific layout: `B: VLM/ICL` is above `C: CNN`. The input and evaluation blocks, connecting arrows and embedded explanatory panels are preserved.
+- The editable Draw.io source records the revised node positions and headings. The corresponding PDF was derived from the retained defense vector export by exchanging the panel and heading regions; it was rendered through SVG with outlined text and a local Chromium PDF export. No experimental results were regenerated.
+- Draw.io SHA-256: `4c41acb9b62fb93e44c738f1c32563806d96b1642d716b7b180ca27e30140c51`.
+- PDF SHA-256: `571f9ef802a2b8841f76c15c1d8fd1a6dc78573957ca8085c3a5af44aa25c70d`. The defense figure inventory also records this hash.
+
 ### `docs/assets/diagrams/gaussian_generator.png`
 
 - Source: `outputs/final_results_tfg/tfg_figures/results/gaussian_generator.drawio.png`.
