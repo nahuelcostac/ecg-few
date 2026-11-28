@@ -281,7 +281,7 @@ def guide(data: list[dict], full: list[str], annex: list[str]) -> None:
 \begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip
 {\large\ThesisTitle}\par\medskip\AuthorName\par Noviembre de 2026\end{center}
 \section*{Preparación y duración}
-La defensa contiene @FULLCOUNT@ diapositivas principales para un ensayo de 18 minutos y dos páginas de referencias.
+La defensa contiene @FULLCOUNT@ diapositivas principales para un ensayo de 18 minutos, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
 
 La apertura relaciona la escasez de positivos con la representación visual y presenta el aprendizaje en contexto antes de los objetivos. Después del estado del arte se explica el latido y se sitúan los aspectos éticos. Tras las implementaciones se presentan los tres escenarios y el protocolo por paciente. Una diapositiva de transición abre cada bloque de resultados.
 
@@ -311,7 +311,7 @@ La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del M
         lines.append(slide["notes"] + "\n\n")
         if slide["transition"]:
             lines.append(r"\textbf{Transición.} " + slide["transition"] + "\n\n")
-    lines.append(r"\clearpage\section*{Referencias y preguntas previsibles}" + "\n")
+    lines.append(r"\clearpage\section*{Presupuesto, referencias y preguntas previsibles}" + "\n")
     for ident in annex:
         slide = lookup[ident]
         lines.append(

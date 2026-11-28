@@ -52,12 +52,21 @@ def main() -> None:
     ).split()
     main_slides = [slide for slide in slides if slide["section"] == "main"]
     assert [slide["id"] for slide in main_slides] == expected_main
-    assert len(slides) == len({slide["id"] for slide in slides}) == 41
+    assert len(slides) == len({slide["id"] for slide in slides}) == 42
     assert sum(slide["seconds"] for slide in main_slides) == 1080
     assert len(inventory["scientific_figures"]) == 22
     assert all(not slide["figures"] for slide in slides if slide["section"] != "main")
     route = inventory["routes"]["18min"]
     assert route == [slide["id"] for slide in slides]
+    assert route[-4:] == ["cierre", "presupuesto", "a13", "a14"]
+    budget = json.loads((HERE / "data/budget_estimate.json").read_text(encoding="utf-8"))
+    assert all(item["quantity"] * item["eur_per_unit"] == item["amount_eur"] for item in budget["items"])
+    assert sum(item["amount_eur"] for item in budget["items"]) == budget["subtotal_eur"]
+    assert budget["subtotal_eur"] * budget["contingency_fraction"] == budget["contingency_eur"]
+    assert budget["subtotal_eur"] + budget["contingency_eur"] == budget["total_eur"] == 9713
+    if (ROOT / "outputs/final_results_tfg/loocv").is_dir():
+        for source in budget["measured"]["vlm"]:
+            assert sha(ROOT / source["source"]) == source["sha256"]
     for item in inventory["scientific_figures"]:
         assert sha(HERE / item["file"]) == item["sha256"], item["file"]
         for ident, page in zip(item["slides"], item["pages_18min"], strict=True):
@@ -95,6 +104,9 @@ def main() -> None:
     morphology = " ".join(texts[route.index("latido")].split())
     assert all(label in morphology for label in ("QRS", "RBBB", "Segmento ST", "Onda T"))
     assert not any("??" in text for text in texts)
+    budget_text = " ".join(texts[route.index("presupuesto")].split())
+    assert all(value in budget_text for value in ("Presupuesto aproximado", "9.713", "8,34", "2,83", "20 h", "10 h"))
+    assert "no son gasto facturado" in budget_text
     clinical_text = texts[route.index("p13")]
     assert "0,761" in clinical_text and "0,535" in clinical_text
     assert "F1 de la clase positiva" in clinical_text

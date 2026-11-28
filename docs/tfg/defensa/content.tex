@@ -614,6 +614,44 @@
 \note{Gracias por su atención. Quedo a disposición del tribunal para las preguntas.}
 \end{frame}}
 
+\expandafter\newcommand\csname Slidepresupuesto\endcsname{%
+\renewcommand{\defenseblock}{Presupuesto}
+\renewcommand{\defensenav}{\hyperlink{a13}{Referencias}\quad \hyperlink{conclusion}{Volver al cierre}}
+\begin{frame}[t]\hypertarget{presupuesto}{}
+\frametitle{Presupuesto aproximado}
+\vspace{2mm}
+{\fontsize{17}{23}\selectfont Valoración del trabajo y los recursos; importes y dedicaciones supuestos.\par}
+\vspace{4mm}
+{\fontsize{17}{22}\selectfont
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}p{137mm}p{98mm}r@{}}
+\textcolor{UOGreen}{Concepto} & \textcolor{UOGreen}{Estimación} & \textcolor{UOGreen}{Coste}\\
+\midrule
+Investigación y desarrollo & 300 h $\times$ 20 €/h & 6.000 €\\
+Tutoría docente e investigadora & 40 h $\times$ 50 €/h & 2.000 €\\
+Asesoramiento clínico y revisión & 10 h $\times$ 60 €/h & 600 €\\
+Cómputo VLM (Gemma, inferencia) & 20 h $\times$ 2 €/h & 40 €\\
+Cómputo CNN (incl. adaptación) & 10 h $\times$ 1 €/h & 10 €\\
+Equipo amortizado y almacenamiento & 150 € + 30 € & 180 €\\
+Margen para imprevistos & 10\% de 8.830 € & 883 €\\
+\midrule
+\textbf{Total estimado} & \textbf{Aproximadamente 9.700 €} & \textbf{9.713 €}\\
+\end{tabular}\par}
+\vspace{4mm}
+{\fontsize{16}{22}\selectfont\color{UOGreen} Tiempos registrados: Gemma 8,34 h de consultas; CNN 2,83 h de entrenamiento.\par}
+\vspace{2mm}
+{\fontsize{13}{18}\selectfont\color{UOGray} Las reservas de 20 h y 10 h incluyen un margen operativo supuesto; no son gasto facturado.\\
+Software libre: 0 €. Datos ya cedidos; sin nueva adquisición ni validación prospectiva. Sin impuestos indirectos.\par}
+\credit{Estructura: N. Costa Cortez, TFG (2019), §6.2, p. 72. Tiempos: registros de la campaña final.}
+\note{Este presupuesto es una valoración aproximada del coste de realizar el trabajo, no una relación de pagos reales. Sigue la separación entre personal, materiales y total de la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, Preprocesado y tratamiento inteligente de electrocardiogramas intracardíacos. No se reutilizan sus precios históricos. Se suponen trescientas horas de investigación y desarrollo a veinte euros por hora, cuarenta horas de tutoría docente e investigadora a cincuenta euros y diez horas de asesoramiento clínico y revisión de datos a sesenta euros. Son costes institucionales hipotéticos con cargas incluidas, no salarios oficiales ni dedicaciones verificadas. El desarrollo comprende la revisión bibliográfica, el simulador, el código, la operación de los experimentos, el análisis, la memoria y la defensa.
+
+Los tres agregados canónicos de Gemma contienen 24.222 consultas. La suma del número de entradas por la latencia media de cada ejecución es 8,34 horas. Es tiempo acumulado de respuesta del servicio, con sobrecarga de red y servicio: no identifica horas efectivas de GPU ni permite reconstruir una factura por tokens. Para las CNN se suman 2,83 horas registradas de entrenamiento, incluyendo el preentrenamiento SimCLR. Se cuentan una sola vez los entrenamientos compartidos que aparecen repetidos en las predicciones de los pacientes. No se dispone de una medición completa de los trabajos, incluidos carga, inferencia y Grad-CAM.
+
+Por eso se presupuestan, como hipótesis, veinte horas de servicio para Gemma y diez horas de GPU para CNN, con margen para preparación, arranque, análisis y repeticiones. Las tarifas de dos y un euro por hora son supuestos de orden de magnitud. Como contexto se consultó la página pública de Runpod el 28 de noviembre de 2026: A100 PCIe 80 GB a 2,09 dólares por hora y RTX 4090 a 0,89 dólares por hora. No se convierten esos precios a euros ni se afirma que fueran las GPU utilizadas o que tuvieran el mismo rendimiento. Referencia: \href{https://www.runpod.io/product/cloud-gpus}{Runpod, Cloud GPUs}. El coste energético del cómputo se considera incluido en la tarifa.
+
+El equipo de trabajo se valora por amortización: mil doscientos euros en cuarenta y ocho meses, imputando seis meses, da ciento cincuenta euros. El almacenamiento y las copias se estiman en treinta euros. El software libre no añade licencias. Los registros son datos ya cedidos: no se valora una nueva adquisición de ECG, un nuevo etiquetado clínico ni una validación prospectiva o multicéntrica. Tampoco se imputa el preentrenamiento original de Gemma o ImageNet, el despliegue asistencial, los gastos generales institucionales ni impuestos indirectos. El subtotal es ocho mil ochocientos treinta euros; con un diez por ciento de imprevistos, el total es nueve mil setecientos trece euros, aproximadamente nueve mil setecientos. Las hipótesis, fuentes y cálculos se conservan en la documentación de presupuesto del repositorio.}
+\end{frame}}
+
 \expandafter\newcommand\csname Slidea13\endcsname{%
 \renewcommand{\defenseblock}{Referencias}
 \renewcommand{\defensenav}{\hyperlink{a14}{Métodos y métricas}\quad \hyperlink{conclusion}{Volver al cierre}}

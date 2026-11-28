@@ -1,0 +1,173 @@
+{
+  "status": "Approximate replacement-cost scenario, not an expense statement",
+  "date": "2026-11-28",
+  "currency": "EUR",
+  "reference": {
+    "author": "Nahuel A. Costa Cortez",
+    "title": "Preprocesado y tratamiento inteligente de electrocardiogramas intracardiacos",
+    "year": 2019,
+    "section": "6.2 Presupuesto",
+    "printed_page": 72,
+    "local_source_filename": "TFG.pdf",
+    "sha256": "8fc7687e57b7928615a9c83907d052b1185387872962826efa714a92cd86628c",
+    "use": "Personnel, materials and total structure only; historical amounts are not reused"
+  },
+  "measured": {
+    "vlm": [
+      {
+        "source": "outputs/final_results_tfg/loocv/vlm/vlm_summary_by_seed.csv",
+        "sha256": "7800b3b4ba60d95eaf8d2747b220a12406efb79c0eae2240e4e16925fe686d35",
+        "runs": 33,
+        "queries": 10461,
+        "seconds": 15049.684708071061
+      },
+      {
+        "source": "outputs/final_results_tfg/loocv/vlm_real_context/vlm_summary_by_seed.csv",
+        "sha256": "bb8925b6d16eaa4d26f137bfd03c8cf5d2dbeba9ee8cdf4750799a8ddeb002d6",
+        "runs": 33,
+        "queries": 10461,
+        "seconds": 10192.505687071043
+      },
+      {
+        "source": "outputs/final_results_tfg/loocv/vlm_simulator_qrs/vlm_summary_by_seed.csv",
+        "sha256": "9ebc444c9a907676dd9c8dcb5f7880e629114728c86b61aab6b8c35f3fffb794",
+        "runs": 33,
+        "queries": 3300,
+        "seconds": 4780.702435279979
+      }
+    ],
+    "cnn": [
+      {
+        "source_directory": "outputs/final_results_tfg/runs/cnn_clinical_brugada_loocv",
+        "source_pattern": "**/fold_predictions.jsonl",
+        "source_files": 30,
+        "timing_manifest_sha256": "e3343cd774478ab8bf01109462975a215f394a8637067fbbebbef4c24872a13f",
+        "aggregation": "sum training seconds over unique folds",
+        "folds": 9510,
+        "fits": 9510,
+        "train_seconds": 5742.625262799984,
+        "ssl_pretrain_seconds": 0.0,
+        "seconds": 5742.625262799984
+      },
+      {
+        "source_directory": "outputs/final_results_tfg/runs/cnn_simulator_qrs_loocv",
+        "source_pattern": "**/fold_predictions.jsonl",
+        "source_files": 15,
+        "timing_manifest_sha256": "2fbc5cf2072a5f0992767e8ffc124a6cbdef768fccfa3b652db9aa4b30c0901d",
+        "aggregation": "sum training seconds over unique folds",
+        "folds": 1500,
+        "fits": 1500,
+        "train_seconds": 4167.282686530973,
+        "ssl_pretrain_seconds": 0.0,
+        "seconds": 4167.282686530973
+      },
+      {
+        "source_directory": "outputs/final_results_tfg/runs/cnn_loocv",
+        "source_pattern": "**/fold_predictions.jsonl",
+        "source_files": 15,
+        "timing_manifest_sha256": "effdfe04815324e82550f221fac79c57fd3079b761e64cce7994b1c47bbad84b",
+        "aggregation": "one training payload per run, shared across folds",
+        "folds": 4755,
+        "fits": 15,
+        "train_seconds": 46.845139397999446,
+        "ssl_pretrain_seconds": 0.0,
+        "seconds": 46.845139397999446
+      },
+      {
+        "source_directory": "outputs/final_results_tfg/runs/cnn_domain_adaptation",
+        "source_pattern": "**/fold_predictions.jsonl",
+        "source_files": 24,
+        "timing_manifest_sha256": "ee824ddf23055a2e108b3843a233728e7d1da3dc737b2fb81005dde04b55aac5",
+        "aggregation": "one training payload per run, shared across folds",
+        "folds": 7608,
+        "fits": 24,
+        "train_seconds": 186.20753664298536,
+        "ssl_pretrain_seconds": 27.33182823801326,
+        "seconds": 213.53936488099862
+      }
+    ],
+    "vlm_seconds": 30022.892830422083,
+    "cnn_seconds": 10170.292453609954,
+    "vlm_formula": "sum(n_leads * latency_seconds_mean) over all rows of the three canonical per-seed aggregate reports",
+    "cnn_formula": "sum train_seconds and ssl_pretrain_seconds; shared external-training timings counted once per run, not once per held-out patient"
+  },
+  "assumptions": {
+    "all_quantities_and_rates_are_assumptions": true,
+    "personnel": "Illustrative loaded institutional hourly costs, including assumed employer charges; not a salary scale or recorded timesheet",
+    "research_scope": "Literature review, simulator, implementation, experiment operation, analysis, thesis and defense",
+    "compute_scope": "Budget allowances for model/service start-up, preprocessing, inference, plots, analysis and modest reruns; not measured GPU-hours",
+    "vlm_limit": "Recorded client request latency includes service/network overhead. No GPU type, server concurrency, token bill or resource accounting is available; it cannot establish actual GPU occupation or API expenditure. The 20-hour allowance and EUR 2/hour are a planning scenario, not a measured transfer of timings to another GPU.",
+    "cnn_limit": "Recorded train_seconds excludes parts of data loading, model construction, inference and Grad-CAM; no full job wall-clock accounting is available. The 10-hour allowance is assumed.",
+    "market_context": {
+      "url": "https://www.runpod.io/product/cloud-gpus",
+      "accessed": "2026-11-28",
+      "displayed_usd_per_hour": {
+        "A100 PCIe 80GB": 2.09,
+        "RTX 4090 24GB": 0.89
+      },
+      "use": "Order-of-magnitude context only; EUR 2 and EUR 1 are independent rounded budgeting assumptions, not foreign-exchange conversions or quotes. Rates and hardware differ from the recorded runs."
+    },
+    "workstation": "EUR 1200 workstation / 48 months * 6 months = EUR 150; excludes a separately purchased GPU to avoid double counting rented compute",
+    "storage": "6 months * EUR 5 = EUR 30",
+    "software_licenses_eur": 0,
+    "cloud_energy": "Included in assumed compute rates; not added again",
+    "clinical_data": "Existing supplied research data; no new ECG acquisition or prospective validation cost included",
+    "excluded": "Institutional overhead allocation, new clinical recruitment and labeling, prospective/multicentre validation, production deployment, foundation-model pretraining, indirect taxes where applicable",
+    "tax_basis": "Illustrative economic cost before applicable indirect taxes; do not add VAT to personnel"
+  },
+  "items": [
+    {
+      "category": "Research and development",
+      "quantity": 300,
+      "unit": "hour",
+      "eur_per_unit": 20,
+      "amount_eur": 6000
+    },
+    {
+      "category": "Academic supervision (teaching and research staff)",
+      "quantity": 40,
+      "unit": "hour",
+      "eur_per_unit": 50,
+      "amount_eur": 2000
+    },
+    {
+      "category": "Clinical advice and data review",
+      "quantity": 10,
+      "unit": "hour",
+      "eur_per_unit": 60,
+      "amount_eur": 600
+    },
+    {
+      "category": "Gemma inference service allowance",
+      "quantity": 20,
+      "unit": "reserved service hour",
+      "eur_per_unit": 2,
+      "amount_eur": 40
+    },
+    {
+      "category": "CNN compute allowance",
+      "quantity": 10,
+      "unit": "reserved GPU hour",
+      "eur_per_unit": 1,
+      "amount_eur": 10
+    },
+    {
+      "category": "Workstation depreciation",
+      "quantity": 6,
+      "unit": "month",
+      "eur_per_unit": 25,
+      "amount_eur": 150
+    },
+    {
+      "category": "Storage and backups",
+      "quantity": 6,
+      "unit": "month",
+      "eur_per_unit": 5,
+      "amount_eur": 30
+    }
+  ],
+  "subtotal_eur": 8830,
+  "contingency_fraction": 0.1,
+  "contingency_eur": 883,
+  "total_eur": 9713
+}

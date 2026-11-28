@@ -13,7 +13,7 @@
 \begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip
 {\large\ThesisTitle}\par\medskip\AuthorName\par Noviembre de 2026\end{center}
 \section*{Preparación y duración}
-La defensa contiene 39 diapositivas principales para un ensayo de 18 minutos y dos páginas de referencias.
+La defensa contiene 39 diapositivas principales para un ensayo de 18 minutos, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
 
 La apertura relaciona la escasez de positivos con la representación visual y presenta el aprendizaje en contexto antes de los objetivos. Después del estado del arte se explica el latido y se sitúan los aspectos éticos. Tras las implementaciones se presentan los tres escenarios y el protocolo por paciente. Una diapositiva de transición abre cada bloque de resultados.
 
@@ -330,7 +330,16 @@ La continuación empieza por revisar las etiquetas con especialistas y ampliar l
 
 Gracias por su atención. Quedo a disposición del tribunal para las preguntas.
 
-\clearpage\section*{Referencias y preguntas previsibles}
+\clearpage\section*{Presupuesto, referencias y preguntas previsibles}
+\Needspace{7\baselineskip}\subsection*{Presupuesto aproximado}
+Este presupuesto es una valoración aproximada del coste de realizar el trabajo, no una relación de pagos reales. Sigue la separación entre personal, materiales y total de la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, Preprocesado y tratamiento inteligente de electrocardiogramas intracardíacos. No se reutilizan sus precios históricos. Se suponen trescientas horas de investigación y desarrollo a veinte euros por hora, cuarenta horas de tutoría docente e investigadora a cincuenta euros y diez horas de asesoramiento clínico y revisión de datos a sesenta euros. Son costes institucionales hipotéticos con cargas incluidas, no salarios oficiales ni dedicaciones verificadas. El desarrollo comprende la revisión bibliográfica, el simulador, el código, la operación de los experimentos, el análisis, la memoria y la defensa.
+
+Los tres agregados canónicos de Gemma contienen 24.222 consultas. La suma del número de entradas por la latencia media de cada ejecución es 8,34 horas. Es tiempo acumulado de respuesta del servicio, con sobrecarga de red y servicio: no identifica horas efectivas de GPU ni permite reconstruir una factura por tokens. Para las CNN se suman 2,83 horas registradas de entrenamiento, incluyendo el preentrenamiento SimCLR. Se cuentan una sola vez los entrenamientos compartidos que aparecen repetidos en las predicciones de los pacientes. No se dispone de una medición completa de los trabajos, incluidos carga, inferencia y Grad-CAM.
+
+Por eso se presupuestan, como hipótesis, veinte horas de servicio para Gemma y diez horas de GPU para CNN, con margen para preparación, arranque, análisis y repeticiones. Las tarifas de dos y un euro por hora son supuestos de orden de magnitud. Como contexto se consultó la página pública de Runpod el 28 de noviembre de 2026: A100 PCIe 80 GB a 2,09 dólares por hora y RTX 4090 a 0,89 dólares por hora. No se convierten esos precios a euros ni se afirma que fueran las GPU utilizadas o que tuvieran el mismo rendimiento. Referencia: \href{https://www.runpod.io/product/cloud-gpus}{Runpod, Cloud GPUs}. El coste energético del cómputo se considera incluido en la tarifa.
+
+El equipo de trabajo se valora por amortización: mil doscientos euros en cuarenta y ocho meses, imputando seis meses, da ciento cincuenta euros. El almacenamiento y las copias se estiman en treinta euros. El software libre no añade licencias. Los registros son datos ya cedidos: no se valora una nueva adquisición de ECG, un nuevo etiquetado clínico ni una validación prospectiva o multicéntrica. Tampoco se imputa el preentrenamiento original de Gemma o ImageNet, el despliegue asistencial, los gastos generales institucionales ni impuestos indirectos. El subtotal es ocho mil ochocientos treinta euros; con un diez por ciento de imprevistos, el total es nueve mil setecientos trece euros, aproximadamente nueve mil setecientos. Las hipótesis, fuentes y cálculos se conservan en la documentación de presupuesto del repositorio.
+
 \Needspace{7\baselineskip}\subsection*{Referencias clínicas y estado del arte}
 Las referencias de contexto respaldan la motivación clínica y la procedencia de los datos y trazados. Los antecedentes corresponden al análisis de señales, el análisis de imágenes, el cambio de dominio y el aprendizaje con pocos ejemplos. Los créditos y las licencias de las imágenes publicadas se detallan en el proyecto LaTeX. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh et al. (2026).} El crédito de TarmacView figura junto a la ilustración de adaptación.
 
