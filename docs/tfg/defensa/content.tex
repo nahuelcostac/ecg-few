@@ -362,45 +362,44 @@
 \renewcommand{\defenseblock}{Diseño experimental}
 \renewcommand{\defensenav}{Defensa del TFG}
 \begin{frame}[t]\hypertarget{metricas}{}
-\frametitle{Métricas de evaluación y triaje}
-\vspace{2mm}
-{\fontsize{19}{25}\selectfont Con clases desbalanceadas, acertar los negativos no basta.\par}
-\vspace{2mm}
+\frametitle{Métricas de evaluación}
+\vspace{5mm}
 \begin{columns}[T,onlytextwidth]
-\begin{column}{.48\textwidth}
-{\fontsize{23}{30}\selectfont\color{UOGreen} Exactitud balanceada (BA)\par}
-\vspace{2mm}
-{\fontsize{22}{29}\selectfont $\mathrm{BA}=\dfrac{\text{sensibilidad}+\text{especificidad}}{2}$\par}
-\vspace{2mm}
-{\fontsize{17}{23}\selectfont Da el mismo peso a las dos clases.\par}
-\vspace{2mm}
-{\fontsize{17}{24}\selectfont
-\textcolor{UOGreen}{Sensibilidad} $=\dfrac{\mathrm{VP}}{\mathrm{VP}+\mathrm{FN}}$\quad Positivos detectados.\par
-\vspace{2mm}
-\textcolor{UOGreen}{Especificidad} $=\dfrac{\mathrm{VN}}{\mathrm{VN}+\mathrm{FP}}$\quad Negativos descartados.\par}
+\begin{column}{.53\textwidth}
+{\fontsize{17}{23}\selectfont
+\setlength{\tabcolsep}{3mm}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}p{25mm}p{52mm}p{52mm}@{}}
+& \multicolumn{2}{c}{\textcolor{UOGray}{Predicción del modelo}}\\[2mm]
+& \centering Positivo & \centering Negativo\tabularnewline[3mm]
+\textcolor{UOGray}{Positivo real}
+& \cellcolor{UOGreen!12}\rule{0pt}{12mm}{\fontsize{27}{32}\selectfont\color{UOGreen} VP}\par\vspace{2mm}Positivo detectado\par\vspace{5mm}
+& \cellcolor{ScenarioRed!12}\rule{0pt}{12mm}{\fontsize{27}{32}\selectfont\color{ScenarioRed} FN}\par\vspace{2mm}Caso omitido\par\vspace{5mm}\tabularnewline[2mm]
+\textcolor{UOGray}{Negativo real}
+& \cellcolor{ScenarioRed!12}\rule{0pt}{12mm}{\fontsize{27}{32}\selectfont\color{ScenarioRed} FP}\par\vspace{2mm}Falsa alarma\par\vspace{5mm}
+& \cellcolor{UOGreen!12}\rule{0pt}{12mm}{\fontsize{27}{32}\selectfont\color{UOGreen} VN}\par\vspace{2mm}Negativo descartado\par\vspace{5mm}\tabularnewline
+\end{tabular}\par}
 \end{column}
-\begin{column}{.47\textwidth}
-{\fontsize{23}{30}\selectfont\color{UOGreen} F1 de la clase positiva\par}
+\begin{column}{.41\textwidth}
+{\fontsize{27}{34}\selectfont\color{UOGreen} BA\enspace {\fontsize{19}{26}\selectfont Exactitud balanceada}\par}
+\vspace{3mm}
+{\fontsize{22}{29}\selectfont Cada clase pesa un 50\%.\par}
+\vspace{3mm}
+{\fontsize{16}{23}\selectfont Sensibilidad: positivos detectados.\\Especificidad: negativos descartados.\par}
 \vspace{2mm}
-{\fontsize{22}{29}\selectfont $\mathrm{F1}=\dfrac{2\,\text{precisión}\cdot\text{sensibilidad}}{\text{precisión}+\text{sensibilidad}}$\par}
-\vspace{2mm}
-{\fontsize{17}{23}\selectfont Combina precisión y sensibilidad.\par}
-\vspace{2mm}
-{\fontsize{17}{24}\selectfont
-\textcolor{UOGreen}{Precisión} $=\dfrac{\mathrm{VP}}{\mathrm{VP}+\mathrm{FP}}$\par
-\vspace{2mm}
-De los casos señalados, cuántos son positivos.\par
-\vspace{2mm}
-F1 no utiliza los verdaderos negativos.\par}
+{\fontsize{16}{23}\selectfont La clase mayoritaria no domina.\par}
+\vspace{7mm}
+{\fontsize{27}{34}\selectfont\color{UOGreen} F1\enspace {\fontsize{19}{26}\selectfont Clase positiva}\par}
+\vspace{3mm}
+{\fontsize{21}{28}\selectfont Combina sensibilidad y precisión.\par}
+\vspace{3mm}
+{\fontsize{16}{23}\selectfont Precisión: aciertos entre los señalados.\par}
 \end{column}
 \end{columns}
-\vspace{2mm}
+\vspace{6mm}
 {\color{UOLine}\hrule height0.5pt}
-\vspace{2mm}
-{\fontsize{18}{24}\selectfont\color{UOGreen} Triaje: reducir FN para no dejar casos sospechosos sin priorizar;\\controlar FP para limitar revisiones innecesarias.\par}
-\vspace{2mm}
-{\fontsize{13}{18}\selectfont BA y F1 no incorporan el coste clínico de cada error; hay que revisar sensibilidad y especificidad.\par}
-\credit{VP/VN: verdaderos positivos/negativos; FP/FN: falsos positivos/negativos. \href{https://scikit-learn.org/stable/modules/model_evaluation.html}{Definiciones: scikit-learn.}}
+\vspace{4mm}
+{\fontsize{18}{25}\selectfont\color{UOGreen} Triaje\enspace {\color{UOInk} Reducir casos omitidos y controlar las falsas alarmas.}\par}
 \note{La exactitud global puede parecer alta si predominan los negativos y el modelo casi siempre predice esa clase. La exactitud balanceada promedia sensibilidad y especificidad, por lo que cada clase pesa lo mismo aunque sus tamaños difieran. La sensibilidad es la proporción de positivos de referencia que se detectan; un falso negativo es un positivo de referencia que el modelo clasifica como negativo. La especificidad es la proporción de negativos de referencia que se descartan; un falso positivo es un negativo que se señala como positivo.
 
 F1 se calcula para la clase positiva y es la media armónica de precisión y sensibilidad. La precisión indica cuántos de los casos señalados son positivos según la referencia. F1 disminuye cuando se acumulan falsos positivos o falsos negativos, pero no incluye los verdaderos negativos y no asigna por sí sola un mayor coste clínico a omitir un caso. Tampoco la exactitud balanceada expresa la utilidad clínica de los errores: da el mismo peso a la sensibilidad y la especificidad, no un coste asistencial acordado.
@@ -409,7 +408,9 @@ Como posible apoyo al triaje, interesa reducir los falsos negativos para no deja
 
 En la evaluación del HUCA, positivo se refiere a la etiqueta clínica empleada. En el simulador, la clase derivada procede de las reglas morfológicas QRS/ST. Son objetivos de anotación distintos y no se convierten en diagnósticos clínicos intercambiables. Las fórmulas son las mismas para cada tarea binaria, pero se interpretan respecto a su propia referencia.
 
-Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.}
+Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.
+
+La matriz de confusión de esta diapositiva es un esquema conceptual sin recuentos, no un resultado experimental. Las filas son la etiqueta de referencia y las columnas la predicción. La diagonal representa los aciertos; las celdas fuera de la diagonal distinguen casos omitidos y falsas alarmas. BA equivale a la media de sensibilidad y especificidad. Al dar un cincuenta por ciento a cada clase, aumenta el peso relativo de la minoritaria respecto a la exactitud global. F1 equivale a dos veces VP dividido entre dos veces VP más FP más FN; combina precisión y sensibilidad mediante su media armónica. Las fórmulas se conservan en las notas para dejar la diapositiva como apoyo visual.}
 \end{frame}}
 
 \expandafter\newcommand\csname Slideescenario_simulador\endcsname{%
@@ -725,8 +726,6 @@ Software libre & 0 €\\\midrule
 \end{columns}
 \vspace{3mm}
 {\fontsize{14}{20}\selectfont\color{UOGreen} Tiempos registrados: Gemma 8,34 h de consultas; CNN 2,83 h de entrenamiento.\par}
-\vspace{1mm}
-{\fontsize{12}{17}\selectfont\color{UOGray} Dedicaciones y tarifas supuestas. Reservas de 20 h y 10 h con margen; no son gasto facturado. Datos ya cedidos; sin nueva adquisición,\\validación prospectiva ni impuestos indirectos. Estructura: Costa Cortez, TFG (2019), §6.2, p. 72.\par}
 \note{Este presupuesto es una valoración aproximada del coste de realizar el trabajo, no una relación de pagos reales. Sigue la separación entre personal, materiales y total de la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, Preprocesado y tratamiento inteligente de electrocardiogramas intracardíacos. No se reutilizan sus precios históricos. Se suponen trescientas horas de investigación y desarrollo a veinte euros por hora, cuarenta horas de tutoría docente e investigadora a cincuenta euros y diez horas de asesoramiento clínico y revisión de datos a sesenta euros. Son costes institucionales hipotéticos con cargas incluidas, no salarios oficiales ni dedicaciones verificadas. El desarrollo comprende la revisión bibliográfica, el simulador, el código, la operación de los experimentos, el análisis, la memoria y la defensa.
 
 Los tres agregados canónicos de Gemma contienen 24.222 consultas. La suma del número de entradas por la latencia media de cada ejecución es 8,34 horas. Es tiempo acumulado de respuesta del servicio, con sobrecarga de red y servicio: no identifica horas efectivas de GPU ni permite reconstruir una factura por tokens. Para las CNN se suman 2,83 horas registradas de entrenamiento, incluyendo el preentrenamiento SimCLR. Se cuentan una sola vez los entrenamientos compartidos que aparecen repetidos en las predicciones de los pacientes. No se dispone de una medición completa de los trabajos, incluidos carga, inferencia y Grad-CAM.

@@ -47,7 +47,7 @@ La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del M
 20 & Inspección de activaciones con Grad-CAM & 8:50\\
 21 & Escenarios de evaluación & 9:05\\
 22 & Protocolo de evaluación por paciente: LOOCV & 9:40\\
-23 & Métricas de evaluación y triaje & 10:25\\
+23 & Métricas de evaluación & 10:25\\
 24 & Simulación & 10:30\\
 25 & Resultados con ejemplos del simulador & 11:25\\
 26 & Matrices de confusión en el simulador & 11:55\\
@@ -220,7 +220,7 @@ K es el número de demostraciones para Gemma o casos de entrenamiento para ResNe
 
 \textbf{Transición.} Antes de los resultados, explicamos qué mide cada métrica y cómo interpretar los errores.
 
-\Needspace{8\baselineskip}\section*{23. Métricas de evaluación y triaje}
+\Needspace{8\baselineskip}\section*{23. Métricas de evaluación}
 \textbf{Tiempo orientativo: }45 segundos.
 
 La exactitud global puede parecer alta si predominan los negativos y el modelo casi siempre predice esa clase. La exactitud balanceada promedia sensibilidad y especificidad, por lo que cada clase pesa lo mismo aunque sus tamaños difieran. La sensibilidad es la proporción de positivos de referencia que se detectan; un falso negativo es un positivo de referencia que el modelo clasifica como negativo. La especificidad es la proporción de negativos de referencia que se descartan; un falso positivo es un negativo que se señala como positivo.
@@ -232,6 +232,8 @@ Como posible apoyo al triaje, interesa reducir los falsos negativos para no deja
 En la evaluación del HUCA, positivo se refiere a la etiqueta clínica empleada. En el simulador, la clase derivada procede de las reglas morfológicas QRS/ST. Son objetivos de anotación distintos y no se convierten en diagnósticos clínicos intercambiables. Las fórmulas son las mismas para cada tarea binaria, pero se interpretan respecto a su propia referencia.
 
 Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.
+
+La matriz de confusión de esta diapositiva es un esquema conceptual sin recuentos, no un resultado experimental. Las filas son la etiqueta de referencia y las columnas la predicción. La diagonal representa los aciertos; las celdas fuera de la diagonal distinguen casos omitidos y falsas alarmas. BA equivale a la media de sensibilidad y especificidad. Al dar un cincuenta por ciento a cada clase, aumenta el peso relativo de la minoritaria respecto a la exactitud global. F1 equivale a dos veces VP dividido entre dos veces VP más FP más FN; combina precisión y sensibilidad mediante su media armónica. Las fórmulas se conservan en las notas para dejar la diapositiva como apoyo visual.
 
 \textbf{Transición.} Empezamos con el escenario en el que todos los datos son simulados.
 

@@ -106,12 +106,12 @@ def main() -> None:
     assert not any("??" in text for text in texts)
     budget_text = " ".join(texts[route.index("presupuesto")].split())
     assert all(value in budget_text for value in ("Presupuesto aproximado", "9.713", "8,34", "2,83", "20 h", "10 h"))
-    assert "no son gasto facturado" in budget_text
+    assert "Dedicaciones y tarifas supuestas" not in budget_text
     assert all(label in budget_text for label in ("Personal", "Cómputo", "Materiales y servicios"))
     assert route[route.index("p09") + 1] == "metricas"
     metrics_text = " ".join(texts[route.index("metricas")].split())
-    assert all(label in metrics_text for label in ("Exactitud balanceada", "F1 de la clase positiva", "Sensibilidad", "Especificidad", "Precisión", "Triaje"))
-    assert "BA y F1 no incorporan el coste clínico de cada error" in metrics_text
+    assert all(label in metrics_text for label in ("Exactitud balanceada", "Clase positiva", "Sensibilidad", "Especificidad", "Precisión", "Triaje"))
+    assert all(label in metrics_text for label in ("Cada clase pesa un 50", "VP", "FN", "FP", "VN", "Caso omitido", "Falsa alarma"))
     clinical_text = texts[route.index("p13")]
     assert "0,761" in clinical_text and "0,535" in clinical_text
     assert "F1 de la clase positiva" in clinical_text
