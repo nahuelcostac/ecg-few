@@ -1,5 +1,5 @@
 {
-  "status": "Approximate replacement-cost scenario, not an expense statement",
+  "status": "Approximate economic allocation using user-reported self-managed hardware, not an invoice",
   "date": "2026-11-28",
   "currency": "EUR",
   "reference": {
@@ -92,28 +92,81 @@
     "cnn_formula": "sum train_seconds and ssl_pretrain_seconds; shared external-training timings counted once per run, not once per held-out patient"
   },
   "assumptions": {
-    "all_quantities_and_rates_are_assumptions": true,
-    "personnel": "Illustrative loaded institutional hourly costs, including assumed employer charges; not a salary scale or recorded timesheet",
-    "research_scope": "Literature review, simulator, implementation, experiment operation, analysis, thesis and defense",
-    "compute_scope": "Budget allowances for model/service start-up, preprocessing, inference, plots, analysis and modest reruns; not measured GPU-hours",
-    "vlm_limit": "Recorded client request latency includes service/network overhead. No GPU type, server concurrency, token bill or resource accounting is available; it cannot establish actual GPU occupation or API expenditure. The 20-hour allowance and EUR 2/hour are a planning scenario, not a measured transfer of timings to another GPU.",
-    "cnn_limit": "Recorded train_seconds excludes parts of data loading, model construction, inference and Grad-CAM; no full job wall-clock accounting is available. The 10-hour allowance is assumed.",
-    "market_context": {
-      "url": "https://www.runpod.io/product/cloud-gpus",
-      "accessed": "2026-11-28",
-      "displayed_usd_per_hour": {
-        "A100 PCIe 80GB": 2.09,
-        "RTX 4090 24GB": 0.89
-      },
-      "use": "Order-of-magnitude context only; EUR 2 and EUR 1 are independent rounded budgeting assumptions, not foreign-exchange conversions or quotes. Rates and hardware differ from the recorded runs."
+    "personnel": "Illustrative loaded institutional hourly costs and assumed hours, unchanged from the prior estimate. They are not official salaries or recorded timesheets.",
+    "hardware_reported_by_author": {
+      "vlm": "A borrowed self-managed cluster with two NVIDIA A100 GPUs, supplied by the supervisor",
+      "cnn": "The author's own NVIDIA GeForce RTX 3060 PC",
+      "a100_memory_and_form_factor": "Not confirmed, the valuation uses an explicit reference scenario rather than claiming a known configuration"
     },
-    "workstation": "EUR 1200 workstation / 48 months * 6 months = EUR 150; excludes a separately purchased GPU to avoid double counting rented compute",
+    "cluster_reserved_node_hours": 20,
+    "cnn_pc_hours": 10,
+    "cluster_depreciation": {
+      "reference_a100_eur_each": 7479,
+      "rounded_budget_reference_eur_each": 7500,
+      "gpu_quantity": 2,
+      "host_and_other_hardware_eur_assumed": 3000,
+      "node_value_eur_assumed": 18000,
+      "life_years_assumed": 4,
+      "productive_node_hours_per_year_assumed": 2000,
+      "eur_per_node_hour": 2.25,
+      "allocated_eur": 45,
+      "interpretation": "An imputed economic cost for access to the borrowed equipment. No hardware purchase or rental payment is claimed."
+    },
+    "cluster_electricity": {
+      "a100_tdp_w_range_each": [
+        250,
+        400
+      ],
+      "gpu_w_each_assumed": 400,
+      "gpu_quantity": 2,
+      "host_w_assumed": 200,
+      "node_kw_assumed": 1.0,
+      "pue_assumed": 1.2,
+      "eur_per_kwh_assumed": 0.25,
+      "hours_assumed": 20,
+      "allocated_eur": 6,
+      "interpretation": "Conservative engineering estimate based on maximum GPU TDP plus host load and cooling, not metered energy."
+    },
+    "cnn_electricity": {
+      "gpu_tdp_w": 170,
+      "host_w_assumed": 130,
+      "pc_kw_assumed": 0.3,
+      "eur_per_kwh_assumed": 0.25,
+      "hours_assumed": 10,
+      "calculated_eur": 0.75,
+      "rounded_budget_eur": 1
+    },
+    "time_limit": "Canonical request latency and training counters do not measure reserved-node wall time, GPU occupation or energy. The 20 node-hours and 10 PC-hours remain explicit allowances, not measured durations.",
+    "workstation": "EUR 1200 / 48 months * 6 months = EUR 150. This allocation includes the existing RTX 3060 workstation, so no additional RTX depreciation is charged in compute.",
     "storage": "6 months * EUR 5 = EUR 30",
     "software_licenses_eur": 0,
-    "cloud_energy": "Included in assumed compute rates; not added again",
-    "clinical_data": "Existing supplied research data; no new ECG acquisition or prospective validation cost included",
-    "excluded": "Institutional overhead allocation, new clinical recruitment and labeling, prospective/multicentre validation, production deployment, foundation-model pretraining, indirect taxes where applicable",
-    "tax_basis": "Illustrative economic cost before applicable indirect taxes; do not add VAT to personnel"
+    "electricity_tariff": "EUR 0.25/kWh is an assumed calculation rate, not the university or author's actual tariff. Eurostat provides market context rather than a price quote for this equipment.",
+    "clinical_data": "Existing supplied retrospective research data, no new acquisition or prospective validation budget.",
+    "excluded": "New recruitment, new clinical labeling, prospective or multicentre validation, production deployment, foundation-model pretraining, institutional overhead allocation and additional indirect taxes.",
+    "sources": [
+      {
+        "title": "NVIDIA A100 data sheet",
+        "url": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf",
+        "supports": "A100 TDP of 250 W for 40 GB PCIe, 300 W for 80 GB PCIe and 400 W for SXM variants."
+      },
+      {
+        "title": "NVIDIA RTX 3060 specifications",
+        "url": "https://www.nvidia.com/en-au/geforce/graphics-cards/30-series/rtx-3060-3060ti/",
+        "supports": "Reference RTX 3060 graphics-card power of 170 W."
+      },
+      {
+        "title": "HydraGPU A100 80GB refurbished price listing",
+        "url": "https://www.hydragpu.com/nvidia-a100-80gb-refurbished.html",
+        "reference_eur": 7479,
+        "supports": "Published retailer search listing for a refurbished 80 GB A100. Used only as replacement-cost context. The product page itself returned HTTP 403 during retrieval. It is not the acquisition price of the borrowed cards."
+      },
+      {
+        "title": "Eurostat electricity price statistics",
+        "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Electricity_price_statistics",
+        "supports": "EU household average EUR 0.2832/kWh in H1 2026 provides order-of-magnitude context. The calculation uses a separate rounded EUR 0.25/kWh assumption."
+      }
+    ],
+    "sources_accessed": "2026-11-28"
   },
   "items": [
     {
@@ -138,18 +191,25 @@
       "amount_eur": 600
     },
     {
-      "category": "Gemma inference service allowance",
+      "category": "Borrowed two-A100 cluster depreciation allocation",
       "quantity": 20,
-      "unit": "reserved service hour",
-      "eur_per_unit": 2,
-      "amount_eur": 40
+      "unit": "node hour, two GPUs together",
+      "eur_per_unit": 2.25,
+      "amount_eur": 45
     },
     {
-      "category": "CNN compute allowance",
-      "quantity": 10,
-      "unit": "reserved GPU hour",
+      "category": "Borrowed cluster electricity and cooling",
+      "quantity": 20,
+      "unit": "node hour",
+      "eur_per_unit": 0.3,
+      "amount_eur": 6
+    },
+    {
+      "category": "RTX 3060 PC electricity",
+      "quantity": 1,
+      "unit": "rounded allowance for ten PC hours",
       "eur_per_unit": 1,
-      "amount_eur": 10
+      "amount_eur": 1
     },
     {
       "category": "Workstation depreciation",
@@ -166,8 +226,9 @@
       "amount_eur": 30
     }
   ],
-  "subtotal_eur": 8830,
+  "subtotal_eur": 8832,
   "contingency_fraction": 0.1,
   "contingency_eur": 883,
-  "total_eur": 9713
+  "total_eur": 9715,
+  "contingency_rounding": "nearest whole euro"
 }

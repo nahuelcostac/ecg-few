@@ -97,6 +97,10 @@ Except for the experimental pipeline, CNN, and VLM diagram exports described bel
 - Draw.io SHA-256: `4c41acb9b62fb93e44c738f1c32563806d96b1642d716b7b180ca27e30140c51`.
 - PDF SHA-256: `571f9ef802a2b8841f76c15c1d8fd1a6dc78573957ca8085c3a5af44aa25c70d`. The defense figure inventory also records this hash.
 
+### Defense presentation crops and Grad-CAM legibility
+
+The defense aligns the simulator and HUCA counts with separate vector crops of the same comparison figure. Numbered figure captions credit original work or the published source. The ICL schematic preserves its visible adapted graphic while omitting hidden article text outside the crop. The Grad-CAM figure uses the same selected canonical example at the native 386 × 386 panel resolution, with vector titles. The measured heatmap retains its intrinsic raster resolution. [Derivative provenance](tfg/defensa/data/presentation_figure_derivatives.json) and [Grad-CAM provenance](tfg/defensa/data/gradcam_procedencia.json) record the sources and checksums. PowerPoint pages are exported at 3840 × 2160 for improved display quality.
+
 ### Defense implementation diagram palette
 
 The defense implementation figures `docs/tfg/defensa/assets/vlm_icl_context_window.pdf` and `cnn_convolutional_pipeline.pdf` use the same light-green test-sample fill (`#D9EAD3`) and border (`#93C47D`). Their PDF vector color operators were normalized while preserving all text, page sizes and drawing positions. Current checksums are recorded in the [defense figure inventory](tfg/defensa/inventario_figuras.json).

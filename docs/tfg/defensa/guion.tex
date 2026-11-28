@@ -7,13 +7,13 @@
 \usepackage{parskip,enumitem,xcolor,xurl,hyperref,fancyhdr,longtable,booktabs,needspace}
 \input{metadata}\input{metrics}
 \hypersetup{hidelinks,pdftitle={Guion de defensa del TFG},pdfauthor={\AuthorName},pdfsubject={\ThesisTitle}}
-\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Guion de defensa del TFG}\fancyhead[R]{\small Alejandro Moris Lara}\fancyfoot[C]{\thepage}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Guion de defensa del TFG}\fancyhead[R]{\small Alejandro Morís Lara}\fancyfoot[C]{\thepage}
 \setlength{\headheight}{15pt}
 \begin{document}
 \begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip
 {\large\ThesisTitle}\par\medskip\AuthorName\par Noviembre de 2026\end{center}
 \section*{Preparación y duración}
-La defensa contiene 39 diapositivas principales para un ensayo de 18 minutos y 20 segundos, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
+La defensa contiene 38 diapositivas principales para un ensayo de 17 minutos y 50 segundos, una diapositiva de presupuesto como apoyo después del cierre y dos páginas de referencias.
 
 La apertura relaciona la escasez de positivos con la representación visual y presenta el aprendizaje en contexto antes de los objetivos. Después del estado del arte se explica el latido y se sitúan los aspectos éticos. Tras las implementaciones se presentan los tres escenarios y el protocolo por paciente. Una diapositiva de transición abre cada bloque de resultados.
 
@@ -23,7 +23,7 @@ Ensaya en voz alta, siguiendo el gráfico que ve el tribunal. No leas las diapos
 
 La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del Manual de Identidad Corporativa de UniOvi. No constituye una plantilla Beamer publicada o aprobada por la institución. Se conservan los emblemas originales, con Georgia para los títulos y el texto. Si Georgia no está instalada, el proyecto utiliza TeX Gyre Termes como alternativa.
 
-\clearpage\section*{Ruta principal: 18 minutos y 20 segundos}
+\clearpage\section*{Ruta principal: 17 minutos y 50 segundos}
 \begin{longtable}{p{12mm}p{112mm}r}\toprule Diap. & Contenido & Acumulado\\\midrule\endhead
 1 & Análisis de ECGs con grandes modelos de lenguaje & 0:15\\
 2 & Enfermedades cardiovasculares y síndrome de Brugada & 0:45\\
@@ -51,19 +51,18 @@ La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del M
 24 & Resultados con ejemplos del simulador & 11:00\\
 25 & Matrices de confusión en el simulador & 11:30\\
 26 & Cambio de dominio & 11:35\\
-27 & Cambio de dominio en ICL con selección balanceada & 12:05\\
-28 & Adaptación de dominio & 12:25\\
-29 & Cambio de dominio en ICL con selección estándar & 12:45\\
-30 & CNN entrenada en el simulador y evaluada en el HUCA & 13:20\\
-31 & Métodos de adaptación de dominio en la CNN & 14:00\\
-32 & F1 de la clase positiva al cambiar de dominio & 14:30\\
-33 & Evaluación clínica & 14:35\\
-34 & Demostraciones y entrenamiento con ejemplos del HUCA & 15:45\\
-35 & Matrices de confusión en la evaluación clínica & 16:20\\
-36 & Conclusiones & 17:00\\
-37 & Limitaciones del estudio & 17:45\\
-38 & Continuación del trabajo & 18:10\\
-39 & Cierre y preguntas & 18:20\\
+27 & Adaptación de dominio & 11:55\\
+28 & Cambio de dominio en ICL con selección estándar & 12:15\\
+29 & CNN entrenada en el simulador y evaluada en el HUCA & 12:50\\
+30 & Métodos de adaptación de dominio en la CNN & 13:30\\
+31 & F1 de la clase positiva al cambiar de dominio & 14:00\\
+32 & Evaluación clínica & 14:05\\
+33 & Demostraciones y entrenamiento con ejemplos del HUCA & 15:15\\
+34 & Matrices de confusión en la evaluación clínica & 15:50\\
+35 & Conclusiones & 16:30\\
+36 & Limitaciones del estudio & 17:15\\
+37 & Continuación del trabajo & 17:40\\
+38 & Cierre y preguntas & 17:50\\
 \bottomrule\end{longtable}
 \Needspace{8\baselineskip}\section*{01. Análisis de ECGs con grandes modelos de lenguaje}
 \textbf{Tiempo orientativo: }15 segundos.
@@ -110,7 +109,7 @@ Primero sitúo la propuesta en el estado del arte y presento el caso de Brugada.
 \Needspace{8\baselineskip}\section*{07. Estado del arte}
 \textbf{Tiempo orientativo: }30 segundos.
 
-Ribeiro estudió el análisis de señales digitales y Sangha evaluó CNN sobre imágenes de ECG. Camba y colaboradores ya aplicaron ICL a Brugada y Saleh exploró cómo entrenar con pocos casos de Brugada. Aquí comparamos Gemma y ResNet18 en tres escenarios que cambian el número y la procedencia de los ejemplos. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh y colaboradores (2026).}
+Ribeiro estudió el análisis de señales digitales y Sangha evaluó CNN sobre imágenes de ECG. Camba y colaboradores ya aplicaron ICL a Brugada y Saleh exploró cómo entrenar con pocos casos de Brugada. Aquí comparamos Gemma y ResNet18 en tres escenarios que cambian el número y la procedencia de los ejemplos. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh y colaboradores (2026).} La figura reproduce un esquema de Sangha y colaboradores. Fuente: \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC8948243/}{Sangha et al. (2022)}, CC BY 4.0.
 
 \textbf{Transición.} Antes de ver el caso de Brugada, vamos a localizar las partes de un latido.
 
@@ -194,7 +193,7 @@ La CNN utiliza ResNet18 preentrenada y ajusta la red completa. La imagen se conv
 \Needspace{8\baselineskip}\section*{19. Inspección de activaciones con Grad-CAM}
 \textbf{Tiempo orientativo: }30 segundos.
 
-El ejemplo muestra un latido sintético de V1 y el mapa de Grad-CAM de la salida asociada a RBBB. En la superposición se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color indica regiones relacionadas con la salida de la CNN en este ejemplo. Es una inspección cualitativa.
+El ejemplo muestra un latido sintético de V1 y el mapa de Grad-CAM de la salida asociada a RBBB. En la superposición se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color indica regiones relacionadas con la salida de la CNN en este ejemplo. Es una inspección cualitativa. Los paneles proceden de la imagen canónica conservada y se incluyen a su resolución nativa, sin remuestreo. Los títulos son vectoriales. La suavidad del mapa de activación pertenece al resultado original y no se han inventado detalles al ampliarlo.
 
 \textbf{Transición.} Con los dos métodos definidos, podemos distinguir de dónde provienen los ejemplos y los ECG de prueba.
 
@@ -215,7 +214,7 @@ K es el número de demostraciones para Gemma o casos de entrenamiento para ResNe
 \Needspace{8\baselineskip}\section*{22. Métricas de evaluación}
 \textbf{Tiempo orientativo: }45 segundos.
 
-La exactitud global puede parecer alta si predominan los negativos y el modelo casi siempre predice esa clase. La exactitud balanceada promedia sensibilidad y especificidad, por lo que cada clase pesa lo mismo aunque sus tamaños difieran. La sensibilidad es la proporción de positivos de referencia que se detectan; un falso negativo es un positivo de referencia que el modelo clasifica como negativo. La especificidad es la proporción de negativos de referencia que se descartan; un falso positivo es un negativo que se señala como positivo.
+La exactitud global puede parecer alta si predominan los negativos y el modelo casi siempre predice esa clase. La exactitud balanceada promedia sensibilidad y especificidad, por lo que cada clase pesa lo mismo aunque sus tamaños difieran. La sensibilidad es la proporción de positivos de referencia que se detectan. Un falso negativo es un positivo de referencia que el modelo clasifica como negativo. La especificidad es la proporción de negativos de referencia que se descartan. Un falso positivo es un negativo que se señala como positivo.
 
 F1 se calcula para la clase positiva y es la media armónica de precisión y sensibilidad. La precisión indica cuántos de los casos señalados son positivos según la referencia. F1 disminuye cuando se acumulan falsos positivos o falsos negativos, pero no incluye los verdaderos negativos y no asigna por sí sola un mayor coste clínico a omitir un caso. Tampoco la exactitud balanceada expresa la utilidad clínica de los errores: da el mismo peso a la sensibilidad y la especificidad, no un coste asistencial acordado.
 
@@ -223,9 +222,9 @@ Como posible apoyo al triaje, interesa reducir los falsos negativos para no deja
 
 En la evaluación del HUCA, positivo se refiere a la etiqueta clínica empleada. En el simulador, la clase derivada procede de las reglas morfológicas QRS/ST. Son objetivos de anotación distintos y no se convierten en diagnósticos clínicos intercambiables. Las fórmulas son las mismas para cada tarea binaria, pero se interpretan respecto a su propia referencia.
 
-Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}; \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.
+Fuentes: \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html}{scikit-learn: exactitud balanceada}. \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html}{F1}. \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html}{sensibilidad o recall}. \href{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html}{precisión}.
 
-La matriz de confusión de esta diapositiva es un esquema conceptual sin recuentos, no un resultado experimental. Las filas son la etiqueta de referencia y las columnas la predicción. La diagonal representa los aciertos; las celdas fuera de la diagonal distinguen casos omitidos y falsas alarmas. BA equivale a la media de sensibilidad y especificidad. Al dar un cincuenta por ciento a cada clase, aumenta el peso relativo de la minoritaria respecto a la exactitud global. F1 equivale a dos veces VP dividido entre dos veces VP más FP más FN; combina precisión y sensibilidad mediante su media armónica. Las fórmulas se conservan en las notas para dejar la diapositiva como apoyo visual.
+La matriz de confusión de esta diapositiva es un esquema conceptual sin recuentos, no un resultado experimental. Las filas son la etiqueta de referencia y las columnas la predicción. La diagonal representa los aciertos. Las celdas fuera de la diagonal distinguen casos omitidos y falsas alarmas. BA equivale a la media de sensibilidad y especificidad. Al dar un cincuenta por ciento a cada clase, aumenta el peso relativo de la minoritaria respecto a la exactitud global. F1 equivale a dos veces VP dividido entre dos veces VP más FP más FN. Combina precisión y sensibilidad mediante su media armónica. Las fórmulas se conservan en las notas para dejar la diapositiva como apoyo visual.
 
 \textbf{Transición.} Empezamos con el escenario en el que todos los datos son simulados.
 
@@ -253,106 +252,107 @@ A la izquierda se ve Gemma con 32 demostraciones balanceadas y a la derecha ResN
 
 En el segundo escenario se mantienen los ejemplos simulados y se evalúa en el HUCA.
 
-\Needspace{8\baselineskip}\section*{27. Cambio de dominio en ICL con selección balanceada}
-\textbf{Tiempo orientativo: }30 segundos.
+\textbf{Transición.} Para interpretar este escenario, conviene explicar primero el cambio de dominio.
 
-En la selección balanceada se compara qué ocurre al cambiar el origen de las demostraciones de Gemma, cuyos pesos permanecen fijos. Ante consultas clínicas, los ejemplos del HUCA ayudan a clasificar otros registros del mismo conjunto. Con demostraciones del simulador, el rendimiento clínico se mantiene próximo al azar.
-
-\textbf{Transición.} Antes de ver la selección estándar y las variantes de la CNN, conviene explicar el cambio de dominio.
-
-\Needspace{8\baselineskip}\section*{28. Adaptación de dominio}
+\Needspace{8\baselineskip}\section*{27. Adaptación de dominio}
 \textbf{Tiempo orientativo: }20 segundos.
 
 La ilustración muestra qué significa entrenar con imágenes de un origen y evaluar con imágenes de otro. Aquí pasamos de latidos simulados a registros del HUCA. Cambian el aspecto del trazado y la etiqueta evaluada: primero se describen rasgos de un latido y después se clasifica al paciente. En la CNN se probó incorporar imágenes del HUCA sin sus etiquetas para reducir la diferencia visual.
 
-\textbf{Transición.} La selección estándar permite ver si el patrón del ICL se mantiene con otro reparto de ejemplos.
+\textbf{Transición.} Veamos ahora cómo cambia el rendimiento del ICL según el origen de las demostraciones.
 
-\Needspace{8\baselineskip}\section*{29. Cambio de dominio en ICL con selección estándar}
+\Needspace{8\baselineskip}\section*{28. Cambio de dominio en ICL con selección estándar}
 \textbf{Tiempo orientativo: }20 segundos.
 
-La selección estándar reproduce el mismo patrón general. Las consultas clínicas se benefician de ejemplos del HUCA, mientras que las demostraciones simuladas aportan poco al clasificar los registros clínicos.
+Con selección estándar, se compara el efecto del origen de las demostraciones. Las consultas clínicas se benefician de ejemplos del HUCA, mientras que las demostraciones simuladas aportan poco al clasificar los registros clínicos.
 
 \textbf{Transición.} Veamos qué ocurre para ResNet18 al entrenar con el simulador y probar sobre el HUCA.
 
-\Needspace{8\baselineskip}\section*{30. CNN entrenada en el simulador y evaluada en el HUCA}
+\Needspace{8\baselineskip}\section*{29. CNN entrenada en el simulador y evaluada en el HUCA}
 \textbf{Tiempo orientativo: }35 segundos.
 
 Aquí se entrena la CNN con datos del simulador y se cambia el conjunto de prueba. La línea continua representa la evaluación simulada y la discontinua, la clínica. Con treinta y dos ejemplos la exactitud balanceada clínica queda en \TransferCnnLastBA{}. El cambio de dominio afecta tanto al aspecto del trazado como a las etiquetas.
 
 \textbf{Transición.} Las variantes de adaptación intentan reducir esa pérdida de rendimiento.
 
-\Needspace{8\baselineskip}\section*{31. Métodos de adaptación de dominio en la CNN}
+\Needspace{8\baselineskip}\section*{30. Métodos de adaptación de dominio en la CNN}
 \textbf{Tiempo orientativo: }40 segundos.
 
 Gemma con demostraciones sintéticas aparece en el panel derecho. En la izquierda, la comparación muestra las cuatro variantes de adaptación de la CNN. Usan imágenes clínicas sin sus etiquetas, incluidas las que se evalúan después. CORAL y MMD mejoran algunos puntos frente a ResNet18 con el mismo K. La mejor exactitud balanceada global sigue correspondiendo a la referencia sin adaptación.
 
 \textbf{Transición.} F1 permite comprobar qué sucede con la detección de positivos.
 
-\Needspace{8\baselineskip}\section*{32. F1 de la clase positiva al cambiar de dominio}
+\Needspace{8\baselineskip}\section*{31. F1 de la clase positiva al cambiar de dominio}
 \textbf{Tiempo orientativo: }30 segundos.
 
 El panel de F1 permite examinar la detección de positivos al cambiar de dominio. El rendimiento sigue siendo bajo en la clasificación clínica, tanto con las variantes de adaptación como con las demostraciones simuladas de Gemma. Esto ayuda a interpretar una especificidad alta cuando se predice casi siempre la clase negativa.
 
 \textbf{Transición.} En el último escenario los ejemplos proceden del propio HUCA.
 
-\Needspace{8\baselineskip}\section*{33. Evaluación clínica}
+\Needspace{8\baselineskip}\section*{32. Evaluación clínica}
 \textbf{Tiempo orientativo: }5 segundos.
 
 En el tercer escenario, tanto los ejemplos como la prueba proceden del HUCA.
 
-\Needspace{8\baselineskip}\section*{34. Demostraciones y entrenamiento con ejemplos del HUCA}
+\Needspace{8\baselineskip}\section*{33. Demostraciones y entrenamiento con ejemplos del HUCA}
 \textbf{Tiempo orientativo: }70 segundos.
 
 En el tercer escenario, Gemma recibe demostraciones del HUCA y ResNet18 se entrena con imágenes del mismo conjunto. El paciente de prueba queda reservado en ambos casos. A la izquierda vemos la exactitud balanceada. A la derecha se muestra F1 para la clase positiva. F1 baja cuando el modelo deja casos positivos sin detectar o cuando da demasiadas falsas alarmas. Sin demostraciones, Gemma no resulta capaz de identificar positivos en la evaluación realizada. Con dos o cuatro ejemplos, la mejor CNN conserva una ligera ventaja. Desde ocho ejemplos, Gemma con selección balanceada obtiene mejores resultados. Con treinta y dos alcanza una exactitud balanceada de \RealVlmBA{}, frente a \RealCnnLastBA{} de la CNN balanceada, y un F1 de \RealVlmFone{}. La comparación se refiere a esta muestra y a las configuraciones evaluadas.
 
 \textbf{Transición.} Las matrices detallan los aciertos y errores por clase.
 
-\Needspace{8\baselineskip}\section*{35. Matrices de confusión en la evaluación clínica}
+\Needspace{8\baselineskip}\section*{34. Matrices de confusión en la evaluación clínica}
 \textbf{Tiempo orientativo: }35 segundos.
 
 Las matrices muestran las mejores configuraciones balanceadas de cada método. A la izquierda, Gemma utiliza treinta y dos demostraciones. A la derecha, ResNet18 utiliza dieciséis ejemplos de entrenamiento. Gemma obtiene una sensibilidad de \RealVlmSens{} y una especificidad de \RealVlmSpec{}. Esto deja sin identificar alrededor de una cuarta parte de los positivos. Las matrices se normalizan por clase real y agregan tres evaluaciones de los mismos pacientes.
 
 \textbf{Transición.} Con estos tres escenarios ya podemos responder a las preguntas planteadas al principio.
 
-\Needspace{8\baselineskip}\section*{36. Conclusiones}
+\Needspace{8\baselineskip}\section*{35. Conclusiones}
 \textbf{Tiempo orientativo: }40 segundos.
 
 Con ejemplos del HUCA, Gemma supera a ResNet18 desde ocho demostraciones. Con 32 y selección balanceada, la exactitud balanceada es \RealVlmBA{} para Gemma y \RealCnnLastBA{} para ResNet18. El simulador demuestra que ambos aprovechan más ejemplos en una tarea controlada. Al usar ejemplos sintéticos sobre el HUCA el rendimiento cae, lo que pone de relieve la importancia de la procedencia de las demostraciones.
 
 \textbf{Transición.} Estos resultados deben leerse teniendo en cuenta las limitaciones de la muestra y de la entrada.
 
-\Needspace{8\baselineskip}\section*{37. Limitaciones del estudio}
+\Needspace{8\baselineskip}\section*{36. Limitaciones del estudio}
 \textbf{Tiempo orientativo: }45 segundos.
 
-Las limitaciones se concentran en la procedencia de la muestra y en la representación de entrada. La evaluación clínica utiliza \HucaPatients{} pacientes del Hospital Universitario Central de Asturias. Aunque permite comparar los métodos dentro de esta cohorte, su tamaño y la escasez de ejemplos positivos limitan la variedad de trazados y etiquetas observada. Todos los pacientes proceden del mismo hospital; no se ha validado el rendimiento en una cohorte externa. Por tanto, estos resultados no establecen la generalización a otros hospitales o poblaciones.
+Las limitaciones se concentran en la procedencia de la muestra y en la representación de entrada. La evaluación clínica utiliza \HucaPatients{} pacientes del Hospital Universitario Central de Asturias. Aunque permite comparar los métodos dentro de esta cohorte, su tamaño y la escasez de ejemplos positivos limitan la variedad de trazados y etiquetas observada. Todos los pacientes proceden del mismo hospital. No se ha validado el rendimiento en una cohorte externa. Por tanto, estos resultados no establecen la generalización a otros hospitales o poblaciones.
 
-La entrada es un trazado renderizado de un latido central de la derivación precordial V1. No se utiliza el registro temporal completo ni la información conjunta de las doce derivaciones. Esta selección reduce la información disponible y acota el alcance del experimento a esa representación. La ilustración muestra la disposición de las derivaciones precordiales y destaca V1; no representa un paciente ni un resultado del estudio.
+La entrada es un trazado renderizado de un latido central de la derivación precordial V1. No se utiliza el registro temporal completo ni la información conjunta de las doce derivaciones. Esta selección reduce la información disponible y acota el alcance del experimento a esa representación. La ilustración muestra la disposición de las derivaciones precordiales y destaca V1. No representa un paciente ni un resultado del estudio.
 
-La fotografía del HUCA es de vicenmiranda, publicada en Wikimedia Commons con licencia CC BY 2.0; se recorta para la composición. El esquema anatómico es de Twisp y está en dominio público. En la adaptación se elimina el fondo azul y se resalta V1 con la paleta de la defensa, conservando la disposición anatómica. Las fuentes y licencias se conservan en la documentación de los recursos visuales. La adaptación de dominio y la ampliación de datos se abordan en la diapositiva de trabajo futuro.
+La fotografía del HUCA es de vicenmiranda, publicada en Wikimedia Commons con licencia CC BY 2.0. Se recorta para la composición. El esquema anatómico es de Twisp y está en dominio público. En la adaptación se elimina el fondo azul y se resalta V1 con la paleta de la defensa, conservando la disposición anatómica. Las fuentes y licencias se conservan en la documentación de los recursos visuales. La adaptación de dominio y la ampliación de datos se abordan en la diapositiva de trabajo futuro.
 
 \textbf{Transición.} Estos límites orientan las siguientes evaluaciones.
 
-\Needspace{8\baselineskip}\section*{38. Continuación del trabajo}
+\Needspace{8\baselineskip}\section*{37. Continuación del trabajo}
 \textbf{Tiempo orientativo: }25 segundos.
 
 La continuación empieza por revisar las etiquetas con especialistas y ampliar la recogida de casos etiquetados. Se estudiarían otros rasgos morfológicos del ECG y se probarían otros métodos de adaptación de dominio. Por último, se evaluaría si el sistema ayuda a priorizar ECG sospechosos en el HUCA y después en otros centros sanitarios.
 
 \textbf{Transición.} Con esto termino la exposición.
 
-\Needspace{8\baselineskip}\section*{39. Cierre y preguntas}
+\Needspace{8\baselineskip}\section*{38. Cierre y preguntas}
 \textbf{Tiempo orientativo: }10 segundos.
 
 Gracias por su atención. Quedo a disposición del tribunal para las preguntas.
 
 \clearpage\section*{Presupuesto, referencias y preguntas previsibles}
 \Needspace{7\baselineskip}\subsection*{Presupuesto aproximado}
-Este presupuesto es una valoración aproximada del coste de realizar el trabajo, no una relación de pagos reales. Sigue la separación entre personal, materiales y total de la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, Preprocesado y tratamiento inteligente de electrocardiogramas intracardíacos. No se reutilizan sus precios históricos. Se suponen trescientas horas de investigación y desarrollo a veinte euros por hora, cuarenta horas de tutoría docente e investigadora a cincuenta euros y diez horas de asesoramiento clínico y revisión de datos a sesenta euros. Son costes institucionales hipotéticos con cargas incluidas, no salarios oficiales ni dedicaciones verificadas. El desarrollo comprende la revisión bibliográfica, el simulador, el código, la operación de los experimentos, el análisis, la memoria y la defensa.
+El presupuesto valora de forma aproximada el personal y los recursos del estudio. La estructura sigue la sección 6.2, página 72, del TFG de Nahuel Costa Cortez de 2019, sin reutilizar sus precios históricos. Las dedicaciones y tarifas del personal son hipótesis de cálculo. Se mantienen trescientas horas de investigación a veinte euros, cuarenta horas de tutoría a cincuenta euros y diez horas de asesoramiento clínico a sesenta euros.
 
-Los tres agregados canónicos de Gemma contienen 24.222 consultas. La suma del número de entradas por la latencia media de cada ejecución es 8,34 horas. Es tiempo acumulado de respuesta del servicio, con sobrecarga de red y servicio: no identifica horas efectivas de GPU ni permite reconstruir una factura por tokens. Para las CNN se suman 2,83 horas registradas de entrenamiento, incluyendo el preentrenamiento SimCLR. Se cuentan una sola vez los entrenamientos compartidos que aparecen repetidos en las predicciones de los pacientes. No se dispone de una medición completa de los trabajos, incluidos carga, inferencia y Grad-CAM.
+Según la información del autor, Gemma se ejecutó en un clúster autogestionado cedido por su tutor con dos A100. La CNN se entrenó en su propio ordenador con una RTX 3060. No se presupone una factura de alquiler en la nube. La capacidad y el formato de las A100 no están confirmados. Como escenario de valoración se usa un precio de reposición redondeado de siete mil quinientos euros por A100, próximo al anuncio público de HydraGPU para una A100 de ochenta gigabytes reacondicionada a siete mil cuatrocientos setenta y nueve euros. Es una referencia comercial actual, no el precio pagado por las tarjetas utilizadas.
 
-Por eso se presupuestan, como hipótesis, veinte horas de servicio para Gemma y diez horas de GPU para CNN, con margen para preparación, arranque, análisis y repeticiones. Las tarifas de dos y un euro por hora son supuestos de orden de magnitud. Como contexto se consultó la página pública de Runpod el 28 de noviembre de 2026: A100 PCIe 80 GB a 2,09 dólares por hora y RTX 4090 a 0,89 dólares por hora. No se convierten esos precios a euros ni se afirma que fueran las GPU utilizadas o que tuvieran el mismo rendimiento. Referencia: \href{https://www.runpod.io/product/cloud-gpus}{Runpod, Cloud GPUs}. El coste energético del cómputo se considera incluido en la tarifa.
+Se añaden tres mil euros supuestos para el resto del nodo. Dieciocho mil euros amortizados en cuatro años y dos mil horas productivas por año equivalen a dos euros con veinticinco céntimos por hora del nodo completo, con las dos GPU. Para veinte horas se imputan cuarenta y cinco euros. Ese coste es una valoración del recurso cedido, no un pago del estudiante. La utilización anual y la vida útil son supuestos que influyen en el resultado.
 
-El equipo de trabajo se valora por amortización: mil doscientos euros en cuarenta y ocho meses, imputando seis meses, da ciento cincuenta euros. El almacenamiento y las copias se estiman en treinta euros. El software libre no añade licencias. Los registros son datos ya cedidos: no se valora una nueva adquisición de ECG, un nuevo etiquetado clínico ni una validación prospectiva o multicéntrica. Tampoco se imputa el preentrenamiento original de Gemma o ImageNet, el despliegue asistencial, los gastos generales institucionales ni impuestos indirectos. El subtotal es ocho mil ochocientos treinta euros; con un diez por ciento de imprevistos, el total es nueve mil setecientos trece euros, aproximadamente nueve mil setecientos. Las hipótesis, fuentes y cálculos se conservan en la documentación de presupuesto del repositorio.
+La ficha de NVIDIA sitúa el TDP máximo por A100 entre doscientos cincuenta y cuatrocientos vatios según la variante. Se considera de forma conservadora un kilovatio para las dos GPU y el resto del nodo, un factor de refrigeración de uno con dos y una electricidad supuesta de veinticinco céntimos por kilovatio hora. Veinte horas equivalen a seis euros de energía. Sumados a la amortización, el coste imputado del clúster es cincuenta y un euros. En la RTX 3060, NVIDIA declara ciento setenta vatios de potencia de la tarjeta. Se suponen trescientos vatios para el ordenador completo. Diez horas a la misma tarifa dan setenta y cinco céntimos y se redondean a un euro. No se ha medido el consumo eléctrico y el TDP no es una lectura de consumo. La tarifa elegida es una hipótesis, no el contrato eléctrico del hospital, la universidad o el autor.
+
+Los tiempos canónicos se conservan: ocho coma treinta y cuatro horas acumuladas de consultas a Gemma y dos coma ochenta y tres horas registradas de entrenamiento de CNN. No equivalen al tiempo de reserva del clúster ni a una medida de ocupación o energía. Las veinte horas del nodo con dos A100 y las diez horas del PC son márgenes operativos supuestos para esta valoración.
+
+Se mantienen ciento cincuenta euros de amortización del ordenador y treinta euros de almacenamiento. La RTX ya se considera dentro del ordenador, de modo que no se vuelve a amortizar en el cómputo. El software libre no añade licencias. El subtotal es ocho mil ochocientos treinta y dos euros. El diez por ciento de imprevistos, redondeado a euros completos, es ochocientos ochenta y tres euros. El total estimado es nueve mil setecientos quince euros, aproximadamente nueve mil setecientos. Los datos fueron cedidos y no se incluye una nueva adquisición ni una validación clínica prospectiva.
+
+Fuentes: \href{https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf}{NVIDIA, ficha A100}. \href{https://www.nvidia.com/en-au/geforce/graphics-cards/30-series/rtx-3060-3060ti/}{NVIDIA, especificaciones RTX 3060}. \href{https://www.hydragpu.com/nvidia-a100-80gb-refurbished.html}{HydraGPU, referencia de reposición}. \href{https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Electricity_price_statistics}{Eurostat, contexto de precios eléctricos}. Las hipótesis y cálculos están en la documentación de presupuesto del repositorio.
 
 \Needspace{7\baselineskip}\subsection*{Referencias clínicas y estado del arte}
 Las referencias de contexto respaldan la motivación clínica y la procedencia de los datos y trazados. Los antecedentes corresponden al análisis de señales, el análisis de imágenes, el cambio de dominio y el aprendizaje con pocos ejemplos. Los créditos y las licencias de las imágenes publicadas se detallan en el proyecto LaTeX. \href{https://doi.org/10.1371/journal.pdig.0001222}{Saleh et al. (2026).} El crédito de TarmacView figura junto a la ilustración de adaptación.

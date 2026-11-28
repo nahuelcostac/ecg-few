@@ -1,0 +1,42 @@
+{
+  "purpose": "Presentation-only layout and legibility changes, no experiments rerun",
+  "comparison": {
+    "source": "assets/fig_synthetic_real_comparison.pdf",
+    "source_sha256": "580ed19a2ec7cbc6f2ae9120921517174ed58e634c945637b7515fbc2851c368",
+    "panels": [
+      {
+        "file": "assets/comparison_simulator_panel.pdf",
+        "clip_pdf_points": [
+          0,
+          0,
+          325,
+          270.9599914550781
+        ],
+        "sha256": "ff1ab5d332a27ab22d907d4fb6be070b78b6b12d11287cccfc6660ddefb5ea1b"
+      },
+      {
+        "file": "assets/comparison_huca_panel.pdf",
+        "clip_pdf_points": [
+          330,
+          0,
+          643.9199829101562,
+          270.9599914550781
+        ],
+        "sha256": "0cd62dd4c734656bb04c5d7d2a5d5dd1c0a833baaa30b4f5b20dab1c460c94a9"
+      }
+    ],
+    "method": "Vector PDF crops, used to align each caption and canonical aggregate count with its own panel"
+  },
+  "icl": {
+    "file": "assets/icl_general_dong2024.pdf",
+    "method": "Graphic-only SVG-to-PDF export with outlined text, preserving the visible adapted figure and removing hidden article text outside the crop",
+    "source_credit": "Dong et al. (2024), retained in the numbered caption",
+    "sha256": "145f27d4c7294073219bb739ac92150bfa43f2295884a160ed78d47f4d31f151"
+  },
+  "gradcam": {
+    "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
+    "provenance": "data/gradcam_procedencia.json",
+    "method": "The selected canonical raw panel crops at 386 by 386 pixels, embedded without resampling, with vector titles. The recorded heatmap and spatial registration are preserved.",
+    "sha256": "3eff583abfa6a8af94ad6167eb20847c96f4921be118591c6a84676b0b539e29"
+  }
+}

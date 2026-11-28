@@ -7,7 +7,6 @@
 \RequirePackage{colortbl}
 \RequirePackage{tikz}
 \RequirePackage{etoolbox}
-\RequirePackage{appendixnumberbeamer}
 \IfFontExistsTF{Georgia}{\setsansfont{Georgia}\setmainfont{Georgia}}{\setsansfont{TeX Gyre Termes}\setmainfont{TeX Gyre Termes}}
 \geometry{paperwidth=320mm,paperheight=180mm}
 \definecolor{UOInk}{HTML}{252C2D}
@@ -42,9 +41,8 @@
   \hspace{15mm}\begin{minipage}{290mm}
   {\color{UOLine}\hrule height0.3pt}\vspace{2mm}
   \usebeamerfont{footline}\color{UOGray}%
-  Alejandro Moris Lara\hfill
-  \defensenav
-  \hspace{6mm}\insertframenumber\par\vspace{3mm}
+  \AuthorName\hfill
+  \insertpagenumber\par\vspace{3mm}
   \end{minipage}
 }
 \setbeamertemplate{note page}{\insertnote}
@@ -52,6 +50,7 @@
 \AtBeginDocument{\usebeamerfont{normal text}}
 \newcommand{\takeaway}[1]{\par\vspace{2mm}{\fontsize{22}{29}\selectfont #1\par}}
 \newcommand{\credit}[1]{\par\vspace{2mm}{\fontsize{11}{14}\selectfont\color{UOGray}#1\par}}
+\newcommand{\figurecaption}[2]{\par\vspace{2mm}{\fontsize{11}{14}\selectfont\color{UOGray}Figura~#1. #2\par}}
 \newcommand{\scenarioheading}{%
   {\fontsize{20}{26}\selectfont\bfseries Escenario} &
   {\fontsize{20}{26}\selectfont\bfseries Origen de ejemplos} &
@@ -61,7 +60,7 @@
   \begin{center}
     \setlength{\tabcolsep}{4mm}%
     \renewcommand{\arraystretch}{1.4}%
-    \begin{tabular}{@{}p{107mm}p{88mm}p{74mm}@{}}
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{107mm}>{\raggedright\arraybackslash}p{88mm}>{\raggedright\arraybackslash}p{74mm}@{}}
       \scenarioheading
       \midrule
       {\fontsize{30}{38}\selectfont\color{ScenarioRed}\bfseries #1} &
@@ -79,7 +78,7 @@
   \begin{column}{.49\textwidth}\centering\includegraphics[width=\linewidth,height=95mm,keepaspectratio]{assets/#2}\end{column}
   \end{columns}
 }
-\newcommand{\backtoconclusions}{\ifdefenseappendix\credit{\hyperlink{conclusion}{Volver al cierre}}\fi}
+\newcommand{\backtoconclusions}{}
 \hyphenpenalty=10000
 \exhyphenpenalty=10000
 \emergencystretch=2em

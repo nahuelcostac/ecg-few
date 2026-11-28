@@ -25,7 +25,7 @@ const renderDirectory = await mkdtemp(join(tmpdir(), "defensa-tfg-"));
 try {
   const prefix = join(renderDirectory, "slide");
   execFileSync(process.env.PDFTOPPM ?? "pdftoppm", [
-    "-png", "-scale-to-x", "1920", "-scale-to-y", "1080",
+    "-png", "-scale-to-x", "3840", "-scale-to-y", "2160",
     join(directory, "Defensa_TFG.pdf"), prefix,
   ], { stdio: "inherit" });
 

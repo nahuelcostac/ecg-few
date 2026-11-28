@@ -21,5 +21,14 @@
       492
     ]
   ],
-  "scope": "Latido sintético V1. Salida RBBB de ResNet18. Ejemplo cualitativo elegido por el solapamiento visible con el trazado."
+  "scope": "Latido sintético V1. Salida RBBB de ResNet18. Ejemplo cualitativo elegido por el solapamiento visible con el trazado.",
+  "presentation_update": {
+    "panels_native_resolution_px": [
+      386,
+      386
+    ],
+    "resampling": false,
+    "pdf_titles": "vector text",
+    "note": "The selected canonical heatmap and its spatial registration are preserved at native resolution."
+  }
 }

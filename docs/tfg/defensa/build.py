@@ -14,6 +14,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import zipfile
@@ -191,9 +192,17 @@ def generate_sources() -> None:
     full = [slide["id"] for slide in data if slide["section"] == "main"]
     support = [slide["id"] for slide in data if slide["section"] == "appendix"]
     sections = []
+    figure_number = 0
+
+    def number_figure(_match: re.Match) -> str:
+        nonlocal figure_number
+        figure_number += 1
+        return rf"\figurecaption{{{figure_number}}}{{"
+
     for slide in data:
         label = slide["id"]
         body = slide["latex"]
+        body = re.sub(r"\\figurecaption\{", number_figure, body)
         notes = slide["notes"]
         navigation = [
             rf"\hyperlink{{{target}}}{{{caption}}}"
@@ -207,11 +216,9 @@ def generate_sources() -> None:
                 else f"Volver a la diapositiva {full.index(origin) + 1}"
             )
             navigation.append(rf"\hyperlink{{{origin}}}{{{caption}}}")
-        if slide["section"] == "appendix" and not origins:
-            navigation.append(r"\hyperlink{conclusion}{Volver al cierre}")
         footer = r"\quad ".join(navigation) or "Defensa del TFG"
         plain = label in {"p01", "p02", "cierre"} or slide.get("plain", False)
-        prefix = "[plain]" if plain else "[t]"
+        prefix = "[plain]" if plain else "[c]"
         sections.append(
             r"\expandafter\newcommand\csname Slide"
             + slide["id"]
@@ -275,7 +282,7 @@ def guide(data: list[dict], full: list[str], annex: list[str]) -> None:
 \usepackage{parskip,enumitem,xcolor,xurl,hyperref,fancyhdr,longtable,booktabs,needspace}
 \input{metadata}\input{metrics}
 \hypersetup{hidelinks,pdftitle={Guion de defensa del TFG},pdfauthor={\AuthorName},pdfsubject={\ThesisTitle}}
-\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Guion de defensa del TFG}\fancyhead[R]{\small Alejandro Moris Lara}\fancyfoot[C]{\thepage}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Guion de defensa del TFG}\fancyhead[R]{\small Alejandro Morís Lara}\fancyfoot[C]{\thepage}
 \setlength{\headheight}{15pt}
 \begin{document}
 \begin{center}{\LARGE Guion para la defensa del TFG}\par\medskip

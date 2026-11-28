@@ -18,7 +18,7 @@
         "p14"
       ],
       "pages_18min": [
-        35
+        34
       ],
       "format": "vector PDF"
     },
@@ -29,7 +29,7 @@
         "p13"
       ],
       "pages_18min": [
-        34
+        33
       ],
       "format": "vector PDF"
     },
@@ -57,7 +57,7 @@
     },
     {
       "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
-      "sha256": "60ba146358b9ce3a155cf982df47c60d954ad1e9a17143b2e97127b30fd4ff31",
+      "sha256": "3eff583abfa6a8af94ad6167eb20847c96f4921be118591c6a84676b0b539e29",
       "slides": [
         "a06"
       ],
@@ -106,7 +106,7 @@
         "p11"
       ],
       "pages_18min": [
-        30
+        29
       ],
       "format": "vector PDF"
     },
@@ -114,12 +114,10 @@
       "file": "assets/domain_gap_icl_context_ba_by_k.pdf",
       "sha256": "c3c45553d5e1c8135b0bb4cc68b5714b726d3cc825b07d7c60061c5b376c1c3e",
       "slides": [
-        "p12",
         "a11"
       ],
       "pages_18min": [
-        27,
-        29
+        28
       ],
       "format": "vector PDF"
     },
@@ -191,7 +189,7 @@
     },
     {
       "file": "assets/icl_general_dong2024.pdf",
-      "sha256": "10ce298fed7560155a39a6521ab06658bbce7002ba47355913f68a24672587be",
+      "sha256": "145f27d4c7294073219bb739ac92150bfa43f2295884a160ed78d47f4d31f151",
       "slides": [
         "a03"
       ],
@@ -208,8 +206,8 @@
         "a10"
       ],
       "pages_18min": [
-        31,
-        32
+        30,
+        31
       ],
       "format": "vector PDF"
     },
@@ -238,7 +236,7 @@
   ],
   "unique_count": 21,
   "main_slide_count": {
-    "18min": 39
+    "18min": 38
   },
   "routes": {
     "18min": [
@@ -268,7 +266,6 @@
       "p10",
       "a07",
       "escenario_transferencia",
-      "p12",
       "antecedente_dominio",
       "a11",
       "p11",
@@ -442,12 +439,6 @@
       "title": "Cambio de dominio",
       "block": "Resultados",
       "seconds": 5
-    },
-    {
-      "slide": "p12",
-      "title": "Cambio de dominio en ICL con selección balanceada",
-      "block": "Resultados 2/3 \\enspace Simulador \\(\\rightarrow\\) HUCA",
-      "seconds": 30
     },
     {
       "slide": "antecedente_dominio",

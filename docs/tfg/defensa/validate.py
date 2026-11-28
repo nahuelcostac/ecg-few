@@ -49,14 +49,14 @@ def main() -> None:
     inventory = json.loads((HERE / "inventario_figuras.json").read_text(encoding="utf-8"))
     slides = json.loads((HERE / "slides.json").read_text(encoding="utf-8"))
     expected_main = (
-        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 huca p04 p08 p07 a06 escenarios p09 metricas escenario_simulador p10 a07 escenario_transferencia p12 antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
+        "p01 problema p02 a03 objetivos indice antecedentes latido p03 a15 cnn_concepto p05 p06 a04 huca p04 p08 p07 a06 escenarios p09 metricas escenario_simulador p10 a07 escenario_transferencia antecedente_dominio a11 p11 a09 a10 escenario_clinico p13 p14 p16 p15 futuro cierre"
     ).split()
     main_slides = [slide for slide in slides if slide["section"] == "main"]
     assert [slide["id"] for slide in main_slides] == expected_main
-    assert len(slides) == len({slide["id"] for slide in slides}) == 42
-    assert sum(slide["seconds"] for slide in main_slides) == 1100
+    assert len(slides) == len({slide["id"] for slide in slides}) == 41
+    assert sum(slide["seconds"] for slide in main_slides) == 1070
     assert len(inventory["scientific_figures"]) == 21
-    assert all(slide["id"] != "a05" for slide in slides)
+    assert all(slide["id"] not in {"a05", "p12"} for slide in slides)
     diagram = ET.parse(HERE / "assets/fig_pipeline_experimental.drawio")
     labels = {
         cell.get("value"): float(cell.find("mxGeometry").get("y"))
@@ -71,8 +71,8 @@ def main() -> None:
     budget = json.loads((HERE / "data/budget_estimate.json").read_text(encoding="utf-8"))
     assert all(item["quantity"] * item["eur_per_unit"] == item["amount_eur"] for item in budget["items"])
     assert sum(item["amount_eur"] for item in budget["items"]) == budget["subtotal_eur"]
-    assert budget["subtotal_eur"] * budget["contingency_fraction"] == budget["contingency_eur"]
-    assert budget["subtotal_eur"] + budget["contingency_eur"] == budget["total_eur"] == 9713
+    assert round(budget["subtotal_eur"] * budget["contingency_fraction"]) == budget["contingency_eur"]
+    assert budget["subtotal_eur"] + budget["contingency_eur"] == budget["total_eur"] == 9715
     if (ROOT / "outputs/final_results_tfg/loocv").is_dir():
         for source in budget["measured"]["vlm"]:
             assert sha(ROOT / source["source"]) == source["sha256"]
@@ -96,6 +96,18 @@ def main() -> None:
     assert all(abs(page.get_width() / page.get_height() - 16 / 9) < 0.001 for page in document)
     texts = [page.get_textpage().get_text_range() for page in document]
     combined = "\n".join(texts)
+    assert ";" not in combined
+    assert "Alejandro Moris Lara" not in combined
+    assert "Alejandro Morís Lara" in combined
+    assert "Volver al cierre" not in combined
+    assert "Figura 3.4 de la memoria" not in combined
+    assert all(";" not in slide["notes"] for slide in slides)
+    figure_numbers = [int(n) for n in re.findall(r"Figura\s+(\d+)\.", combined)]
+    assert sorted(set(figure_numbers)) == list(range(1, max(figure_numbers) + 1))
+    for index, (slide, text) in enumerate(zip(slides, texts, strict=True), 1):
+        if slide["id"] not in {"p01", "p02", "cierre"} and not slide.get("plain"):
+            assert re.search(rf"Alejandro Morís Lara\s+{index}\s*$", text), slide["id"]
+    assert "Referencias" not in texts[route.index("cierre")]
     for number in ("0,761", "0,498"):
         assert number in combined, number
     protocol = texts[route.index("p09")]
@@ -114,7 +126,7 @@ def main() -> None:
     assert all(label in morphology for label in ("QRS", "RBBB", "Segmento ST", "Onda T"))
     assert not any("??" in text for text in texts)
     budget_text = " ".join(texts[route.index("presupuesto")].split())
-    assert all(value in budget_text for value in ("Presupuesto aproximado", "9.713", "8,34", "2,83", "20 h", "10 h"))
+    assert all(value in budget_text for value in ("Presupuesto aproximado", "9.715", "8,34", "2,83", "20 h", "10 h", "2 A100", "RTX 3060"))
     assert "Dedicaciones y tarifas supuestas" not in budget_text
     assert all(label in budget_text for label in ("Personal", "Cómputo", "Materiales y servicios"))
     assert route[route.index("p09") + 1] == "metricas"
