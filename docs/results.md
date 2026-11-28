@@ -93,13 +93,13 @@ Except for the experimental pipeline, CNN, and VLM diagram exports described bel
 ### `docs/tfg/defensa/assets/fig_pipeline_experimental.drawio` and `.pdf`
 
 - Defense-specific layout: `B: VLM/ICL` is above `C: CNN`. The input and evaluation blocks, connecting arrows and embedded explanatory panels are preserved.
-- The editable Draw.io source records the revised node positions and headings. The corresponding PDF was derived from the retained defense vector export by exchanging the panel and heading regions; it was rendered through SVG with outlined text and a local Chromium PDF export. No experimental results were regenerated.
-- Draw.io SHA-256: `4c41acb9b62fb93e44c738f1c32563806d96b1642d716b7b180ca27e30140c51`.
-- PDF SHA-256: `571f9ef802a2b8841f76c15c1d8fd1a6dc78573957ca8085c3a5af44aa25c70d`. The defense figure inventory also records this hash.
+- The editable Draw.io source records the revised node positions and headings, and the light-green sample headers embedded in both model panels now match HUCA and evaluation (`#D9EAD3`, border `#93C47D`). The corresponding PDF was derived from the retained defense vector export by exchanging the panel and heading regions; it was rendered through SVG with outlined text and a local Chromium PDF export. No experimental results were regenerated.
+- Draw.io SHA-256: `126f1e5fec346df87c039a4291cbe0a6aa473f20ee8d1725d0cee129d06826c1`.
+- PDF SHA-256: `07d60a0b0b6d8d08b1e28e6674541ee5ca95982832a01004b74fcea688468ad9`. The defense figure inventory also records this hash.
 
 ### Defense presentation crops and Grad-CAM legibility
 
-The defense aligns the simulator and HUCA counts with separate vector crops of the same comparison figure. Numbered figure captions credit original work or the published source. The ICL schematic preserves its visible adapted graphic while omitting hidden article text outside the crop. The Grad-CAM figure uses the same selected canonical example at the native 386 × 386 panel resolution, with vector titles. The measured heatmap retains its intrinsic raster resolution. [Derivative provenance](tfg/defensa/data/presentation_figure_derivatives.json) and [Grad-CAM provenance](tfg/defensa/data/gradcam_procedencia.json) record the sources and checksums. PowerPoint pages are exported at 3840 × 2160 for improved display quality.
+The defense aligns the simulator and HUCA counts with equal-width vector crops having symmetric artwork bounds. Numbered figure captions credit original work or the published source. The ICL schematic preserves its visible adapted graphic while omitting hidden article text outside the crop. The Grad-CAM teaching slide now uses a native-resolution crop of the first row of figure 15 from [Sundaramoorthy and Karunanidhi (2026)](https://doi.org/10.3389/fphys.2026.1848316), licensed CC BY 4.0. It is explicitly presented as a published illustration of the method, rather than a result of this thesis. The original canonical Grad-CAM example remains preserved locally and its public derivative is unchanged. [Derivative provenance](tfg/defensa/data/presentation_figure_derivatives.json) records crop coordinates, attribution, license and checksums. [Canonical Grad-CAM provenance](tfg/defensa/data/gradcam_procedencia.json) remains available. PowerPoint pages are exported at 3840 × 2160.
 
 ### Defense implementation diagram palette
 

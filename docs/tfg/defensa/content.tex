@@ -49,12 +49,12 @@
 \begin{tikzpicture}[remember picture,overlay,x=1mm,y=-1mm]
 \begin{scope}[shift={(current page.north west)}]
 \node[anchor=north west,inner sep=0pt] at (0,0)
-  {\includegraphics[viewport=0 86 1000 445,clip,width=\paperwidth]{assets/referencias_visuales/electrocardiograma_papel_adjunto.png}};
-\node[anchor=north west,inner sep=0pt,text width=288mm] at (16,111)
-  {\figurecaption{2}{ECG en papel. Imagen aportada para la presentación.}};
-\node[anchor=north west,inner sep=0pt,text=UOInk] at (16,120)
+  {\includegraphics[viewport=0 86 1000 420,clip,width=\paperwidth]{assets/referencias_visuales/electrocardiograma_papel_adjunto.png}};
+\node[anchor=north west,inner sep=0pt,text width=288mm] at (16,169)
+  {\figurecaption{2}{Electrocardiograma en papel.}};
+\node[anchor=north west,inner sep=0pt,text=UOInk] at (16,118)
   {\fontsize{40}{47}\selectfont Electrocardiograma en formato imagen};
-\node[anchor=north west,inner sep=0pt,text=UOGreen] at (16,145)
+\node[anchor=north west,inner sep=0pt,text=UOGreen] at (16,143)
   {\fontsize{21}{28}\selectfont ¿Puede un modelo interpretar el trazado con pocos ejemplos?};
 \node[anchor=south east,inner sep=0pt,text=UOGray] at (302,172)
   {\fontsize{11}{14}\selectfont\insertframenumber};
@@ -325,10 +325,14 @@
 \renewcommand{\defenseblock}{Implementación}
 \renewcommand{\defensenav}{Defensa del TFG}
 \begin{frame}[c]\hypertarget{a06}{}
-\frametitle{Inspección de activaciones con Grad-CAM}
-\fullfigure[101mm]{cnn_simulator_qrs_gradcam_example.pdf}
-\figurecaption{17}{Entrada V1, mapa Grad-CAM y superposición para la salida RBBB. Ejemplo cualitativo del simulador. Elaboración propia.}
-\note{El ejemplo muestra un latido sintético de V1 y el mapa de Grad-CAM de la salida asociada a RBBB. En la superposición se aprecia una activación amplia que alcanza la zona del QRS y parte del trazado posterior. El color indica regiones relacionadas con la salida de la CNN en este ejemplo. Es una inspección cualitativa. Los paneles proceden de la imagen canónica conservada y se incluyen a su resolución nativa, sin remuestreo. Los títulos son vectoriales. La suavidad del mapa de activación pertenece al resultado original y no se han inventado detalles al ampliarlo.}
+\frametitle{Superposición de Grad-CAM sobre ECG}
+\centering
+\includegraphics[width=282mm]{assets/gradcam_ecg_published_example.pdf}\par
+\vspace{7mm}
+{\fontsize{22}{29}\selectfont El color sitúa las regiones que más contribuyen a la salida del modelo.\par}
+\vspace{3mm}
+\figurecaption{17}{Ejemplos publicados de Grad-CAM sobre ECG. \href{https://doi.org/10.3389/fphys.2026.1848316}{Sundaramoorthy y Karunanidhi (2026)}, CC BY 4.0. Recorte.}
+\note{Esta figura publicada ilustra la superposición de Grad-CAM sobre una señal de ECG. Los colores cálidos corresponden a valores mayores del mapa dentro de cada ejemplo, según su escala. La activación indica una contribución relativa a la salida del modelo y no demuestra por sí sola una interpretación clínica correcta. Es una ilustración bibliográfica de un clasificador de arritmias sobre señales, no un resultado de la CNN de este TFG ni un ejemplo de Brugada. En nuestro estudio, Grad-CAM se aplicó a imágenes de un latido central de V1. Fuente: \href{https://doi.org/10.3389/fphys.2026.1848316}{Sundaramoorthy y Karunanidhi (2026)}, figura 15, recortada a la fila superior, CC BY 4.0.}
 \end{frame}}
 
 \expandafter\newcommand\csname Slideescenarios\endcsname{%
@@ -811,6 +815,7 @@ Fuentes: \href{https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a1
 \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC3148951/}{Sayadi et al. (2010). Generación de ECG con gaussianas.}\par\vspace{2mm}
 \href{https://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html}{He et al. (2016). Redes residuales.}\par\vspace{2mm}
 \href{https://doi.org/10.1109/ICCV.2017.74}{Selvaraju et al. (2017). Grad-CAM.}\par\vspace{2mm}
+\href{https://doi.org/10.3389/fphys.2026.1848316}{Sundaramoorthy y Karunanidhi (2026).\newline Grad-CAM sobre ECG.}\par\vspace{2mm}
 \href{https://aclanthology.org/2024.emnlp-main.64/}{Dong et al. (2024). Aprendizaje en contexto.}\par\vspace{2mm}
 \href{https://ai.google.dev/gemma/docs/core/model_card_4}{Google DeepMind. Ficha de Gemma 4.}\par}
 \end{column}

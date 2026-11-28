@@ -9,23 +9,23 @@
         "clip_pdf_points": [
           0,
           0,
-          325,
-          270.9599914550781
+          290,
+          270.96
         ],
-        "sha256": "ff1ab5d332a27ab22d907d4fb6be070b78b6b12d11287cccfc6660ddefb5ea1b"
+        "sha256": "fc65b1c88b5bb591beeb0357cbd099f52631e8cc476cad4484fc1a2fb8d280d9"
       },
       {
         "file": "assets/comparison_huca_panel.pdf",
         "clip_pdf_points": [
-          330,
+          353,
           0,
-          643.9199829101562,
-          270.9599914550781
+          643,
+          270.96
         ],
-        "sha256": "0cd62dd4c734656bb04c5d7d2a5d5dd1c0a833baaa30b4f5b20dab1c460c94a9"
+        "sha256": "caaefe624321076019bcbf9726abfcd497528af6d32bf4e527138f5672f5ba36"
       }
     ],
-    "method": "Vector PDF crops, used to align each caption and canonical aggregate count with its own panel"
+    "method": "Equal-width vector PDF crops with symmetric artwork bounds, so each panel is centered over its count and caption."
   },
   "icl": {
     "file": "assets/icl_general_dong2024.pdf",
@@ -37,6 +37,44 @@
     "file": "assets/cnn_simulator_qrs_gradcam_example.pdf",
     "provenance": "data/gradcam_procedencia.json",
     "method": "The selected canonical raw panel crops at 386 by 386 pixels, embedded without resampling, with vector titles. The recorded heatmap and spatial registration are preserved.",
-    "sha256": "3eff583abfa6a8af94ad6167eb20847c96f4921be118591c6a84676b0b539e29"
+    "sha256": "3eff583abfa6a8af94ad6167eb20847c96f4921be118591c6a84676b0b539e29",
+    "displayed_on_slide": false
+  },
+  "pipeline_palette": {
+    "file": "assets/fig_pipeline_experimental.pdf",
+    "editable_source": "assets/fig_pipeline_experimental.drawio",
+    "fill": "#D9EAD3",
+    "stroke": "#93C47D",
+    "scope": "Embedded CNN and VLM/ICL test-sample headers now match HUCA and evaluation. Text and token colors are retained for contrast.",
+    "sha256": "07d60a0b0b6d8d08b1e28e6674541ee5ca95982832a01004b74fcea688468ad9"
+  },
+  "gradcam_illustration": {
+    "file": "assets/referencias_visuales/gradcam_ecg_sundaramoorthy2026.png",
+    "authors": "Sureshkumar Sundaramoorthy and Govardhan Karunanidhi",
+    "year": 2026,
+    "title": "Explainable hybrid deep learning framework with Grad-CAM for heartbeat-level arrhythmia classification",
+    "article": "https://doi.org/10.3389/fphys.2026.1848316",
+    "figure": 15,
+    "source_image": "https://www.frontiersin.org/files/Articles/1848316/xml-images/fphys-17-1848316-g015.webp",
+    "source_sha256": "287221254d50397b93cdad7a4d27e1465b5108838e4bcc8143445f6f15255045",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_dimensions_px": [
+      1772,
+      1175
+    ],
+    "crop_xyxy_px": [
+      0,
+      0,
+      1772,
+      375
+    ],
+    "resampling": false,
+    "scope": "Published method illustration from another study, not an experimental result from this thesis. Original scales and trace-map registration retained.",
+    "sha256": "8656a0262bd6ee29963768f662cf58c7bdcbd3fa2f2954c4af05c9d3134426e7",
+    "display_pdf": {
+      "file": "assets/gradcam_ecg_published_example.pdf",
+      "sha256": "39ab2e6d98dd7f95c81bdb4ec7e7ee36b4c3c8892e00266e03d97b25e3630eaa"
+    }
   }
 }
