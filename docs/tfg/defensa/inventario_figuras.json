@@ -46,7 +46,7 @@
     },
     {
       "file": "assets/cnn_convolutional_pipeline.pdf",
-      "sha256": "3d7363f2ca80683d12b945f9ede4890be9a548ff5ad25f248ff5b29e49b83557",
+      "sha256": "d3feeed060b3368b08edd64b4d86d9a29f603be620aa1e66c75656bffe49baeb",
       "slides": [
         "p07"
       ],
@@ -215,7 +215,7 @@
     },
     {
       "file": "assets/vlm_icl_context_window.pdf",
-      "sha256": "57b0aa2ef8ecf3d19801b62928e96acaaa441786b64b46e3632d13e8a61fc7c7",
+      "sha256": "eb7a92be28434fe4e628fa027f533ee84221c8a09d1023581eae76643044650f",
       "slides": [
         "p08"
       ],
