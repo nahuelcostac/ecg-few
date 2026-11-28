@@ -1,0 +1,27 @@
+{
+  "purpose": "Illustrative assets for the study limitations slide; no patient data or experimental results",
+  "accessed": "2026-11-28",
+  "hospital": {
+    "author": "vicenmiranda",
+    "source": "https://commons.wikimedia.org/wiki/File:25._Hospital_Universitario_Central_de_Asturias_(36104132056).jpg",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "file": "assets/referencias_visuales/huca_vicenmiranda.jpg",
+    "adaptation": "Original JPEG preserved; cropped by 110 bp at the bottom and 80 bp at the top in the Beamer placement"
+  },
+  "precordial": {
+    "author": "Twisp",
+    "source": "https://commons.wikimedia.org/wiki/File:Precordial_Leads.svg",
+    "license": "Public domain, released by the copyright holder",
+    "original": "assets/referencias_visuales/precordial_leads_twisp.svg",
+    "derivative": "assets/referencias_visuales/precordial_v1_highlight.svg",
+    "pdf": "assets/referencias_visuales/precordial_v1_highlight.pdf",
+    "adaptation": "Background and frame removed; V1 marker and label highlighted in teal, other electrode markers subdued. Anatomical positions unchanged. PDF converted from the derivative SVG with PyMuPDF."
+  },
+  "files": {
+    "huca_vicenmiranda.jpg": "2058e718228f9f79ef5e2ff16ca932f505125d276f49b80eb24fefa1836fac1d",
+    "precordial_leads_twisp.svg": "cb477a36f899f35e2ccde57c02095f718fdb68479ccfde0bc29ef437ed1b4f56",
+    "precordial_v1_highlight.svg": "9db7287f835dc9c000ecd4e1805aa9f59b8982bb94444ccf8f280047d6459e47",
+    "precordial_v1_highlight.pdf": "c9b11ad922c12741d4a52907d301975b211756c213a5285601ebf60d55bffc5c"
+  }
+}

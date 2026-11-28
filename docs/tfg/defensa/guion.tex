@@ -61,7 +61,7 @@ La presentación es una adaptación a 16:9 de los modelos del apartado 6.1 del M
 34 & Demostraciones y entrenamiento con ejemplos del HUCA & 15:45\\
 35 & Matrices de confusión en la evaluación clínica & 16:20\\
 36 & Conclusiones & 17:00\\
-37 & Interpretación y límites del estudio & 17:45\\
+37 & Limitaciones del estudio & 17:45\\
 38 & Continuación del trabajo & 18:10\\
 39 & Cierre y preguntas & 18:20\\
 \bottomrule\end{longtable}
@@ -319,12 +319,16 @@ Las matrices muestran las mejores configuraciones balanceadas de cada método. A
 
 Con ejemplos del HUCA, Gemma supera a ResNet18 desde ocho demostraciones. Con 32 y selección balanceada, la exactitud balanceada es \RealVlmBA{} para Gemma y \RealCnnLastBA{} para ResNet18. El simulador demuestra que ambos aprovechan más ejemplos en una tarea controlada. Al usar ejemplos sintéticos sobre el HUCA el rendimiento cae, lo que pone de relieve la importancia de la procedencia de las demostraciones.
 
-\textbf{Transición.} ¿Por qué pueden ser tan distintos ambos resultados clínicos?
+\textbf{Transición.} Estos resultados deben leerse teniendo en cuenta las limitaciones de la muestra y de la entrada.
 
-\Needspace{8\baselineskip}\section*{37. Interpretación y límites del estudio}
+\Needspace{8\baselineskip}\section*{37. Limitaciones del estudio}
 \textbf{Tiempo orientativo: }45 segundos.
 
-Una explicación compatible con los resultados es que los ejemplos del HUCA muestran a Gemma cómo se aplica la etiqueta clínica sobre trazados reales. ResNet18 parte de ImageNet y debe ajustar sus pesos con pocas imágenes. Además, dispone de ocho pacientes de validación por pliegue. El resultado podría depender del preentrenamiento, del modelo o del protocolo y el experimento no aísla esos factores. Los pesos abiertos permitieron procesar las imágenes en un entorno privado. El estudio utiliza datos de un centro, un latido V1 por paciente y etiquetas distintas entre simulador y HUCA. Aún quedan positivos por detectar y el apoyo al triaje necesita validación clínica.
+Las limitaciones se concentran en la procedencia de la muestra y en la representación de entrada. La evaluación clínica utiliza \HucaPatients{} pacientes del Hospital Universitario Central de Asturias. Aunque permite comparar los métodos dentro de esta cohorte, su tamaño y la escasez de ejemplos positivos limitan la variedad de trazados y etiquetas observada. Todos los pacientes proceden del mismo hospital; no se ha validado el rendimiento en una cohorte externa. Por tanto, estos resultados no establecen la generalización a otros hospitales o poblaciones.
+
+La entrada es un trazado renderizado de un latido central de la derivación precordial V1. No se utiliza el registro temporal completo ni la información conjunta de las doce derivaciones. Esta selección reduce la información disponible y acota el alcance del experimento a esa representación. La ilustración muestra la disposición de las derivaciones precordiales y destaca V1; no representa un paciente ni un resultado del estudio.
+
+La fotografía del HUCA es de vicenmiranda, publicada en Wikimedia Commons con licencia CC BY 2.0; se recorta para la composición. El esquema anatómico es de Twisp y está en dominio público. En la adaptación se elimina el fondo azul y se resalta V1 con la paleta de la defensa, conservando la disposición anatómica. Las fuentes y licencias se conservan en la documentación de los recursos visuales. La adaptación de dominio y la ampliación de datos se abordan en la diapositiva de trabajo futuro.
 
 \textbf{Transición.} Estos límites orientan las siguientes evaluaciones.
 

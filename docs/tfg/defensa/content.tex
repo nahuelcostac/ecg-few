@@ -598,29 +598,37 @@ La matriz de confusión de esta diapositiva es un esquema conceptual sin recuent
 \renewcommand{\defenseblock}{Conclusiones y discusión}
 \renewcommand{\defensenav}{Defensa del TFG}
 \begin{frame}[t]\hypertarget{p15}{}
-\frametitle{Interpretación y límites del estudio}
-\vspace{8mm}
-{\fontsize{24}{32}\selectfont\color{UOGreen} Qué aportan las demostraciones del HUCA\par}
-{\fontsize{17}{24}\selectfont Gemma recibe ejemplos de la etiqueta clínica. ResNet18 ajusta sus pesos con pocos casos.\par}
-\vspace{6mm}
-{\fontsize{19}{25}\selectfont\color{UOGreen} Pesos abiertos\par}
-{\fontsize{17}{24}\selectfont Procesamiento en un entorno privado.\par}
-\vspace{9mm}
+\frametitle{Limitaciones del estudio}
+\vspace{4mm}
 \begin{columns}[T,onlytextwidth]
-\begin{column}{.28\textwidth}
-{\color{UOGreen}\rule{\linewidth}{1pt}}\par
-{\fontsize{18}{24}\selectfont Un solo centro\par}
+\begin{column}{.47\textwidth}
+\begin{minipage}[c][70mm][c]{\linewidth}
+\centering
+\includegraphics[trim=0bp 110bp 0bp 80bp,clip,width=\linewidth,height=70mm,keepaspectratio]{assets/referencias_visuales/huca_vicenmiranda.jpg}
+\end{minipage}\par
+\vspace{5mm}
+{\fontsize{22}{29}\selectfont\color{UOGreen} Muestra de un único hospital\par}
+\vspace{3mm}
+{\fontsize{18}{25}\selectfont\HucaPatients{} pacientes del HUCA.\\Muestra limitada, sin validación externa.\par}
 \end{column}
-\begin{column}{.28\textwidth}
-{\color{UOGreen}\rule{\linewidth}{1pt}}\par
-{\fontsize{18}{24}\selectfont Un latido de V1\par}
-\end{column}
-\begin{column}{.36\textwidth}
-{\color{UOGreen}\rule{\linewidth}{1pt}}\par
-{\fontsize{18}{24}\selectfont Etiquetas distintas\par}
+\begin{column}{.47\textwidth}
+\begin{minipage}[c][70mm][c]{\linewidth}
+\centering
+\includegraphics[width=\linewidth,height=70mm,keepaspectratio]{assets/referencias_visuales/precordial_v1_highlight.pdf}
+\end{minipage}\par
+\vspace{5mm}
+{\fontsize{22}{29}\selectfont\color{UOGreen} Un latido de la derivación V1\par}
+\vspace{3mm}
+{\fontsize{18}{25}\selectfont V1 es una derivación precordial.\\Representación parcial del ECG.\par}
 \end{column}
 \end{columns}
-\note{Una explicación compatible con los resultados es que los ejemplos del HUCA muestran a Gemma cómo se aplica la etiqueta clínica sobre trazados reales. ResNet18 parte de ImageNet y debe ajustar sus pesos con pocas imágenes. Además, dispone de ocho pacientes de validación por pliegue. El resultado podría depender del preentrenamiento, del modelo o del protocolo y el experimento no aísla esos factores. Los pesos abiertos permitieron procesar las imágenes en un entorno privado. El estudio utiliza datos de un centro, un latido V1 por paciente y etiquetas distintas entre simulador y HUCA. Aún quedan positivos por detectar y el apoyo al triaje necesita validación clínica.}
+\vspace{5mm}
+\credit{Fotografía: \href{https://commons.wikimedia.org/wiki/File:25._Hospital_Universitario_Central_de_Asturias_(36104132056).jpg}{vicenmiranda, CC BY 2.0, recorte}. Esquema precordial: \href{https://commons.wikimedia.org/wiki/File:Precordial_Leads.svg}{Twisp, dominio público; V1 resaltada}.}
+\note{Las limitaciones se concentran en la procedencia de la muestra y en la representación de entrada. La evaluación clínica utiliza \HucaPatients{} pacientes del Hospital Universitario Central de Asturias. Aunque permite comparar los métodos dentro de esta cohorte, su tamaño y la escasez de ejemplos positivos limitan la variedad de trazados y etiquetas observada. Todos los pacientes proceden del mismo hospital; no se ha validado el rendimiento en una cohorte externa. Por tanto, estos resultados no establecen la generalización a otros hospitales o poblaciones.
+
+La entrada es un trazado renderizado de un latido central de la derivación precordial V1. No se utiliza el registro temporal completo ni la información conjunta de las doce derivaciones. Esta selección reduce la información disponible y acota el alcance del experimento a esa representación. La ilustración muestra la disposición de las derivaciones precordiales y destaca V1; no representa un paciente ni un resultado del estudio.
+
+La fotografía del HUCA es de vicenmiranda, publicada en Wikimedia Commons con licencia CC BY 2.0; se recorta para la composición. El esquema anatómico es de Twisp y está en dominio público. En la adaptación se elimina el fondo azul y se resalta V1 con la paleta de la defensa, conservando la disposición anatómica. Las fuentes y licencias se conservan en la documentación de los recursos visuales. La adaptación de dominio y la ampliación de datos se abordan en la diapositiva de trabajo futuro.}
 \end{frame}}
 
 \expandafter\newcommand\csname Slidefuturo\endcsname{%

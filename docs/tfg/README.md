@@ -11,6 +11,8 @@ This folder publishes the revised Spanish thesis **Análisis de ECGs con grandes
 
 The PowerPoint represents the PDF pages as images. Edit the Beamer sources to change slide text and figures. The deck contains 39 presentation slides, one approximate-budget support slide after the thank-you page, and two reference pages. A metrics slide immediately after LOOCV uses a conceptual confusion matrix to explain balanced accuracy, positive-class F1, sensitivity, specificity and precision in relation to class imbalance and triage errors; formulas and sources are preserved in the speaker notes. The rehearsal timings sum to 18 minutes and 20 seconds; the route retains its historical `18min` identifier. The budget is divided into personnel, compute, and materials subtables, with a separate total. Recorded times remain visible, while detailed assumptions are kept in the notes and [budget provenance](defensa/BUDGET.md).
 
+The limitations slide focuses on the limited HUCA cohort without external validation and the input restricted to a rendered central V1 beat. It pairs an exterior hospital photograph with a precordial-lead illustration highlighting V1; [visual credits and adaptations](defensa/assets/referencias_visuales/README.md) document both resources. The former interpretation and open-weights blocks have been removed from that slide.
+
 ## Compile the sources
 
 Install Tectonic or a TeX distribution with XeLaTeX and latexmk. Run the following commands from the repository root.

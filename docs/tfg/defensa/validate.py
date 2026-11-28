@@ -121,6 +121,9 @@ def main() -> None:
     metrics_text = " ".join(texts[route.index("metricas")].split())
     assert all(label in metrics_text for label in ("Exactitud balanceada", "Clase positiva", "Sensibilidad", "Especificidad", "Precisión", "Triaje"))
     assert all(label in metrics_text for label in ("Cada clase pesa un 50", "VP", "FN", "FP", "VN", "Caso omitido", "Falsa alarma"))
+    limitations = " ".join(texts[route.index("p15")].split())
+    assert all(label in limitations for label in ("Limitaciones del estudio", "Muestra de un único hospital", "317 pacientes", "Un latido de la derivación V1", "precordial"))
+    assert "Pesos abiertos" not in limitations and "Qué aportan las demostraciones" not in limitations
     clinical_text = texts[route.index("p13")]
     assert "0,761" in clinical_text and "0,535" in clinical_text
     assert "F1 de la clase positiva" in clinical_text
